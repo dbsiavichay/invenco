@@ -4,16 +4,23 @@ from django.contrib.auth.models import User
 class Job(models.Model):
 	name = models.CharField(max_length = 64)
 
-class Deparment(models.Model):
+	def __unicode__(self):
+		return self.name
+
+class Department(models.Model):
 	code = models.CharField(max_length = 16)
 	name = models.CharField(max_length = 64)
-	date = models.DateTimeField()
+
+	def __unicode__(self):
+		return self.name
 
 class Area(models.Model):
 	code = models.CharField(max_length = 16)
 	name = models.CharField(max_length = 64)
-	date = models.DateTimeField()
-	deparment = models.ForeignKey(Deparment)
+	department = models.ForeignKey(Department)
+
+	def __unicode__(self):
+		return self.name
 
 class Employee(models.Model):
 	charter = models.CharField(max_length = 10)
@@ -22,5 +29,3 @@ class Employee(models.Model):
 	user = models.ForeignKey(User)
 	area = models.ForeignKey(Area)
 	job = models.ForeignKey(Job)
-
-
