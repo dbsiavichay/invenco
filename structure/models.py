@@ -29,3 +29,6 @@ class Employee(models.Model):
 	user = models.ForeignKey(User)
 	area = models.ForeignKey(Area)
 	job = models.ForeignKey(Job)
+
+	def __unicode__(self):
+		return '%s %s' % (self.user.first_name, self.user.last_name)

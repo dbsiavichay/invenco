@@ -32,3 +32,6 @@ class Device(models.Model):
 	date_warranty = models.DateTimeField()
 	specifications = JSONField(blank=True, null=True)
 	model = models.ForeignKey(Model)
+
+	def __unicode__(self):
+		return '%s %s %s - Code: %s' % (self.model.type, self.model.trademark, self.model, self.code)
