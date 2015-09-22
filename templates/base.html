@@ -29,10 +29,10 @@
 			        		<span class="caret"></span>
 			        	</a>
 			        	<ul class="dropdown-menu" role="menu">
-				            <li><a href="#">Cargos</a></li>
-				            <li><a href="#">Departamentos</a></li>
-				            <li><a href="#">Areas</a></li>				            
-				            <li><a href="#">Empleados</a></li>				            
+				            <li><a href="/jobs">Cargos</a></li>
+				            <li><a href="/departments">Departamentos</a></li>
+				            <li><a href="/areas">Areas</a></li>				            
+				            <li><a href="/employees">Empleados</a></li>				            
 				        </ul>
 			        </li>			        
 			        <li class="dropdown">
@@ -70,5 +70,6 @@
 
 	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script src="{% static 'libs/js/bootstrap.min.js' %}"></script>
+	{% block imports%}{% endblock%}
 </body>
 </html>

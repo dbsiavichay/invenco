@@ -19,5 +19,5 @@ from structure.views import jobs
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^jobs/', jobs, name='jobs'),
+    url(r'', include('structure.urls')),
 ]
