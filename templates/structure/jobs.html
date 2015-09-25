@@ -16,9 +16,8 @@
 					<th>Acciones</th>
 				</tr>
 			</thead>
-			<tbody>
-				{% if jobs %}			
-				{% for job in jobs %}
+			<tbody id="objectList">							
+				{% for job in object_list %}
 				<tr>
 					<td class="col-xs-10">{{ job.name }}</td>
 					<td id="{{ job.id }}" class="col-xs-2">
@@ -30,45 +29,27 @@
 						</button>
 					</td>
 				</tr>
-				{% endfor %}
-				{% else %}
+				{% empty %}
 				<tr>
 					<td colspan="2">'No existen registros'</td>
-				</tr>
-				{% endif %}			
+				</tr>							
+				{% endfor %}
 			</tbody>
 		</table>
-	</section>
-
-
-	<section class="modals">
-		<div id="jobModal" class="modal fade">
-			<div class="modal-dialog">
-			    <div class="modal-content">
-				    <div class="modal-header">
-				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				        <h4 class="modal-title">Datos de cargo</h4>
-				    </div>
-				    <div class="modal-body">
-				        <div class="form-horizontal">
-				        	<div class="form-group">
-							    <label for="txtName" class="col-md-2 control-label">Nombre</label>
-							    <div class="col-md-10">
-							        <input id="txtName" type="text" class="form-control" placeholder="Nombre del cargo">
-							    </div>
-							</div>
-				        </div>
-				    </div>
-				    <div class="modal-footer">
-				        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-				        <button id="btnEdit" type="button" class="btn btn-primary">Guardar</button>
-				        <button id="btnSave" type="button" class="btn btn-primary">Guardar</button>
-				    </div>
-			    </div>
-			</div>
-		</div>
-	</section>
+	</section>	
 {% endblock %}
+
+{% block modal_content %}
+	<div class="form-horizontal" action="/jobs/" method="post">
+    	<div class="form-group">
+		    <label for="txtName" class="col-md-2 control-label">Nombre</label>
+		    <div class="col-md-10">
+		        <input id="txtName" type="text" class="form-control" placeholder="Nombre del cargo">
+		    </div>
+		</div>
+    </div>
+{% endblock %}
+
 {% block imports%}
 	{% load staticfiles%}
 	<script src="{% static 'structure/js/jobs.js' %}"></script>

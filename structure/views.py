@@ -1,16 +1,51 @@
-from django.shortcuts import render, render_to_response
-from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
+from django.forms.models import modelform_factory
+from django.forms import model_to_dict
+from django.http import JsonResponse
+from django.views.generic import ListView, DetailView
 from .models import Job
 
-def jobs(request):
+class JobListView(ListView):
+	model = Job
+	template_name = 'structure/jobs.html'
 
-	jobs = Job.objects.all()
+	def get_context_data(self, **kwargs):
+		context = super(JobListView, self).get_context_data(**kwargs)
+		context['modal_title'] = 'Datos de Cargo'
+		return context
 
-	return render_to_response('structure/jobs.html', {'jobs': jobs})
+	def post(self, request, *args, **kwargs):
+		if request.is_ajax():			
+			job_modelform = modelform_factory(Job, fields=('name',))					
+    		job_form = job_modelform(request.POST)
+    		if job_form.is_valid():
+    			object = job_form.save()
+    			data = model_to_dict(object)
+    			return JsonResponse(data)
+    		return JsonResponse({}, status=400)				
 
-def job(request, job_id):
+class JobDetailView(DetailView):
+	model = Job
 
-	job = Job.objects.get(pk=job_id)
-	response = JsonResponse({'id': job.id, 'name': job.name})
-	return HttpResponse(response)
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+		    self.object = self.get_object()
+		    data = model_to_dict(self.object)		    
+		    return JsonResponse(data)
 
+	def post(self, request, *args, **kwargs):
+		if request.is_ajax():				
+			self.object = self.get_object()
+			job_modelform = modelform_factory(Job, fields=('name',))					
+    		job_form = job_modelform(request.POST, instance=self.object)
+    		if job_form.is_valid():
+    			job_form.save()
+    			data = model_to_dict(self.object)
+    			return JsonResponse(data)
+    		return JsonResponse({}, status=400)						
+
+	def delete(self, request, *args, **kwargs):
+		if request.is_ajax():
+			self.object = self.get_object()
+			self.object.delete()
+			return JsonResponse({})

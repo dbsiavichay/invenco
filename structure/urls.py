@@ -1,9 +1,7 @@
 from django.conf.urls import patterns, url
-from .views	import jobs, job
+from .views	import JobListView, JobDetailView
 
 urlpatterns = patterns('',
-    url(r'^jobs/$', jobs, name='jobs'),
-    url(r'^jobs/(?P<job_id>\d+)/$', job, name='job_detail'),
-    #url(r'^albums/(?P<artist>[\w\-]+)/$', AlbumListView.as_view(), name='album_list'),
-    #url(r'^albums/detail/(?P<slug>[\w\-]+)/$', AlbumDetailView.as_view(), name='album_detail'),
+    url(r'^jobs/$', JobListView.as_view(), name='job_list'),
+    url(r'^jobs/(?P<pk>\d+)/$', JobDetailView.as_view(), name='job_detail'),
 )
