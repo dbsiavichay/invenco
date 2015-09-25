@@ -60,8 +60,7 @@ $(function () {
 			jobNameField.val('');
 			$('#btnEdit').hide();
 			$('#btnSave').show();
-		}
-		$('#successAlert').hide();
+		}		
 		$('#objectModal').modal('show');
 	}
 
