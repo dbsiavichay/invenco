@@ -1,71 +1,8 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html lang="es_EC">
-<head>
-	<meta charset="UTF-8">
-	<title>Siscon</title>
-	<link rel="stylesheet" href="{% static 'libs/css/bootstrap.min.css' %}">
-	<link rel="stylesheet" href="{% static 'libs/css/styles.css' %}">
-</head>
-<body>
-	<nav class="navbar navbar-default">
-	  	<div class="container-fluid">
-		    <div class="navbar-header">
-			    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
-			        <span class="sr-only">Toggle navigation</span>
-			        <span class="icon-bar"></span>
-			        <span class="icon-bar"></span>
-			        <span class="icon-bar"></span>
-			    </button>
-			    <a class="navbar-brand" href="#">SISCON</a>
-		    </div>
+{% extends "base.html" %}
 
-		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
-			    <ul class="nav navbar-nav">
-			        <li class="dropdown">
-			        	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-			        		<span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span>
-			        		Estructura
-			        		<span class="caret"></span>
-			        	</a>
-			        	<ul class="dropdown-menu" role="menu">
-				            <li><a href="#">Cargos</a></li>
-				            <li><a href="#">Departamentos</a></li>
-				            <li><a href="#">Areas</a></li>				            
-				            <li><a href="#">Empleados</a></li>				            
-				        </ul>
-			        </li>			        
-			        <li class="dropdown">
-				        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-				          	<span class="glyphicon glyphicon-blackboard" aria-hidden="true"></span>
-				          	Equipos 
-				          	<span class="caret"></span>
-				        </a>
-				        <ul class="dropdown-menu" role="menu">
-				            <li><a href="#">Marcas</a></li>				            
-				            <li><a href="#">Tipos</a></li>
-				            <li><a href="#">Modelos</a></li>
-				            <li><a href="#">Dispositivos</a></li>				            
-				        </ul>
-			        </li>
-			        <li>
-			        	<a href="#">
-			        		<span class="glyphicon glyphicon-check" aria-hidden="true"></span>
-			        		Asignaciones
-			        	</a>
-			        </li>
-			    </ul>			   
-			    <ul class="nav navbar-nav navbar-right">
-			        <li>
-						<a href="/login">
-							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Iniciar sesión
-						</a>
-					</li>
-			    </ul>
-		    </div>
-	  	</div>
-	</nav>
-	
+{% block title %}Areas | Siscon{% endblock %}
+
+{% block content %}
 	<section class="section">
 		<button class="btn btn-success col-xs-12">
 			<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
@@ -82,10 +19,12 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr id="1">
-					<td class="col-xs-4">ADM</td>
-					<td class="col-xs-6">Gestión administrativa</td>
-					<td class="col-xs-2">
+				{% for area in object_list%}
+				<tr>
+					<td class="col-xs-2">{{ area.code }}</td>
+					<td class="col-xs-4">{{ area.name }}</td>
+					<td class="col-xs-4">{{ area.department }}</td>
+					<td id="{{ area.id }}" class="col-xs-2">
 						<button class="btn btn-sm btn-default">
 							<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
 						</button>
@@ -93,45 +32,47 @@
 							<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 						</button>
 					</td>
-				</tr>				
+				</tr>
+				{% empty %}
+				<tr>
+					<td colspan="4">'No existen registros'</td>
+				</tr>
+				{%endfor %}
 			</tbody>
 		</table>
-	</section>
+	</section>	
+{% endblock %}
 
-
-	<section class="modals">
-		<div id="departmentModal" class="modal fade">
-			<div class="modal-dialog">
-			    <div class="modal-content">
-				    <div class="modal-header">
-				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				        <h4 class="modal-title">Datos de departamento</h4>
-				    </div>
-				    <div class="modal-body">
-				        <div class="form-horizontal">
-				        	<div class="form-group">
-							    <label for="txtCode" class="col-md-2 control-label">Código</label>
-							    <div class="col-md-10">
-							        <input id="txtCode" type="text" class="form-control" placeholder="Código del cargo">
-							    </div>
-							</div>
-				        	<div class="form-group">
-							    <label for="txtName" class="col-md-2 control-label">Nombre</label>
-							    <div class="col-md-10">
-							        <input id="txtName" type="text" class="form-control" placeholder="Nombre del cargo">
-							    </div>
-							</div>
-				        </div>
-				    </div>
-				    <div class="modal-footer">
-				        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-				        <button id="btnSave" type="button" class="btn btn-primary">Guardar</button>
-				    </div>
-			    </div>
-			</div>
+{% block modal_content %}
+	<div class="form-horizontal">
+		<div class="form-group">
+		    <label for="selDepartment" class="col-md-3 control-label">Departamento</label>
+		    <div class="col-md-9">
+		        <select id="selDepartment" class="form-control selectpicker" data-size="10" data-live-search="true">
+		        	<option value="">--- Seleccionar ---</option>
+		        	{% for department in departments %}
+		        	<option value="{{ department.id }}">{{ department.name }}</option>
+		        	{% endfor %}
+		        </select>
+		    </div>
 		</div>
-	</section>
-			
-	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-	<script src="{% static 'libs/js/bootstrap.min.js' %}"></script>	
-</body>
+    	<div class="form-group">
+		    <label for="txtCode" class="col-md-3 control-label">Código</label>
+		    <div class="col-md-9">
+		        <input id="txtCode" type="text" class="form-control" placeholder="Código del cargo">
+		    </div>
+		</div>
+    	<div class="form-group">
+		    <label for="txtName" class="col-md-3 control-label">Nombre</label>
+		    <div class="col-md-9">
+		        <input id="txtName" type="text" class="form-control" placeholder="Nombre del cargo">
+		    </div>
+		</div>
+    </div>
+{% endblock %}
+
+{% block imports%}
+	{% load staticfiles%}
+	<script src="{% static 'structure/js/areas.js' %}"></script>
+{% endblock%}
+

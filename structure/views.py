@@ -3,7 +3,7 @@ from django.forms.models import modelform_factory
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
-from .models import Job, Department
+from .models import Job, Department, Area
 
 class JobListView(ListView):
 	model = Job
@@ -85,6 +85,56 @@ class DepartmentDetailView(DetailView):
     		department_form = department_modelform(request.POST, instance=self.object)
     		if department_form.is_valid():
     			department_form.save()
+    			data = model_to_dict(self.object)
+    			return JsonResponse(data)
+    		return JsonResponse({}, status=400)						
+
+	def delete(self, request, *args, **kwargs):
+		if request.is_ajax():
+			self.object = self.get_object()
+			self.object.delete()
+			return JsonResponse({})
+
+
+class AreaListView(ListView):
+	model = Area
+	template_name = 'structure/areas.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(AreaListView, self).get_context_data(**kwargs)
+
+		departments = Department.objects.all()
+		context['modal_title'] = 'Datos de Area'
+		context['departments'] = departments
+
+		return context
+
+	def post(self, request, *args, **kwargs):
+		if request.is_ajax():			
+			area_modelform = modelform_factory(Area, fields=('code', 'name', 'department'))					
+    		area_form = area_modelform(request.POST)
+    		if area_form.is_valid():
+    			object = area_form.save()
+    			data = model_to_dict(object)
+    			return JsonResponse(data)
+    		return JsonResponse({}, status=400)				
+
+class AreaDetailView(DetailView):
+	model = Area
+
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+		    self.object = self.get_object()
+		    data = model_to_dict(self.object)		    
+		    return JsonResponse(data)
+
+	def post(self, request, *args, **kwargs):
+		if request.is_ajax():				
+			self.object = self.get_object()
+			area_modelform = modelform_factory(Area, fields=('code', 'name', 'department'))					
+    		area_form = area_modelform(request.POST, instance=self.object)
+    		if area_form.is_valid():
+    			area_form.save()
     			data = model_to_dict(self.object)
     			return JsonResponse(data)
     		return JsonResponse({}, status=400)						
