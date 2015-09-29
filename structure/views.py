@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.forms.models import modelform_factory
 from django.forms import model_to_dict
 from django.http import JsonResponse

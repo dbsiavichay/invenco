@@ -1,5 +1,5 @@
 from django.db import models
-from jsonfield import JSONField
+from django_pgjson.fields import JsonField
 
 class Trademark(models.Model):
 	name = models.CharField(max_length=32)
@@ -9,14 +9,14 @@ class Trademark(models.Model):
 
 class Type(models.Model):
 	name = models.CharField(max_length=32)
-	specifications = JSONField(blank=True, null=True)
+	specifications = JsonField(blank=True, null=True)
 
 	def __unicode__(self):
 		return self.name
 
 class Model(models.Model):
 	name = models.CharField(max_length=128)
-	specifications = JSONField(blank=True, null=True)
+	specifications = JsonField(blank=True, null=True)
 	type = models.ForeignKey(Type)
 	trademark = models.ForeignKey(Trademark)
 
@@ -30,7 +30,7 @@ class Device(models.Model):
 	ip = models.CharField(max_length=16, blank=True, null=True)
 	date_purchase = models.DateTimeField()
 	date_warranty = models.DateTimeField()
-	specifications = JSONField(blank=True, null=True)
+	specifications = JsonField(blank=True, null=True)
 	model = models.ForeignKey(Model)
 
 	def __unicode__(self):
