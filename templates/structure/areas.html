@@ -43,6 +43,7 @@
 	</section>	
 {% endblock %}
 
+{% block modal_title %}Datos de area{% endblock %}
 {% block modal_content %}
 	<div class="form-horizontal">
 		<div class="form-group">
@@ -73,6 +74,7 @@
 
 {% block imports%}
 	{% load staticfiles%}
+	<script src="{% static 'libs/js/bootstrap-select.min.js' %}"></script>
 	<script src="{% static 'structure/js/areas.js' %}"></script>
 {% endblock%}
 

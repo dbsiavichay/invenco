@@ -9,11 +9,6 @@ class JobListView(ListView):
 	model = Job
 	template_name = 'structure/jobs.html'
 
-	def get_context_data(self, **kwargs):
-		context = super(JobListView, self).get_context_data(**kwargs)
-		context['modal_title'] = 'Datos de Cargo'
-		return context
-
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():			
 			job_modelform = modelform_factory(Job, fields=('name',))					
@@ -53,11 +48,6 @@ class JobDetailView(DetailView):
 class DepartmentListView(ListView):
 	model = Department
 	template_name = 'structure/departments.html'
-
-	def get_context_data(self, **kwargs):
-		context = super(DepartmentListView, self).get_context_data(**kwargs)
-		context['modal_title'] = 'Datos de Departamento'
-		return context
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():			
@@ -104,7 +94,6 @@ class AreaListView(ListView):
 		context = super(AreaListView, self).get_context_data(**kwargs)
 
 		departments = Department.objects.all()
-		context['modal_title'] = 'Datos de Area'
 		context['departments'] = departments
 
 		return context

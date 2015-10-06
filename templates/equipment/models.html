@@ -43,6 +43,7 @@
 	</section>	
 {% endblock %}
 
+{% block modal_title %}Datos de modelo{% endblock %}
 {% block modal_content %}
 	<ul class="nav nav-tabs" role="tablist">
 	    <li role="presentation" class="active">
@@ -99,6 +100,7 @@
 
 {% block imports%}
 	{% load staticfiles %}
+	<script src="{% static 'libs/js/bootstrap-select.min.js' %}"></script>
 	<script src="{% static 'libs/js/capitalize.js' %}"></script>
 	<script src="{% static 'equipment/js/models.js' %}"></script>
 {% endblock%}

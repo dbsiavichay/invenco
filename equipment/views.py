@@ -9,11 +9,6 @@ class TrademarkListView(ListView):
 	model = Trademark
 	template_name = 'equipment/trademarks.html'
 
-	def get_context_data(self, **kwargs):
-		context = super(TrademarkListView, self).get_context_data(**kwargs)
-		context['modal_title'] = 'Datos de Marca'
-		return context
-
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():			
 			trademark_modelform = modelform_factory(Trademark, fields=('name',))					
@@ -53,11 +48,6 @@ class TrademarkDetailView(DetailView):
 class TypeListView(ListView):
 	model = Type
 	template_name = 'equipment/types.html'
-
-	def get_context_data(self, **kwargs):
-		context = super(TypeListView, self).get_context_data(**kwargs)
-		context['modal_title'] = 'Datos de Tipo'
-		return context
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():				
@@ -104,7 +94,6 @@ class ModelListView(ListView):
 		types = Type.objects.all()
 		trademarks = Trademark.objects.all()
 
-		context['modal_title'] = 'Datos de Modelo'
 		context['types'] = types
 		context['trademarks'] = trademarks
 		return context
