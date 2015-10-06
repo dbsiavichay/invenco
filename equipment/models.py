@@ -27,7 +27,7 @@ class Device(models.Model):
 	code = models.CharField(max_length=16, unique=True)
 	serial = models.CharField(max_length=34, unique=True, blank=True, null=True)
 	part = models.CharField(max_length=32, blank=True, null=True)
-	ip = models.CharField(max_length=16, blank=True, null=True)
+	state = models.CharField(max_length=16, blank=True, null=True)
 	date_purchase = models.DateTimeField()
 	date_warranty = models.DateTimeField()
 	specifications = JsonField(blank=True, null=True)

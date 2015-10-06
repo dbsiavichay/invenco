@@ -14,7 +14,7 @@ class ModelAdmin(admin.ModelAdmin):
 	search_fields = ('type', 'trademark', 'name',)
 
 class DeviceAdmin(admin.ModelAdmin):
-	list_display = ('model', 'code', 'serial', 'part', 'ip', 'date_purchase', 'date_warranty', 'specifications')
+	list_display = ('model', 'code', 'serial', 'part', 'state', 'date_purchase', 'date_warranty', 'specifications')
 	search_fields = ('code', 'serial', 'part', 'ip')
 	filter_fields = ('model',)
 
