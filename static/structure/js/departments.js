@@ -1,108 +1,39 @@
 $(function () { 
-	var departmentId;
-	var departmentCodeField = $('#txtCode');
-	var departmentNameField = $('#txtName');
+	var id;
 
 	$('.glyphicon-plus-sign').parent().on('click', function () {				
-		openDepartmentModal()
+		openModal()
 	});
 
 	$('.glyphicon-pencil').parent().on('click', function () {
-		departmentId = $(this).parent().attr('id');
-		$.get('/departments/'+departmentId, function (department) {						
-			openDepartmentModal(department);
+		id = $(this).parent().attr('id');
+		$.get('/departments/'+id, function (object) {						
+			openModal(object);
 		});
 	});
 
 	$('.glyphicon-remove').parent().on('click', function () {
-		departmentId = $(this).parent().attr('id');		
+		id = $(this).parent().attr('id');		
 		$('#objectDeleteModal').modal('show');
 	});
 
-
 	$('#btnSave').on('click', function () {		
-		var data = getData();
-		if (data) makeRequest('/departments/', 'POST', data);
+		var is_valid = validateForm();
+		if(!is_valid) return;				
+		makeRequest('/departments/', 'POST', getData(), reloadPage);
 	});
 
-	$('#btnEdit').on('click', function () {		
-		var data = getData();		
-		if (data) makeRequest('/departments/'+data.id+'/', 'POST', data);
+	$('#btnEdit').on('click', function () {	
+		var is_valid = validateForm();
+		if(!is_valid) return;							
+		makeRequest('/departments/'+id+'/', 'POST', getData(), reloadPage);
 	});
 
 	$('#btnDelete').on('click', function () {
-		makeRequest('/departments/'+departmentId+'/', 'DELETE', {});
+		makeRequest('/departments/'+id+'/', 'DELETE', {}, reloadPage);
 	});
 
-
-	var getData = function () {
-		var id = parseInt(departmentId);
-		var code = departmentCodeField.val();
-		var name = departmentNameField.val();
-		var is_valid = true;
-
-		cleanErrorForm()
-
-		if (!code) {			
-			departmentCodeField.parents('.form-group').addClass('has-error');
-			is_valid = false;
-		} 
-
-		if (!name) {
-			departmentNameField.parents('.form-group').addClass('has-error');
-			is_valid = false;
-		}
-
-		if (is_valid) {
-			var data = {
-				id: id,
-				code: code,
-				name: name
-			}
-			return data;			
-		}
-	}
-
-
-	var openDepartmentModal = function (department) {
-		cleanErrorForm()
-
-		if (department) {
-			departmentCodeField.val(department.code);
-			departmentNameField.val(department.name);
-			$('#btnEdit').show();
-			$('#btnSave').hide();
-		} else {
-			departmentCodeField.val('')
-			departmentNameField.val('');
-			$('#btnEdit').hide();
-			$('#btnSave').show();
-		}		
-		$('#objectModal').modal('show');
-	}
-
-	var cleanErrorForm = function () {
-		var codeFormGroup = departmentCodeField.parents('.form-group');
-		var nameFormGroup = departmentNameField.parents('.form-group');
-		if (codeFormGroup.hasClass('has-error')) codeFormGroup.removeClass('has-error');
-		if (nameFormGroup.hasClass('has-error')) nameFormGroup.removeClass('has-error');
-	}
-
-
-	var makeRequest = function (url, method, data) {
-		var request = $.ajax({
-	        url: url,        
-	        method: method, 
-	        data: data,
-	        dataType: 'json'	        
-	    });
-
-	    request.done(function (data) {	    		    	
-	    	$(location).attr('href', '/departments/');
-	    });
-
-	    request.error(function (error) {
-	    	console.log(error);
-	    });
-	}		
+	var reloadPage = function (data) {
+		$(location).attr('href', '/departments/')
+	}	
 });

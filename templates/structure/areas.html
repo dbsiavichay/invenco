@@ -49,7 +49,7 @@
 		<div class="form-group">
 		    <label for="selDepartment" class="col-md-3 control-label">Departamento</label>
 		    <div class="col-md-9">
-		        <select id="selDepartment" class="form-control selectpicker" data-size="10" data-live-search="true">
+		        <select id="inputDepartment" name="department" type="select" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
 		        	<option value="">--- Seleccionar ---</option>
 		        	{% for department in departments %}
 		        	<option value="{{ department.id }}">{{ department.name }}</option>
@@ -58,15 +58,15 @@
 		    </div>
 		</div>
     	<div class="form-group">
-		    <label for="txtCode" class="col-md-3 control-label">Código</label>
+		    <label for="inputCode" class="col-md-3 control-label">Código</label>
 		    <div class="col-md-9">
-		        <input id="txtCode" type="text" class="form-control" placeholder="Código del area">
+		        <input id="inputCode" name="code" type="text" class="form-control" placeholder="Código del area" req="true">
 		    </div>
 		</div>
     	<div class="form-group">
-		    <label for="txtName" class="col-md-3 control-label">Nombre</label>
+		    <label for="inputName" class="col-md-3 control-label">Nombre</label>
 		    <div class="col-md-9">
-		        <input id="txtName" type="text" class="form-control" placeholder="Nombre del area">
+		        <input id="inputName" name="name" type="text" class="form-control" placeholder="Nombre del area" req="true">
 		    </div>
 		</div>
     </div>

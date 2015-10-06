@@ -1,6 +1,4 @@
-$(function () {
-	$('.selectpicker').selectpicker();
-
+$(function () {	
 	var typeId;
 	var typeNameField = $('#txtName');
 	var typeSpecificationsField = [];	

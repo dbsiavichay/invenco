@@ -45,21 +45,21 @@
 {% block modal_content %}
 	<div class="form-horizontal">
     	<div class="form-group">
-		    <label for="txtCode" class="col-md-2 control-label">Código</label>
+		    <label for="inputCode" class="col-md-2 control-label">Código</label>
 		    <div class="col-md-10">
-		        <input id="txtCode" type="text" class="form-control" placeholder="Código del departamento">
+		        <input id="inputCode" name="code" type="text" class="form-control" placeholder="Código del departamento" req="true">
 		    </div>
 		</div>
     	<div class="form-group">
-		    <label for="txtName" class="col-md-2 control-label">Nombre</label>
+		    <label for="inputName" class="col-md-2 control-label">Nombre</label>
 		    <div class="col-md-10">
-		        <input id="txtName" type="text" class="form-control" placeholder="Nombre del departamento">
+		        <input id="inputName" name="name" type="text" class="form-control" placeholder="Nombre del departamento" req="true">
 		    </div>
-		</div>
+		</div>		
     </div>
 {% endblock %}
 
 {% block imports%}
-	{% load staticfiles%}
+	{% load staticfiles %}
 	<script src="{% static 'structure/js/departments.js' %}"></script>
 {% endblock%}

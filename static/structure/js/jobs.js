@@ -1,84 +1,39 @@
 $(function () { 
-	var jobId;
-	var jobNameField = $('#txtName');
+	var id;
 
 	$('.glyphicon-plus-sign').parent().on('click', function () {				
-		openJobModal()
+		openModal()
 	});
 
 	$('.glyphicon-pencil').parent().on('click', function () {
-		jobId = $(this).parent().attr('id');
-		$.get('/jobs/'+jobId, function (job) {						
-			openJobModal(job);
+		id = $(this).parent().attr('id');
+		$.get('/jobs/'+id, function (object) {						
+			openModal(object);
 		});
 	});
 
 	$('.glyphicon-remove').parent().on('click', function () {
-		jobId = $(this).parent().attr('id');		
+		id = $(this).parent().attr('id');		
 		$('#objectDeleteModal').modal('show');
 	});
 
-
-	$('#btnSave').on('click', function () {		
-		var data = getData();
-		if (data) makeRequest('/jobs/', 'POST', data);
+	$('#btnSave').on('click', function () {	
+		var is_valid = validateForm();
+		if(!is_valid) return;	
+		makeRequest('/jobs/', 'POST', getData(), reloadPage);
 	});
 
 	$('#btnEdit').on('click', function () {		
-		var data = getData();		
-		if (data) makeRequest('/jobs/'+data.id+'/', 'POST', data);
+		var is_valid = validateForm();
+		if(!is_valid) return;		
+		makeRequest('/jobs/'+id+'/', 'POST', getData(), reloadPage);
 	});
 
 	$('#btnDelete').on('click', function () {
-		makeRequest('/jobs/'+jobId+'/', 'DELETE', {});
-	});
+		makeRequest('/jobs/'+id+'/', 'DELETE', {}, reloadPage);
+	});	
 
-
-	var getData = function () {
-		var id = parseInt(jobId);
-		var name = jobNameField.val();
-		if (name) {
-			var data = {
-				id: id,
-				name: name
-			}
-			return data;			
-		} else {
-			jobNameField.parents('.form-group').addClass('has-error');
-		}
+	var reloadPage = function (data) {
+		$(location).attr('href', '/jobs/')
 	}
-
-	var openJobModal = function (job) {
-		var formGroup = $('#txtName').parents('.form-group');		
-		if (formGroup.hasClass('has-error')) formGroup.removeClass('has-error');
-		if (job) {
-			jobNameField.val(job.name);
-			$('#btnEdit').show();
-			$('#btnSave').hide();
-		}
-		else {
-			jobNameField.val('');
-			$('#btnEdit').hide();
-			$('#btnSave').show();
-		}		
-		$('#objectModal').modal('show');
-	}
-
-
-	var makeRequest = function (url, method, data) {
-		var request = $.ajax({
-	        url: url,        
-	        method: method, 
-	        data: data,
-	        dataType: 'json'	        
-	    });
-
-	    request.done(function (data) {	    		    	
-	    	$(location).attr('href', '/jobs/');
-	    });
-
-	    request.error(function (error) {
-	    	console.log(error);
-	    });
-	}		
 });
