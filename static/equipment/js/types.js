@@ -1,30 +1,32 @@
 $(function () {	
-	var typeId;
-	var typeNameField = $('#txtName');
-	var typeSpecificationsField = [];	
-
+	var id;	
+	var specifications = [];
 
 	$('.glyphicon-plus-sign').parent().on('click', function () {
-		typeSpecificationsField = [];				
-		openTypeModal()
+		specifications = [];
+		renderSpecifications(specifications)				
+		openModal()
 	});
 
 	$('.glyphicon-pencil').parent().on('click', function () {
-		typeId = $(this).parent().attr('id');
-		$.get('/types/'+typeId, function (type) {
-			openTypeModal(type);
+		id = $(this).parent().attr('id');
+		$.get('/types/'+id, function (object) {
+			specifications = object.specifications;
+			renderSpecifications(specifications);
+			openModal(object);
 		});
 	});
 
 	$('.glyphicon-remove').parent().on('click', function () {
-		typeId = $(this).parent().attr('id');		
+		id = $(this).parent().attr('id');		
 		$('#objectDeleteModal').modal('show');
 	});
 
+
 	$('#btnAdd').on('click', function () {
-		var specification_for = $('input:radio[name=optSpecificationFor]:checked');
-		var specification_name = $('#txtSpecification');
-		var specification_options = $('#txtOptions');
+		var specification_for = $('#inputSpecificationFor').find('input:checked');
+		var specification_name = $('#inputSpecification');
+		var specification_options = $('#inputOptions');
 		var formSpecificationName = specification_name.parents('.form-group');
 
 		if(formSpecificationName.hasClass('has-error')) formSpecificationName.removeClass('has-error');
@@ -35,31 +37,36 @@ $(function () {
 		}		
 
 		var item = getSpecification(specification_for.val(), specification_name.val(), specification_options.val());
-		typeSpecificationsField.push(item);
-		renderDetail(typeSpecificationsField);
+		specifications.push(item);
+		renderSpecifications(specifications);
 	});	
 
 
-
-	$('#btnSave').on('click', function () {		
-		var data = getData();		
-		if (data) makeRequest('/types/', 'POST', data);
+	$('#btnSave').on('click', function () {	
+		var is_valid = validateForm();
+		if(!is_valid) return;		
+		var data = getData();
+		data['specifications'] = JSON.stringify(specifications);	
+		makeRequest('/types/', 'POST', data, reloadPage);
 	});
 
 	$('#btnEdit').on('click', function () {		
-		var data = getData();		
-		if (data) makeRequest('/types/'+data.id+'/', 'POST', data);
+		var is_valid = validateForm();
+		if(!is_valid) return;		
+		var data = getData();
+		data['specifications'] = JSON.stringify(specifications);		
+		if (data) makeRequest('/types/'+id+'/', 'POST', data, reloadPage);
 	});
 
 	$('#btnDelete').on('click', function () {
-		makeRequest('/types/'+typeId+'/', 'DELETE', {});
+		makeRequest('/types/'+id+'/', 'DELETE', {}, reloadPage);
 	});
 
-	var renderDetail = function (detail) {
+	var renderSpecifications = function (detail) {
 		var emptyTemplate = '<tr><td colspan="4">No existen registros</td></tr>';
 		var tab = $('a[href=#detail]');
-
 		var table = $('#table_detail');
+
 		table.children().remove();
 
 		if(detail.length) {
@@ -73,9 +80,9 @@ $(function () {
 			tab.text('Detalle');
 		}
 
-		$('input:radio[name=optSpecificationFor][value=model]').prop('checked', true);
-		$('#txtSpecification').val('');
-		$('#txtOptions').val('');
+		$($('#inputSpecificationFor').find('input').get(0)).prop('checked', true);
+		$('#inputSpecification').val('');
+		$('#inputOptions').val('');
 
 		addListenerDeleteSpecification();
 	}
@@ -98,33 +105,9 @@ $(function () {
 	var addListenerDeleteSpecification = function () {
 		$('.btn-delete-specification').on('click', function () {
 			var pos = $(this).attr('id').split('-')[1]
-			typeSpecificationsField.splice(pos, 1);
-			renderDetail(typeSpecificationsField);
+			specifications.splice(pos, 1);
+			renderSpecifications(specifications);
 		});
-	}
-
-
-	var getData = function () {
-		var id = parseInt(typeId);
-		var name = typeNameField.val();
-		var specifications = JSON.stringify(typeSpecificationsField);
-		var is_valid = true;
-
-		cleanErrorForm()		
-
-		if (!name) {
-			typeNameField.parents('.form-group').addClass('has-error');
-			is_valid = false;
-		}
-
-		if (is_valid) {
-			var data = {
-				id: id,				
-				name: name,
-				specifications: specifications
-			}
-			return data;			
-		}
 	}
 
 
@@ -175,49 +158,7 @@ $(function () {
 	}	
 
 
-	var openTypeModal = function (type) {
-		cleanErrorForm()
-
-		$('input:radio[name=optSpecificationFor][value=model]').prop('checked', true);
-		$('#txtSpecification').val('');
-		$('#txtOptions').val('');		
-		if (type) {			
-			typeNameField.val(type.name);
-			typeSpecificationsField = type.specifications;
-			$('#btnEdit').show();
-			$('#btnSave').hide();
-		} else {
-			typeNameField.val('');
-			$('#btnEdit').hide();
-			$('#btnSave').show();
-		}		
-
-		renderDetail(typeSpecificationsField);		
-		$('#objectModal').modal('show');
-	}
-
-	var cleanErrorForm = function () {
-		var nameFormGroup = typeNameField.parents('.form-group');		
-		var specificationFormGroup = $('#txtSpecification').parents('.form-group');
-		if (nameFormGroup.hasClass('has-error')) nameFormGroup.removeClass('has-error');
-		if (specificationFormGroup.hasClass('has-error')) specificationFormGroup.removeClass('has-error');		
-	}
-
-
-	var makeRequest = function (url, method, data) {
-		var request = $.ajax({
-	        url: url,        
-	        method: method, 
-	        data: data,
-	        dataType: 'json'	        
-	    });
-
-	    request.done(function (data) {	    	
-	    	$(location).attr('href', '/types/');
-	    });
-
-	    request.error(function (error) {
-	    	console.log(error);
-	    });
-	}		
+	var reloadPage = function (data) {
+		$(location).attr('href', '/types/');
+	}	
 });
