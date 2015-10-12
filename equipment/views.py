@@ -100,7 +100,7 @@ class ModelListView(ListView):
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():				
-			model_modelform = modelform_factory(Model, fields=('name', 'specifications'))					
+			model_modelform = modelform_factory(Model, fields=('name', 'specifications', 'type', 'trademark'))					
     		model_form = model_modelform(request.POST)     		
     		if model_form.is_valid():    			    			
     			object = model_form.save()

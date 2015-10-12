@@ -13,9 +13,9 @@ var makeRequest = function (url, method, data, callback) {
     });
 }
 
-var getData = function () {
+var getData = function (container) {
 	var data = {};
-	var fields = $('[id*=input]');
+	var fields = container?container.find('[id*=input]'):$('[id*=input]');
 
 	fields.each(function (index, field) {
 		var type = 	$(field).attr('type');
@@ -52,6 +52,23 @@ var resetFormValues = function () {
 	});	
 }
 
+var setFormValues = function (object) {
+	var fields = $('[id*=input]');
+	fields.each(function (index, field) {
+		var type = $(field).attr('type');
+		var name = $(field).attr('name');
+
+		if(type==='radio') {
+			var radio = $(field).find('input[value='+object[name]+']');
+			$(radio).prop('checked', true);
+		}else if (type === 'select'){
+			$(field).selectpicker('val', object[name]);
+		}else{
+			$(field).val(object[name]);
+		}
+	});
+}
+
 var validateForm = function () {
 	var fields = $('[id*=input]');
 	var is_valid = true;
@@ -73,28 +90,13 @@ var validateForm = function () {
 }
 
 var openModal = function (object) {
-	var fields = $('[id*=input]');
-
 	cleanFormErrors();
 	if(!object) {
 		resetFormValues();
 		$('#btnEdit').hide();
 		$('#btnSave').show();		
 	} else {
-		fields.each(function (index, field) {
-			var type = $(field).attr('type');
-			var name = $(field).attr('name');
-
-			if(type==='radio') {
-				var radio = $(field).find('input[value='+object[name]+']');
-				$(radio).prop('checked', true);
-			}else if (type === 'select'){
-				$(field).selectpicker('val', object[name]);
-			}else{
-				$(field).val(object[name]);
-			}
-		});
-
+		setFormValues(object)
 		$('#btnEdit').show();
 		$('#btnSave').hide();
 	}

@@ -58,10 +58,10 @@
 	    <div role="tabpanel" class="tab-pane active" id="general">
 	    	<div class="form-horizontal">
 	    		<div class="form-group">
-				    <label for="selType" class="col-md-2 control-label">Tipo</label>
+				    <label for="inputType" class="col-md-2 control-label">Tipo</label>
 				    <div class="col-md-10">
-				        <select id="selType" class="form-control selectpicker" data-size="10" data-live-search="true">
-				        	<option value="">--- Seleccionar ---</option>
+				        <select id="inputType" type="select" name="type" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
+				        	<option value="">--- Seleccionar ---</option>				        	
 				        	{% for type in types %}
 				        	<option value="{{ type.id }}">{{ type.name }}</option>
 				        	{% endfor %}
@@ -69,9 +69,9 @@
 				    </div>
 				</div>
 				<div class="form-group">
-				    <label for="selTrademark" class="col-md-2 control-label">Marca</label>
+				    <label for="inputTrademark" class="col-md-2 control-label">Marca</label>
 				    <div class="col-md-10">
-				        <select id="selTrademark" class="form-control selectpicker" data-size="10" data-live-search="true">
+				        <select id="inputTrademark" type="select" name="trademark" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
 				        	<option value="">--- Seleccionar ---</option>
 				        	{% for trademark in trademarks %}
 				        	<option value="{{ trademark.id }}">{{ trademark.name }}</option>
@@ -80,9 +80,9 @@
 				    </div>
 				</div>
 				<div class="form-group">
-				    <label for="txtName" class="col-md-2 control-label">Nombre</label>
+				    <label for="inputName" class="col-md-2 control-label">Nombre</label>
 				    <div class="col-md-10">
-				        <input id="txtName" type="text" class="form-control" placeholder="Nombre del tipo de dispositivo">
+				        <input id="inputName" type="text" name="name" class="form-control" placeholder="Nombre del tipo de dispositivo" req="true">
 				    </div>
 				</div>																	
 	    	</div>
