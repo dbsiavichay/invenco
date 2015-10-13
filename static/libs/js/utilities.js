@@ -6,7 +6,7 @@ var makeRequest = function (url, method, data, callback) {
         dataType: 'json'	        
     });
 
-    request.done(callback(data));
+    request.then(callback);
 
     request.error(function (error) {
     	console.log(error);
@@ -21,7 +21,7 @@ var getData = function (container) {
 		var type = 	$(field).attr('type');
 		var name = $(field).attr('name');		
 		var value = type!='radio'?$(field).val():$(field).find('input:checked').val();
-		data[name] = value;
+		data[name] = value;		
 	});
 
 	return data;	
@@ -59,10 +59,13 @@ var setFormValues = function (object) {
 		var name = $(field).attr('name');
 
 		if(type==='radio') {
-			var radio = $(field).find('input[value='+object[name]+']');
+			var radio = $(field).find("input[value='"+object[name]+"']");
 			$(radio).prop('checked', true);
 		}else if (type === 'select'){
 			$(field).selectpicker('val', object[name]);
+		}else if (type === 'date'){
+			var matches = object[name].match(/\d{4}-\d{1,2}-\d{1,2}/);
+			if (matches) $(field).val(matches[0]);			
 		}else{
 			$(field).val(object[name]);
 		}

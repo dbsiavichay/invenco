@@ -3,7 +3,7 @@ from django.forms.models import modelform_factory
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
-from .models import Trademark, Type, Model
+from .models import Trademark, Type, Model, Device
 
 class TrademarkListView(ListView):
 	model = Trademark
@@ -98,6 +98,17 @@ class ModelListView(ListView):
 		context['trademarks'] = trademarks
 		return context
 
+	def get(self, request, *args, **kwargs):		
+		if request.is_ajax():
+			type = request.GET.get('type', None);
+			if (type is not None):				
+				objects = self.model.objects.filter(type=type)				
+				list = [model_to_dict(object) for object in objects]
+				return JsonResponse(list, safe=False)
+			return JsonResponse({}, status=400);
+		else:
+			return super(ModelListView, self).get(self, request, *args, **kwargs)
+
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():				
 			model_modelform = modelform_factory(Model, fields=('name', 'specifications', 'type', 'trademark'))					
@@ -133,4 +144,54 @@ class ModelDetailView(DetailView):
 			self.object = self.get_object()
 			self.object.delete()
 			return JsonResponse({})
+
+class DeviceListView(ListView):
+	model = Device
+	template_name = 'equipment/devices.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(DeviceListView, self).get_context_data(**kwargs)
+		types = Type.objects.all()
+
+		context['types'] = types
+		return context
+
+	def post(self, request, *args, **kwargs):
+		if request.is_ajax():				
+			model_modelform = modelform_factory(Device, fields=('code', 'serial', 'part', 'state', 'date_purchase', 'date_warranty', 'specifications', 'model',))
+    		model_form = model_modelform(request.POST)     		
+    		if model_form.is_valid():    			    			
+    			object = model_form.save()
+    			data = model_to_dict(object)
+    			return JsonResponse(data)
+    		print model_form.errors
+    		return JsonResponse({}, status=400)				
+
+class DeviceDetailView(DetailView):
+	model = Device
+
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+		    self.object = self.get_object()
+		    data = model_to_dict(self.object)
+		    data['type'] = self.object.model.type.id	    
+		    return JsonResponse(data)
+
+	def post(self, request, *args, **kwargs):
+		if request.is_ajax():				
+			self.object = self.get_object()
+			model_modelform = modelform_factory(Device, fields=('code', 'serial', 'part', 'state', 'date_purchase', 'date_warranty', 'specifications', 'model',))					
+    		model_form = model_modelform(request.POST, instance=self.object)
+    		if model_form.is_valid():
+    			model_form.save()
+    			data = model_to_dict(self.object)
+    			return JsonResponse(data)
+    		return JsonResponse({}, status=400)						
+
+	def delete(self, request, *args, **kwargs):
+		if request.is_ajax():
+			self.object = self.get_object()
+			self.object.delete()
+			return JsonResponse({})
+
 

@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from .views	import TrademarkListView, TrademarkDetailView, TypeListView, TypeDetailView, ModelListView, ModelDetailView
+from .views	import TrademarkListView, TrademarkDetailView, TypeListView, TypeDetailView, ModelListView, ModelDetailView, DeviceListView, DeviceDetailView
 
 urlpatterns = patterns('',
     url(r'^trademarks/$', TrademarkListView.as_view(), name='trademark_list'),
@@ -8,4 +8,6 @@ urlpatterns = patterns('',
     url(r'^types/(?P<pk>\d+)/$', TypeDetailView.as_view(), name='type_detail'),   
     url(r'^models/$', ModelListView.as_view(), name='model_list'),
     url(r'^models/(?P<pk>\d+)/$', ModelDetailView.as_view(), name='model_detail'),
+    url(r'^devices/$', DeviceListView.as_view(), name='device_list'),
+    url(r'^devices/(?P<pk>\d+)/$', DeviceDetailView.as_view(), name='device_detail'),
 )

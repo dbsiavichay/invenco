@@ -1,5 +1,6 @@
 from django.db import models
 from django_pgjson.fields import JsonField
+from datetime import datetime
 
 class Trademark(models.Model):
 	name = models.CharField(max_length=32)
@@ -35,3 +36,7 @@ class Device(models.Model):
 
 	def __unicode__(self):
 		return '%s %s %s - Code: %s' % (self.model.type, self.model.trademark, self.model, self.code)
+
+	def has_warranty(self):
+		now =  datetime.now()
+		return self.date_warranty > now
