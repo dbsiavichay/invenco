@@ -160,6 +160,21 @@ class EmployeeListView(ListView):
 
 		return context
 
+	def get(self, request, *args, **kwargs):		
+		if request.is_ajax():
+			area = request.GET.get('area', None);
+			if (area is not None):				
+				objects = self.model.objects.filter(area=area)				
+				list = []
+				for object in objects:
+					dict = model_to_dict(object)
+					dict['full_name'] = '%s %s' % (object.user.first_name, object.user.last_name)
+					list.append(dict)
+				return JsonResponse(list, safe=False)
+			return JsonResponse({}, status=400);
+		else:
+			return super(EmployeeListView, self).get(self, request, *args, **kwargs)
+
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():
 			user_modelform = modelform_factory(User, fields=('first_name', 'last_name', 'email', 'username', 'password', 'is_active', 'date_joined'))

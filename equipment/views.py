@@ -131,7 +131,7 @@ class ModelDetailView(DetailView):
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():				
 			self.object = self.get_object()
-			model_modelform = modelform_factory(Model, fields=('name', 'specifications'))					
+			model_modelform = modelform_factory(Model, fields=('name', 'specifications', 'type', 'trademark'))					
     		model_form = model_modelform(request.POST, instance=self.object)
     		if model_form.is_valid():
     			model_form.save()
@@ -155,6 +155,23 @@ class DeviceListView(ListView):
 
 		context['types'] = types
 		return context
+
+	def get(self, request, *args, **kwargs):		
+		if request.is_ajax():
+			type = request.GET.get('type', None);
+			if (type is not None):				
+				objects = self.model.objects.filter(model__type=type)				
+				list = []
+				for object in objects:
+					dict = model_to_dict(object)
+					dict['type'] = object.model.type.name
+					dict['trademark'] = object.model.trademark.name
+					dict['model'] = object.model.name
+					list.append(dict)				
+				return JsonResponse(list, safe=False)
+			return JsonResponse({}, status=400);
+		else:
+			return super(DeviceListView, self).get(self, request, *args, **kwargs)
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():				

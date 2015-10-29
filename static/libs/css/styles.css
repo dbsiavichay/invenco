@@ -9,3 +9,18 @@
 .tab-content {
 	padding-top: 10px;
 }
+
+.checkbox {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.checklist {
+	margin-top: 15px;
+	max-height: 250px;
+	overflow: auto;
+}
+
+.checklist-item {
+	padding: 5px 15px;
+}

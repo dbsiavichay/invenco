@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Asignaciones | Siscon{% endblock %}
+
+{% block content %}
+	<section class="section">	
+		<button class="btn btn-success col-xs-12">
+			<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+			Nuevo
+		</button>
+
+		<table class="table table-striped">
+			<thead>
+				<tr>					
+					<th>Dispositivo</th>
+					<th>Código</th>
+					<th>Estado</th>
+					<th>Ubicación</th>
+					<th>Responsable</th>					
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for allo in object_list %}
+				<tr>
+					<td class="col-xs-3">{{ allo.device.model.type }}  {{ allo.device.model.trademark }} {{ allo.device.model }}</td>
+					<td class="col-xs-1">{{ allo.device.code }}</td>
+					<td class="col-xs-1">{{ allo.device.state }}</td>
+					<td class="col-xs-3">{{ allo.employee.area.department.code }} | {{ allo.employee.area }}</td>
+					<td class="col-xs-2">{{ allo.employee.user.first_name }}  {{ allo.employee.user.last_name }}</td>					
+					<td id="{{ allo.id }}" class="col-xs-2">
+						<button class="btn btn-sm btn-default btn-transfer">
+							<span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
+						</button>
+						<button class="btn btn-sm btn-default">
+							<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+						</button>
+					</td>
+				</tr>
+				{% empty %}
+				<tr>
+					<td colspan="6">'No existen registros'</td>
+				</tr>
+				{%endfor %}
+			</tbody>
+		</table>
+	</section>
+{% endblock %}
+
+{% block modal_title %}Datos de asignación{% endblock %}
+{% block modal_content %}
+	<ul class="nav nav-tabs" role="tablist">	    
+		<li role="presentation">
+	    	<a id="tab-from" href="#from" aria-controls="from" role="tab" data-toggle="tab">Equipos a transferir</a>
+	    </li>
+	    <li role="presentation" class="active">
+	    	<a id="tab-employee" href="#employee" aria-controls="employee" role="tab" data-toggle="tab">Datos de responsable</a>
+	    </li>
+	    <li role="presentation">
+	    	<a id="tab-equipment" href="#equipment" aria-controls="equipment" role="tab" data-toggle="tab">Datos de equipos</a>
+	    </li>
+	    <li role="presentation">
+	    	<a id="tab-summary" href="#summary" aria-controls="summary" role="tab" data-toggle="tab">Resumen</a>
+	    </li>
+	</ul>
+	  
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane" id="from">
+			<div class="alert alert-warning alert-dismissible" role="alert" style="display: none">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<strong>Error!</strong> Debe seleccionar al menos un dispositivo a asignar.
+			</div>
+
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Dispositivo</th>						
+						<th>Selección</th>
+					</tr>
+				</thead>
+				<tbody id="table_devices">									
+				</tbody>
+			</table>    		    	
+	    </div>							   
+	    <div role="tabpanel" class="tab-pane active" id="employee">
+	    	<div class="form-horizontal">				    		
+		    	<div class="form-group">
+				    <label for="inputDepartment" class="col-md-3 control-label">Departamento</label>
+				    <div class="col-md-9">
+				        <select id="inputDepartment" type="select" name="department" class="form-control selectpicker" data-size="10" data-live-search="true" req="true"> 
+				        	<option value="">--- Seleccionar ---</option>
+				        	{% for department in departments %}
+				        	<option value="{{ department.id }}">{{ department.name }}</option>
+				        	{% endfor %}
+				        </select>
+				    </div>
+				</div>
+				<div class="form-group">
+				    <label for="inputArea" class="col-md-3 control-label">Area</label>
+				    <div class="col-md-9">
+				        <select id="inputArea" type="select" name="area" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
+				        	<option value="">--- Seleccionar ---</option>
+				        </select>
+				    </div>
+				</div>
+				<div class="form-group">
+				    <label for="inputEmployee" class="col-md-3 control-label">Empleado</label>
+				    <div class="col-md-9">
+				        <select id="inputEmployee" type="select" name="employee" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
+				        	<option value="">--- Seleccionar ---</option>				        	
+				        </select>
+				    </div>
+				</div>								
+				<div class="form-group">
+				    <label for="inputDateJoined" class="col-md-3 control-label">Fecha de asignación</label>
+				    <div class="col-md-9">
+				        <input id="inputDateJoined" type="date" name="date_joined" class="form-control" req="true">
+				    </div>
+				</div>																		
+	    	</div>
+	    </div>
+	    <div role="tabpanel" class="tab-pane" id="equipment">			
+			<div class="form-horizontal">						
+				<div class="form-group">
+				    <label for="inputType" class="col-md-2 control-label">Tipo</label>
+				    <div class="col-md-10">
+				        <select id="inputType" type="select" name="type" class="form-control selectpicker" data-size="10" data-live-search="true" title="--- Seleccionar ---"> 				        	
+				        	{% for type in types %}
+				        	<option value="{{ type.id }}">{{ type.name }}</option>
+				        	{% endfor %}
+				        </select>
+				    </div>
+				</div>
+				<div class="form-group">
+				    <label for="inputDevice" class="col-md-2 control-label">Dispositivos</label>
+				    <div class="col-md-10">
+				        <select id="inputDevice" type="select" name="area" class="form-control selectpicker" data-size="10" data-live-search="true" multiple title="--- Seleccionar ---" data-selected-text-format="count>1">				        	
+				        </select>
+				    </div>
+				</div>
+				<button id="btnAdd" class="btn btn-success btn-sm">
+					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
+					Añadir selección
+				</button>
+			</div>	    		    	
+	    </div>    
+	    <div role="tabpanel" class="tab-pane" id="summary">
+	    	<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Dispositivo</th>						
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody id="table_detail">												
+					<tr class="empty"><td colspan="2">No existen registros</td></tr>							
+				</tbody>
+			</table>
+	    </div>						    						   
+	</div>
+{% endblock %}
+
+{% block imports%}
+	{% load staticfiles %}
+	<script src="{% static 'libs/js/bootstrap-select.min.js' %}"></script>
+	<script src="{% static 'allocation/js/allocations.js' %}"></script>
+{% endblock%}

@@ -20,7 +20,6 @@ var getData = function (container) {
 	fields.each(function (index, field) {
 		var type = 	$(field).attr('type');
 		var name = $(field).attr('name');		
-		//var value = type!='radio'?$(field).val():$(field).find('input:checked').val();
 		var value = type==='radio'?$(field).find('input:checked').val():type==='checkbox'?$(field).prop('checked'):$(field).val();
 		data[name] = value;		
 	});
@@ -84,7 +83,7 @@ var validateForm = function () {
 	fields.each(function (index, field) {
 		var type = $(field).attr('type');
 		var is_required = $(field).attr('req');
-		if(type!='radio' && is_required) {
+		if(type!='radio' && is_required) {			
 			var value = $(field).val().trim();
 			if(!value) {
 				$(field).parents('.form-group').addClass('has-error');

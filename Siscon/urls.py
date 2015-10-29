@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'', include('structure.urls')),
     url(r'', include('equipment.urls')),
+    url(r'', include('allocation.urls')),
 ]
