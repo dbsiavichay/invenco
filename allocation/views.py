@@ -16,14 +16,14 @@ class AllocationListView(ListView):
 		types = Type.objects.all()
 		departments = Department.objects.all()	
 
-		context['object_list'] = context['object_list'].filter(is_active=True);
+		context['object_list'] = context['object_list'].filter(is_active=True)
 		context['types'] = types
 		context['departments'] = departments
 		return context
 
 	def get(self, request, *args, **kwargs):		
 		if request.is_ajax():
-			employee = request.GET.get('employee', None);
+			employee = request.GET.get('employee', None)
 			if (employee is not None):				
 				objects = self.model.objects.filter(employee=employee, is_active=True)
 				list = []
@@ -33,7 +33,7 @@ class AllocationListView(ListView):
 					dict['name'] = '%s %s %s' % (object.device.model.type, object.device.model.trademark, object.device.model)					
 					list.append(dict)				
 				return JsonResponse(list, safe=False)
-			return JsonResponse({}, status=400);
+			return JsonResponse({}, status=400)
 		else:
 			return super(AllocationListView, self).get(self, request, *args, **kwargs)
 
@@ -62,8 +62,8 @@ class AllocationDetailView(DetailView):
 			allocation_modelform = modelform_factory(Allocation, fields=('date_joined', 'is_active', 'employee', 'device'))					
     		allocation_form = allocation_modelform(request.POST)
     		if allocation_form.is_valid():
-    			self.object.is_active = False;
-    			self.object.save();
+    			self.object.is_active = False
+    			self.object.save()
     			allocation_form.save()
     			data = model_to_dict(self.object)
     			return JsonResponse(data)

@@ -176,11 +176,13 @@ class EmployeeListView(ListView):
 			return super(EmployeeListView, self).get(self, request, *args, **kwargs)
 
 	def post(self, request, *args, **kwargs):
-		if request.is_ajax():
+		if request.is_ajax():			
 			user_modelform = modelform_factory(User, fields=('first_name', 'last_name', 'email', 'username', 'password', 'is_active', 'date_joined'))
 			user_form = user_modelform(request.POST)
 			if user_form.is_valid():
 				user = user_form.save()
+				user.set_password(request.POST['password'])
+				user.save()
 				dict = request.POST.copy()
 				dict['user'] = user.id			
 				employee_modelform = modelform_factory(Employee, fields=('charter', 'extension', 'is_head', 'area', 'job', 'user'))					
@@ -212,6 +214,8 @@ class EmployeeDetailView(DetailView):
 			user_form = user_modelform(request.POST, instance=self.object.user)
 			if user_form.is_valid():
 				user = user_form.save()
+				user.set_password(request.POST['password'])
+				user.save()
 				dict = request.POST.copy()
 				dict['user'] = user.id	
 				employee_modelform = modelform_factory(Employee, fields=('charter', 'extension', 'is_head', 'area', 'job', 'user'))					
