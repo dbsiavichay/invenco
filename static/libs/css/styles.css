@@ -10,6 +10,10 @@
 	padding-top: 10px;
 }
 
+.center {
+	text-align: center;
+}
+
 .checkbox {
 	margin-top: 0;
 	margin-bottom: 0;
@@ -24,3 +28,20 @@
 .checklist-item {
 	padding: 5px 15px;
 }
+
+
+.inner-icon { 
+    position: relative; 
+}
+
+.inner-icon .glyphicon {
+  position: absolute;
+  padding: 15px 10px;
+  pointer-events: none;
+}
+
+/*.inner-icon-left .glyphicon  { left:  0px;}
+.inner-icon-right .glyphicon { right: 0px;}*/
+
+.inner-icon-left input  { padding-left:  30px; }
+.inner-icon-right input { padding-right: 30px; }
