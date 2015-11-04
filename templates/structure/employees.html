@@ -14,10 +14,8 @@
 				<tr>					
 					<th>Departamento</th>
 					<th>Area</th>
-					<th>Cargo</th>
 					<th>Cédula</th>
-					<th>Nombres</th>
-					<th>Apellidos</th>					
+					<th>Nombre</th>
 					<th>Email</th>
 					<th>Activo</th>
 					<th>Acciones</th>
@@ -26,12 +24,10 @@
 			<tbody>
 				{% for employee in object_list %}
 				<tr>
-					<td class="col-xs-1">{{ employee.area.department }}</td>
-					<td class="col-xs-1">{{ employee.area }}</td>
-					<td class="col-xs-1">{{ employee.job }}</td>
+					<td class="col-xs-2">{{ employee.area.department }}</td>
+					<td class="col-xs-2">{{ employee.area }}</td>
 					<td class="col-xs-1">{{ employee.charter }}</td>
-					<td class="col-xs-2">{{ employee.user.first_name }}</td>
-					<td class="col-xs-2">{{ employee.user.last_name }}</td>					
+					<td class="col-xs-3">{{ employee.user.first_name }} {{ employee.user.last_name }}</td>					
 					<td class="col-xs-1">{{ employee.user.email }}</td>
 					<td class="col-xs-1">{{ employee.user.is_active }}</td>				
 					<td id="{{ employee.id }}" class="col-xs-2">
