@@ -3,7 +3,7 @@ from structure.models import Employee
 from equipment.models import Device
  
 class Allocation(models.Model):
-	date_joined = models.DateTimeField()
+	date_joined = models.DateField()
 	is_active = models.BooleanField()
 	employee = models.ForeignKey(Employee)
 	device = models.ForeignKey(Device)

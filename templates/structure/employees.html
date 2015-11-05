@@ -141,7 +141,7 @@
 				<div class="form-group">
 				    <label for="inputDateJoined" class="col-md-3 control-label">Ingreso</label>
 				    <div class="col-md-9">
-				        <input id="inputDateJoined" type="date" name="date_joined" class="form-control" req="true">
+				        <input id="inputDateJoined" type="text" name="date_joined" class="form-control datepicker" req="true">
 				    </div>
 				</div>																		
 	    	</div>
@@ -184,5 +184,6 @@
 {% block imports%}
 	{% load staticfiles %}
 	<script src="{% static 'libs/js/bootstrap-select.min.js' %}"></script>
+	<script src="{% static 'libs/js/bootstrap-datepicker.min.js' %}"></script>
 	<script src="{% static 'structure/js/employees.js' %}"></script>
 {% endblock%}

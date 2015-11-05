@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.forms.models import modelform_factory
 from django.forms import model_to_dict
 from django.http import JsonResponse
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 from django.contrib.auth.models import User
 from .models import Job, Department, Area, Employee
 

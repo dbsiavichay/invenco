@@ -1,5 +1,9 @@
 $(function () {
 	$('.selectpicker').selectpicker();
+	$('.datepicker').datepicker({
+	    autoclose: true,
+	    format: 'yyyy-mm-dd'
+	});
 
 	var id;
 	var equipments = [];
@@ -28,9 +32,8 @@ $(function () {
 			$('.nav-tabs').find('a').show();
 			$('#tab-equipment').hide();
 			$('#tab-summary').hide();
-			$('#tab-from').tab('show');
-			var date_joined = new Date();
-			openModal({'date_joined': date_joined.toISOString()});
+			$('#tab-from').tab('show');			
+			openModal({'date_joined': ''});
 		});
 	});
 
