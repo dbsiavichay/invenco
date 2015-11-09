@@ -4,7 +4,7 @@ from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
 from equipment.models import Type
-from structure.models import Department
+from organization.models import Department
 from .models import Allocation
 
 class AllocationListView(ListView):

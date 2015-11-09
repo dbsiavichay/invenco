@@ -36,10 +36,10 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'structure',
+    'django.contrib.staticfiles',    
     'equipment',
     'allocation',
+    'organization',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -83,9 +83,17 @@ DATABASES = {
         'NAME': 'coninfdb',
         'USER': 'postgres',
         'PASSWORD': 'municipio2015',
-        'HOST': '127.0.0.1',
+        'HOST': 'localhost',
         'PORT': '5432',
-    }
+    },
+    'sim': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'sim_morona',
+        'USER': 'postgres',
+        'PASSWORD': 'omega2009a',
+        'HOST': '172.16.8.11',
+        'PORT': '5432',
+    },
 }
 
 
