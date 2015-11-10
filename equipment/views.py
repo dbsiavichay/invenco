@@ -3,6 +3,8 @@ from django.forms.models import modelform_factory
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
+from allocation.models import Allocation
+from organization.models import Contributor
 from .models import Trademark, Type, Model, Device
 
 class TrademarkListView(ListView):
@@ -163,10 +165,18 @@ class DeviceListView(ListView):
 				objects = self.model.objects.filter(model__type=type)				
 				list = []
 				for object in objects:
+					allocations = Allocation.objects.filter(device=object, is_active=True)	
+					is_assigned = len(allocations) > 0				
 					dict = model_to_dict(object)
 					dict['type'] = object.model.type.name
 					dict['trademark'] = object.model.trademark.name
 					dict['model'] = object.model.name
+					dict['is_assigned'] = is_assigned
+					if is_assigned:
+						contributor = Contributor.objects.using('sim').get(charter=allocations[0].employee)
+						namearr = contributor.name.split()
+						dict['subtext'] = '%s %s' % (namearr[2].lower().capitalize(), namearr[0].lower().capitalize())
+
 					list.append(dict)				
 				return JsonResponse(list, safe=False)
 			return JsonResponse({}, status=400);

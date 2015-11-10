@@ -14,7 +14,7 @@ class AllocationListView(ListView):
 	def get_context_data(self, **kwargs):
 		context = super(AllocationListView, self).get_context_data(**kwargs)		
 		types = Type.objects.all()
-		departments = Department.objects.all()	
+		departments = Department.objects.using('sim').all()	
 
 		context['object_list'] = context['object_list'].filter(is_active=True)
 		context['types'] = types
@@ -39,12 +39,12 @@ class AllocationListView(ListView):
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():			
-			allocation_modelform = modelform_factory(Allocation, fields=('date_joined', 'is_active', 'employee', 'device'))					
+			allocation_modelform = modelform_factory(Allocation, fields=('employee','department','area','date_joined','is_active','device',))					
     		allocation_form = allocation_modelform(request.POST)
     		if allocation_form.is_valid():
     			object = allocation_form.save()
     			data = model_to_dict(object)
-    			return JsonResponse(data)
+    			return JsonResponse(data)    		
     		return JsonResponse({}, status=400)				
 
 class AllocationDetailView(DetailView):
@@ -59,7 +59,7 @@ class AllocationDetailView(DetailView):
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():				
 			self.object = self.get_object()
-			allocation_modelform = modelform_factory(Allocation, fields=('date_joined', 'is_active', 'employee', 'device'))					
+			allocation_modelform = modelform_factory(Allocation, fields=('employee','department','area','date_joined','is_active','device',))					
     		allocation_form = allocation_modelform(request.POST)
     		if allocation_form.is_valid():
     			self.object.is_active = False

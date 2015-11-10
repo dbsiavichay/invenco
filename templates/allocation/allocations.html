@@ -26,8 +26,8 @@
 					<td class="col-xs-3">{{ allo.device.model.type }}  {{ allo.device.model.trademark }} {{ allo.device.model }}</td>
 					<td class="col-xs-1">{{ allo.device.code }}</td>
 					<td class="col-xs-1">{{ allo.device.state }}</td>
-					<td class="col-xs-3">{{ allo.employee.area.department.code }} | {{ allo.employee.area }}</td>
-					<td class="col-xs-2">{{ allo.employee.user.first_name }}  {{ allo.employee.user.last_name }}</td>					
+					<td class="col-xs-3">{{ allo.location }}</td>
+					<td class="col-xs-2">{{ allo.responsible }}</td>					
 					<td id="{{ allo.id }}" class="col-xs-2">
 						<button class="btn btn-sm btn-default btn-transfer">
 							<span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
@@ -92,7 +92,7 @@
 				        <select id="inputDepartment" type="select" name="department" class="form-control selectpicker" data-size="10" data-live-search="true" req="true"> 
 				        	<option value="">--- Seleccionar ---</option>
 				        	{% for department in departments %}
-				        	<option value="{{ department.id }}">{{ department.name }}</option>
+				        	<option value="{{ department.code }}">{{ department.name }}</option>
 				        	{% endfor %}
 				        </select>
 				    </div>

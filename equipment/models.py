@@ -36,9 +36,3 @@ class Device(models.Model):
 
 	def __unicode__(self):
 		return '%s %s %s - Code: %s' % (self.model.type, self.model.trademark, self.model, self.code)
-
-	def warranty(self):
-		today =  date.today()
-		warranty = self.date_warranty
-		diff = warranty - today		
-		return diff.days if diff.days > 0 else 0

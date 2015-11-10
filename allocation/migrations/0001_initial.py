@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('employee', models.CharField(max_length=16)),
-                ('department', models.CharField(max_length=64)),
-                ('area', models.CharField(max_length=128)),
+                ('department', models.FloatField()),
+                ('area', models.FloatField()),
                 ('date_joined', models.DateField()),
                 ('is_active', models.BooleanField()),
                 ('device', models.ForeignKey(to='equipment.Device')),

@@ -1,5 +1,7 @@
 $(function () {
-	$('.selectpicker').selectpicker();
+	$('.selectpicker').selectpicker({
+		showSubtext: true
+	});
 	$('.datepicker').datepicker({
 	    autoclose: true,
 	    format: 'yyyy-mm-dd'
@@ -53,6 +55,8 @@ $(function () {
 		if(!is_valid) return;
 		var requests = [];
 		var data = getData($('#employee'));
+		data['department'] = parseFloat(data['department']);
+		data['area'] = parseFloat(data['area']);
 		for (var i in equipments) {
 			data['device'] = equipments[i];
 			data['is_active'] = true;			
@@ -64,7 +68,7 @@ $(function () {
 		    });
 		    requests.push(request);
  		}
-		$.when(requests).then(function () {
+		$.when(requests).done(function () {
 			reloadPage();
 		});
 	});
@@ -75,6 +79,8 @@ $(function () {
 
 		var requests = [];
 		var data = getData($('#employee'));
+		data['department'] = parseFloat(data['department']);
+		data['area'] = parseFloat(data['area']);
 		var table = $('#table_devices');
 		table.find('input[type=checkbox]:checked')
 		.each(function (index, item) {
@@ -92,7 +98,7 @@ $(function () {
 		});
 
 		$.when(requests)
-		.then(function () {
+		.done(function () {
 			reloadPage();
 		});		
 	});
@@ -124,8 +130,10 @@ $(function () {
 			$('#inputDevice').children().remove();    	
 	    	for(var i in data) {
 	    		var device = data[i];
-	    		var disabled = equipments.indexOf(device['id']) >= 0?'disabled':'';	    		
-	    		var option = '<option '+disabled+' value="'+device['id']+'">'+device['code']+' | '+device['type'] +' '+device['trademark']+' '+device['model']+'</option>';
+	    		var added = equipments.indexOf(device['id']) >= 0?' disabled data-subtext="Agregado" ':'';	    		
+	    		var asiggned = device['is_assigned']?'disabled':'';
+	    		var subtext = device['subtext']?'data-subtext="'+ device['subtext'] + '"':'';
+	    		var option = '<option '+asiggned+' '+subtext+ added +' value="'+device['id']+'">'+device['code']+' | '+device['type'] +' '+device['trademark']+' '+device['model']+'</option>';
 	    		$('#inputDevice').append(option);
 	    	}
 	    	$('#inputDevice').selectpicker('refresh');
@@ -135,13 +143,13 @@ $(function () {
 	var getAreas = function () {
 		var department = $('#inputDepartment').val();
 		if (!department) return;
-		$.get('/areas/?department='+department)
+		$.get('/sections/?department='+parseInt(department))
 		.then(function (data) {
 			$('#inputArea').find("option[value!='']").remove();    	
 			$('#inputEmployee').find("option[value!='']").remove();
 	    	for(var i in data) {
-	    		var department = data[i];
-	    		var option = '<option value="'+department['id']+'">'+department['name']+'</option>';
+	    		var area = data[i];
+	    		var option = '<option value="'+area['code']+'">'+area['name']+'</option>';
 	    		$('#inputArea').append(option);
 	    	}
 	    	$('#inputArea').selectpicker('refresh');
@@ -150,14 +158,15 @@ $(function () {
 	}
 
 	var getEmployees = function () {
+		var department = $('#inputDepartment').val();
 		var area = $('#inputArea').val();
-		if (!area) return;
-		$.get('/employees/?area='+area)
+		if (!department || !area) return;
+		$.get('/employees/?area='+parseInt(area)+'&department='+parseInt(department))
 		.then(function (data) {			
 			$('#inputEmployee').find("option[value!='']").remove();    	
 	    	for(var i in data) {
 	    		var employee = data[i];
-	    		var option = '<option value="'+employee['id']+'">'+employee['charter']+' | '+employee['full_name']+'</option>';
+	    		var option = '<option value="'+employee['charter']+'">'+employee['charter']+' | '+employee['full_name']+'</option>';
 	    		$('#inputEmployee').append(option);
 	    	}
 	    	$('#inputEmployee').selectpicker('refresh');
@@ -218,7 +227,11 @@ $(function () {
 			} else {
 				tab.text('Resumen')	
 				$('#table_detail').find('.empty').show();	
-			} 
+			}
+
+			$('#inputType').selectpicker('val', '');
+			$('#inputDevice').find('option[value!=""]').remove();
+			$('#inputDevice').selectpicker('refresh')
 		});
 	}
 

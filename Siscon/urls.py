@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='home.html')),
     url(r'', include('equipment.urls')),
     url(r'', include('allocation.urls')),
+    url(r'', include('organization.urls')),
 ]
