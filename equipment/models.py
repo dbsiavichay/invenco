@@ -37,5 +37,9 @@ class Device(models.Model):
 	model = models.ForeignKey(Model)
 	provider = models.ForeignKey(Provider, blank=True, null=True)
 
+	def get_state_icon(self):
+		icon = 'ok-sign' if self.state == '1' else 'minus-sign' if self.state == '2' else 'remove-sign'		
+		return icon
+
 	def __unicode__(self):
 		return '%s %s %s - Code: %s' % (self.model.type, self.model.trademark, self.model, self.code)

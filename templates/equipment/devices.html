@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Dispositivos | Siscon{% endblock %}
+{% block title %}Dispositivos | Coninf{% endblock %}
 
 {% block content %}
 	<section class="section">
@@ -16,7 +16,7 @@
 					<th>Modelo</th>
 					<th>Código</th>					
 					<th>Estado</th>
-					<th>Fecha compra</th>
+					<th>Compra</th>
 					<th>Garantía</th>
 					<th>Acciones</th>
 				</tr>
@@ -27,8 +27,8 @@
 					<td class="col-xs-2">{{ device.model.type }} - {{ device.model.trademark }}</td>
 					<td class="col-xs-2">{{ device.model }}</td>
 					<td class="col-xs-1">{{ device.code }}</td>
-					<td class="col-xs-1">{{ device.state }}</td>
-					<td class="col-xs-2">{{ device.date_purchase|date:"d F, Y" }}</td>
+					<td class="col-xs-1"><span class="glyphicon glyphicon-{{ device.get_state_icon }}" aria-hidden="true"></span></td>
+					<td class="col-xs-2">{{ device.provider.name }} | {{ device.invoice }}</td>
 					<td class="col-xs-2">{{ device.date_warranty|timeuntil }}</td>
 					<td id="{{ device.id }}" class="col-xs-2">
 						<button class="btn btn-sm btn-default">
@@ -54,6 +54,9 @@
 	<ul class="nav nav-tabs" role="tablist">
 	    <li role="presentation" class="active">
 	    	<a href="#general" aria-controls="general" role="tab" data-toggle="tab">Datos generales</a>
+	    </li>
+	    <li role="presentation">
+	    	<a href="#purchase" aria-controls="purchase" role="tab" data-toggle="tab">Datos de compra</a>
 	    </li>
 	    <li role="presentation">
 	    	<a href="#specifications" aria-controls="specifications" role="tab" data-toggle="tab">Especificaciones</a>
@@ -110,7 +113,28 @@
 				        	<option value="3">Dañado - Baja</option>				        	
 				        </select>
 				    </div>
-				</div>
+				</div>				
+	    	</div>
+	    </div>
+	    <div role="tabpanel" class="tab-pane" id="purchase">
+	    	<div class="form-horizontal">
+	    		<div class="form-group">
+				    <label for="inputProvider" class="col-md-2 control-label">Proveedor</label>
+				    <div class="col-md-10">
+				        <select id="inputProvider" type="select" name="provider" class="form-control selectpicker" data-size="10" data-live-search="true">
+				        	<option value="">--- Seleccionar ---</option>				        	
+				        	{% for provider in providers %}
+				        	<option value="{{ provider.id }}">{{ provider.name }}</option>
+				        	{% endfor %}
+				        </select>
+				    </div>
+				</div>	    				
+				<div class="form-group">
+				    <label for="inputInvoice" class="col-md-2 control-label">Factura</label>
+				    <div class="col-md-10">
+				        <input id="inputInvoice" type="text" name="invoice" class="form-control" placeholder="Número de factura">
+				    </div>
+				</div>																					
 				<div class="form-group">
 				    <label for="inputDatePurchase" class="col-md-2 control-label">Fecha compra</label>
 				    <div class="col-md-10">

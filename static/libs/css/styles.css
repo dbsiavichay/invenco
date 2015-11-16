@@ -29,6 +29,13 @@
 	padding: 5px 15px;
 }
 
+.glyphicon-minus-sign {
+	color: #F7A43E;
+}
+
+.glyphicon-remove-sign {
+	color: #DC143C;
+}
 
 .inner-icon { 
     position: relative; 

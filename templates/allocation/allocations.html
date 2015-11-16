@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Asignaciones | Siscon{% endblock %}
+{% block title %}Asignaciones | Coninf{% endblock %}
 
 {% block content %}
 	<section class="section">	
@@ -25,7 +25,7 @@
 				<tr>
 					<td class="col-xs-3">{{ allo.device.model.type }}  {{ allo.device.model.trademark }} {{ allo.device.model }}</td>
 					<td class="col-xs-1">{{ allo.device.code }}</td>
-					<td class="col-xs-1">{{ allo.device.state }}</td>
+					<td class="col-xs-1"><span class="glyphicon glyphicon-{{ allo.device.get_state_icon }}" aria-hidden="true"></span></td>
 					<td class="col-xs-3">{{ allo.location }}</td>
 					<td class="col-xs-2">{{ allo.responsible }}</td>					
 					<td id="{{ allo.id }}" class="col-xs-2">

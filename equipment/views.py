@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
 from allocation.models import Allocation
 from organization.models import Contributor
+from providers.models import Provider
 from .models import Trademark, Type, Model, Device
 
 class TrademarkListView(ListView):
@@ -154,8 +155,11 @@ class DeviceListView(ListView):
 	def get_context_data(self, **kwargs):
 		context = super(DeviceListView, self).get_context_data(**kwargs)
 		types = Type.objects.all()
+		providers = Provider.objects.all()
 
 		context['types'] = types
+		context['providers'] = providers
+
 		return context
 
 	def get(self, request, *args, **kwargs):		
@@ -185,7 +189,7 @@ class DeviceListView(ListView):
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():				
-			model_modelform = modelform_factory(Device, fields=('code', 'serial', 'part', 'state', 'date_purchase', 'date_warranty', 'specifications', 'model',))
+			model_modelform = modelform_factory(Device, fields=('code', 'serial', 'part', 'state', 'invoice', 'date_purchase', 'date_warranty', 'specifications', 'model', 'provider',))
     		model_form = model_modelform(request.POST)     		
     		if model_form.is_valid():    			    			
     			object = model_form.save()
@@ -207,7 +211,7 @@ class DeviceDetailView(DetailView):
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():				
 			self.object = self.get_object()
-			model_modelform = modelform_factory(Device, fields=('code', 'serial', 'part', 'state', 'date_purchase', 'date_warranty', 'specifications', 'model',))					
+			model_modelform = modelform_factory(Device, fields=('code', 'serial', 'part', 'state', 'invoice', 'date_purchase', 'date_warranty', 'specifications', 'model', 'provider',))
     		model_form = model_modelform(request.POST, instance=self.object)
     		if model_form.is_valid():
     			model_form.save()
@@ -220,5 +224,3 @@ class DeviceDetailView(DetailView):
 			self.object = self.get_object()
 			self.object.delete()
 			return JsonResponse({})
-
-

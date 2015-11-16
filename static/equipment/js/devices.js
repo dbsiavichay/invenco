@@ -40,7 +40,7 @@ $(function () {
 	$('#btnSave').on('click', function () {		
 		var is_valid = validateForm();
 		if(!is_valid) return;
-		var data = getData($('#general'));
+		var data = getData();
 		data['specifications'] = JSON.stringify(getData($('#specifications')));
 		makeRequest('/devices/', 'POST', data, reloadPage);
 	});
@@ -48,7 +48,7 @@ $(function () {
 	$('#btnEdit').on('click', function () {		
 		var is_valid = validateForm();
 		if(!is_valid) return;
-		var data = getData($('#general'));
+		var data = getData();
 		data['specifications'] = JSON.stringify(getData($('#specifications')));
 		makeRequest('/devices/'+id+'/', 'POST', data, reloadPage);
 	});
