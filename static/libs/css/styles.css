@@ -45,3 +45,7 @@
 
 .inner-icon-left input  { padding-left:  30px; }
 .inner-icon-right input { padding-right: 30px; }
+
+.form-group {
+	margin-bottom: 8px;
+}

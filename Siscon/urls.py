@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'', include('equipment.urls')),
     url(r'', include('allocation.urls')),
     url(r'', include('organization.urls')),
+    url(r'', include('providers.urls')),
 ]
