@@ -11,6 +11,7 @@ class Trademark(models.Model):
 
 class Type(models.Model):
 	name = models.CharField(max_length=32)
+	is_part = models.BooleanField(default=False)
 	specifications = JsonField(blank=True, null=True)
 
 	def __unicode__(self):

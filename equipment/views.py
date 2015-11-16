@@ -54,7 +54,7 @@ class TypeListView(ListView):
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():				
-			type_modelform = modelform_factory(Type, fields=('name', 'specifications'))					
+			type_modelform = modelform_factory(Type, fields=('name', 'is_part', 'specifications'))					
     		type_form = type_modelform(request.POST)     		
     		if type_form.is_valid():    			    			
     			object = type_form.save()
@@ -74,7 +74,7 @@ class TypeDetailView(DetailView):
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():				
 			self.object = self.get_object()
-			type_modelform = modelform_factory(Type, fields=('name', 'specifications'))					
+			type_modelform = modelform_factory(Type, fields=('name', 'is_part', 'specifications'))					
     		type_form = type_modelform(request.POST, instance=self.object)
     		if type_form.is_valid():
     			type_form.save()

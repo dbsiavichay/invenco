@@ -10,7 +10,7 @@ $(function () {
 
 	$('.glyphicon-pencil').parent().on('click', function () {
 		id = $(this).parent().attr('id');
-		$.get('/types/'+id, function (object) {
+		$.get('/types/'+id+'/', function (object) {
 			specifications = object.specifications;
 			renderSpecifications(specifications);
 			openModal(object);

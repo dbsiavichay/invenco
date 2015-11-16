@@ -45,7 +45,8 @@ var resetFormValues = function () {
 			var first_radio = $(field).find('input').get(0);
 			$(first_radio).prop('checked', true);
 		}else if (type === 'checkbox') {
-			$(field).prop('checked', true);
+			value = $(field).attr('default')?true:false;
+			$(field).prop('checked', value);
 		}else if (type === 'select'){
 			$(field).selectpicker('val', '');
 		}else{
