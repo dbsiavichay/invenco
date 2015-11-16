@@ -1,6 +1,7 @@
 *.pyc
 *.[oa]
 *~
-structure/migrations/
+organization/migrations/
 equipment/migrations/
 allocation/migrations/
+providers/migrations/

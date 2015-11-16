@@ -1,4 +1,5 @@
 from django.db import models
+from providers.models import Provider
 from django_pgjson.fields import JsonField
 from datetime import date
 
@@ -29,10 +30,12 @@ class Device(models.Model):
 	serial = models.CharField(max_length=34, unique=True, blank=True, null=True)
 	part = models.CharField(max_length=32, blank=True, null=True)
 	state = models.CharField(max_length=16, blank=True, null=True)
+	invoice = models.CharField(max_length=16, blank=True, null=True)
 	date_purchase = models.DateField()
 	date_warranty = models.DateField()
 	specifications = JsonField(blank=True, null=True)
 	model = models.ForeignKey(Model)
+	provider = models.ForeignKey(Provider, blank=True, null=True)
 
 	def __unicode__(self):
 		return '%s %s %s - Code: %s' % (self.model.type, self.model.trademark, self.model, self.code)
