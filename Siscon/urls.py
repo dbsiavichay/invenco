@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'', include('allocation.urls')),
     url(r'', include('organization.urls')),
     url(r'', include('providers.urls')),
+    url(r'', include('technical_assistance.urls')),
 ]

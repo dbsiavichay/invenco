@@ -5,3 +5,4 @@ organization/migrations/
 equipment/migrations/
 allocation/migrations/
 providers/migrations/
+technical_assistance/migrations/

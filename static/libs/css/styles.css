@@ -1,3 +1,7 @@
+hr {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
 .navbar {
 	border-radius: 0;
 }
@@ -8,6 +12,14 @@
 
 .tab-content {
 	padding-top: 10px;
+}
+
+.badge {
+	background-color: initial;
+}
+
+.badge > .glyphicon {
+	color: #555555;
 }
 
 .center {
@@ -37,6 +49,22 @@
 	color: #DC143C;
 }
 
+.list-group {
+	margin-bottom: 0;
+}
+
+.list-group-item {
+	padding: 5px 15px;
+}
+
+.list-group-item-heading {
+	margin-bottom: 0;
+}
+
+.list-group-item-text {
+	font-size: 0.9em;
+}
+
 .inner-icon { 
     position: relative; 
 }
@@ -55,4 +83,9 @@
 
 .form-group {
 	margin-bottom: 8px;
+}
+
+.well-listbox {
+	max-height: 250px;
+	overflow: auto;
 }

@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'allocation',
     'organization',
     'providers',
+    'technical_assistance',
 )
 
 MIDDLEWARE_CLASSES = (

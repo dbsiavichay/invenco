@@ -176,10 +176,8 @@ class DeviceListView(ListView):
 					dict['trademark'] = object.model.trademark.name
 					dict['model'] = object.model.name
 					dict['is_assigned'] = is_assigned
-					if is_assigned:
-						contributor = Contributor.objects.using('sim').get(charter=allocations[0].employee)
-						namearr = contributor.name.split()
-						dict['subtext'] = '%s %s' % (namearr[2].lower().capitalize(), namearr[0].lower().capitalize())
+					if is_assigned:						
+						dict['subtext'] = allocations[0].short_responsible()
 
 					list.append(dict)				
 				return JsonResponse(list, safe=False)
