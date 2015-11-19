@@ -1,26 +1,27 @@
 $(function () {
-	$('.selectpicker').selectpicker({
-		showSubtext: true
-	});
+	var initilizeSelectPicker = function () {
+		$('.selectpicker').selectpicker({
+			showSubtext: true
+		});
+	}
+
 	$('.datepicker').datepicker({
 	    autoclose: true,
 	    format: 'yyyy-mm-dd'
 	});
+
+	initilizeSelectPicker()
 
 	var id;
 	var equipments = [];
 
 	$('.glyphicon-plus-sign').parent().on('click', function () {
 		equipments = [];
-		var $table = $('#table_detail');
-		var $tab = $('a[href=#summary]');
-		$table.find('tr[class!=empty]').remove();
-		$table.children().show();
-		$tab.text('Resumen');
-		$('.nav-tabs').find('a').show();
-		$('#tab-from').hide();
-		$('#tab-employee').tab('show');
-		openModal()
+		$('#form-specifications').children().remove();
+		$('#form-suboptions').children().remove();
+		$('#empty-specifications').show();
+		$('#btnSaveOther').show();
+		openModal({'tabs':[2,3,4]})
 	});
 
 	$('.btn-transfer').on('click', function () {
@@ -30,12 +31,10 @@ $(function () {
 			return $.get('/allocations/?employee='+object['employee']);
 		})
 		.then(function (devices) {
-			renderDevices(devices);
-			$('.nav-tabs').find('a').show();
-			$('#tab-equipment').hide();
-			$('#tab-summary').hide();
-			$('#tab-from').tab('show');			
-			openModal({'date_joined': ''});
+			renderDevices(devices);	
+			$('#btnSaveOther').hide();
+			object = {'date_joined': ''}		
+			openModal({'object': object, 'tabs':[1,2]});
 		});
 	});
 
@@ -45,36 +44,22 @@ $(function () {
 	});
 
 	$('#btnSave').on('click', function () {
-		$('.alert').hide();		
 		var is_valid = validateForm();
-		var has_allocations = equipments.length > 0;
-		if(!has_allocations) {
-			$('#inputDevice').parents('.form-group').addClass('has-error');
-			return;
-		}
+		
 		if(!is_valid) return;
-		var requests = [];
-		var data = getData($('#employee'));
+
+		var data = getData();
+		var specifications = JSON.stringify(getData($('#specifications')));
 		data['department'] = parseFloat(data['department']);
 		data['area'] = parseFloat(data['area']);
-		for (var i in equipments) {
-			data['device'] = equipments[i];
-			data['is_active'] = true;			
-			var request = $.ajax({
-		        url: '/allocations/',        
-		        method: 'POST', 
-		        data: data,
-		        dataType: 'json'	        
-		    });
-		    requests.push(request);
- 		}
-		$.when(requests).done(function () {
-			reloadPage();
-		});
+		data['is_active'] = true;
+		data['specifications'] = specifications;
+
+		makeRequest('/allocations/', 'POST', data, reloadPage);
 	});
 
 	$('#btnEdit').on('click', function () {
-		var is_valid = validateForm();
+		var is_valid = validateForm('#employee');
 		if(!is_valid) return;
 
 		var requests = [];
@@ -103,16 +88,35 @@ $(function () {
 		});		
 	});
 
+	$('#btnSaveOther').on('click', function () {	
+		var is_valid = validateForm();
+		
+		if(!is_valid) return;
+
+		var data = getData();
+		var specifications = JSON.stringify(getData($('#specifications')));
+		data['department'] = parseFloat(data['department']);
+		data['area'] = parseFloat(data['area']);
+		data['is_active'] = true;
+		data['specifications'] = specifications;
+
+		makeRequest('/allocations/', 'POST', data, function () {
+			$('#inputType').selectpicker('val', '');
+			$('#inputDevice').selectpicker('val', '');
+			$('#form-specifications').children().remove();
+			$('#form-suboptions').children().remove();
+			$('#empty-specifications').show();
+			$('#tab-equipment').tab('show');
+		});
+	});
+
 	$('#btnDelete').on('click', function () {
 		makeRequest('/allocations/'+id+'/', 'DELETE', {}, reloadPage);
 	});
 
-	$('#btnAdd').on('click', function () {
-		renderSummary();
-	});
-
 	$('#inputType').on('change', function () {
-		getDevices();	
+		getDevices();
+		renderSpecifications();
 	});
 
 	$('#inputDepartment').on('change', function () {		
@@ -120,7 +124,7 @@ $(function () {
 	});
 
 	$('#inputArea').on('change', function () {		
-		getEmployees();
+		getEmployees();		
 	});
 
 	var getDevices = function () {
@@ -171,69 +175,7 @@ $(function () {
 	    	}
 	    	$('#inputEmployee').selectpicker('refresh');
 		});
-	}
-
-	var renderSummary = function () {
-		var items = $('#inputDevice').val();		
-		var tab = $('a[href=#summary]');
-		var table = $('#table_detail');
-
-		$('#inputType').parents('.form-group').removeClass('has-error');
-		$('#inputDevice').parents('.form-group').removeClass('has-error');		
-
-		if(items) {
-			table.find('.empty').hide();
-			for (var i in items) {
-				var pk = items[i];
-				var name = $('#inputDevice').find('option[value='+pk+']').text();				
-				table.append(getTemplate(pk, name));
-				equipments.push(parseInt(pk));
-			}	
-			tab.text('Resumen (' + equipments.length + ')');
-		}else{
-			var type = $('#inputType').val();
-			if (!type) $('#inputType').parents('.form-group').addClass('has-error');
-			$('#inputDevice').parents('.form-group').addClass('has-error');
-			return;
-		}
-
-		$('#inputType').selectpicker('val', '');
-		$('#inputDevice').find('option[value!=""]').remove();
-		$('#inputDevice').selectpicker('refresh')
-
-		addEventDeleteListener();
-	}
-
-	var getTemplate = function (pk, name) {
-		var template =  '<tr pk="'+pk+'">'+
-							'<td class="col-xs-11">'+name+'</td>'+							
-							'<td class="col-xs-1">'+
-								'<button class="btn btn-sm btn-default btn-delete-device">'+
-									'<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'+
-								'</button>'+
-							'</td>'+
-						'</tr>';
-		return template;
-	}
-
-	var addEventDeleteListener = function () {
-		$('.btn-delete-device').on('click', function () {
-			var tab = $('a[href=#summary]');
-			var pk = $(this).parents('tr').attr('pk');
-			$(this).parents('tr').remove();
-			equipments.splice(equipments.indexOf(pk), 1);
-			if(equipments.length > 0) {
-				tab.text('Resumen ('+equipments.length+')');	
-			} else {
-				tab.text('Resumen')	
-				$('#table_detail').find('.empty').show();	
-			}
-
-			$('#inputType').selectpicker('val', '');
-			$('#inputDevice').find('option[value!=""]').remove();
-			$('#inputDevice').selectpicker('refresh')
-		});
-	}
+	}	
 
 	var renderDevices = function (items) {		
 		var table = $('#table_devices');
@@ -254,6 +196,139 @@ $(function () {
 			if(checked) table.prepend(template);
 			else table.append(template);
 		}
+	}
+
+
+	var renderSpecifications = function (object) {
+		var type = $('#inputType').val();		
+
+		var request = $.get('/types/'+type+'/')
+	    .then(function (data) {	    	
+	    	var specifications = data.specifications;
+	    	var form = $('#form-specifications');
+	    	var empty = true;
+			form.children().remove();			
+	    	$('#empty-specifications').hide();
+
+			if(!specifications) {
+				console.log(specifications);
+				form.append('<p><em>"No existen especificaciones para este dispositivo"</em></p>');
+				return;
+			}			
+
+	    	for (var i in specifications) {
+	    		var item = specifications[i];
+	    		if (item['for']==='allocation') {
+	    			empty = false;
+	    			var elements = getSpecificationElements(item['specification'], item['options']);
+	    			form.append(elements);
+	    			initilizeSelectPicker();	    			
+ 	    		}
+	    	}
+
+	    	if (empty) $('#empty-specifications').show();
+	    	
+	    	if(object) setFormValues(object);   	
+	    })
+	    .then(function () {
+	    	return addEventChanceListener();
+	    })
+	    .then(function (selects) {
+	    	if(object) selects.trigger('change');
+	    	return $.get('/models/?type='+type)
+	    })
+	    .then(function (data) {
+	    	$('#inputModel').find("option[value!='']").remove();    	
+	    	for(var i in data) {
+	    		var model = data[i];
+	    		var option = '<option value="'+model['id']+'">'+model['name']+'</option>';
+	    		$('#inputModel').append(option);
+	    	}
+	    	$('#inputModel').selectpicker('refresh');
+	    	if (object) setFormValues(object);
+	    });
+	}
+
+	var addEventChanceListener = function () {		
+		var selects = $('#form-specifications').find('[type=select]');
+
+		selects.on('change', function () {
+			var form = $('#form-suboptions');
+			var value = $(this).val();						
+			if (value) {
+				var option = $(this).find("option[value='"+value+"']");
+				var str = option.attr('suboptions').trim();
+				if(str) {
+					form.children().remove();
+					var suboptions = str.split(',');
+					for (var i in suboptions) {
+						form.append(getTextElement(suboptions[i]));
+					}
+				}				
+			}else{
+				form.children().remove();
+			}
+		});
+
+		return selects;
+	}
+
+
+	var getSpecificationElements = function (specification, options) {
+		if(specification.length < 1) return;
+
+		if(specification.length > 1) {
+			var array = [];
+			for(var i in specification) {
+				array.push(getTextElement(specification[i]));
+			}
+			return array;
+		}else{
+			if(options.length < 1) {
+				return getTextElement(specification[0]);
+			}else{						
+				return getSelectElement(specification[0], options);
+			}
+		}
+	}
+
+	var getTextElement = function (name) {
+		var template =  '<div class="form-group">'+
+						    '<label for="input'+name.capitalize()+'" class="col-md-2 control-label">'+name.capitalize()+'</label>'+
+						    '<div class="col-md-10">'+
+						        '<input id="input'+name.capitalize()+'" name="'+name+'" type="text" class="form-control" req="true">'+
+						    '</div>'+
+						'</div>'
+
+		return template;
+	}
+
+	var getSelectElement = function (name, options) {				
+		var template = '';
+		var optionElements = '';
+		var is_object = options[0] instanceof Object;		
+
+		for (var i in options) {
+			var option = is_object?options[i]['name']:options[i];
+			var suboptions = is_object?options[i]['suboptions'].toString():'';
+			optionElements = optionElements + getItemSelectElement(option, suboptions);
+		}
+		
+		template =  '<div class="form-group">'+
+					    '<label for="input'+name.capitalize()+'" class="col-md-2 control-label">'+name.capitalize()+'</label>'+
+					    '<div class="col-md-10">'+
+					        '<select id="input'+name.capitalize()+'" name="'+name+'" type="select" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">'+
+					        	'<option value="">--- Seleccionar ---</option>'+
+								optionElements+						        	
+					        '</select>'+
+					    '</div>'+
+					'</div>';
+		return template;
+	}
+
+	var getItemSelectElement = function (name, suboptions) {
+		var template = '<option suboptions="'+suboptions+'" value="'+name.capitalize()+'">'+name.capitalize()+'</option>';
+		return template;
 	}
 
 	var reloadPage = function (data) {

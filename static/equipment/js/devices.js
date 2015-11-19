@@ -28,7 +28,7 @@ $(function () {
 			}
 			setFormValues(object);
 			renderSpecifications(object);
-			openModal(object);
+			openModal({'object': object});
 		});
 	});
 
@@ -80,12 +80,21 @@ $(function () {
 
 	    	for (var i in specifications) {
 	    		var item = specifications[i];
-	    		if (item['for']==='device') {
-	    			empty = false;
-	    			var elements = getSpecificationElements(item['specification'], item['options']);
-	    			form.append(elements);
-	    			initilizeSelectPicker();	    			
- 	    		}
+	    		if(object) {
+	    			if (item['for']==='device' || item['for']==='allocation') {
+		    			empty = false;
+		    			var elements = getSpecificationElements(item['specification'], item['options']);
+		    			form.append(elements);
+		    			initilizeSelectPicker();	    			
+	 	    		}	
+	    		}else {
+		    		if (item['for']==='device') {
+		    			empty = false;
+		    			var elements = getSpecificationElements(item['specification'], item['options']);
+		    			form.append(elements);
+		    			initilizeSelectPicker();	    			
+	 	    		}	    			
+	    		}
 	    	}
 
 	    	if (empty) $('#empty-specifications').show();

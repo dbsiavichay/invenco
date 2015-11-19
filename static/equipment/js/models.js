@@ -22,7 +22,7 @@ $(function () {
 			}
 			setFormValues(object);
 			renderSpecifications(object);
-			openModal(object);
+			openModal({'object': object});
 		});
 	});
 

@@ -76,8 +76,8 @@ var setFormValues = function (object) {
 	});
 }
 
-var validateForm = function () {
-	var fields = $('[id*=input]');
+var validateForm = function (form) {
+	var fields = form?$(form).find('[id*=input]'):$('[id*=input]');
 	var is_valid = true;
 
 	cleanFormErrors();
@@ -96,16 +96,34 @@ var validateForm = function () {
 	return is_valid;
 }
 
-var openModal = function (object) {
+var openModal = function (options) {
+	var options = options || {};
+
 	cleanFormErrors();
-	if(!object) {
+	if(!options['object']) {
 		resetFormValues();
 		$('#btnEdit').hide();
 		$('#btnSave').show();		
 	} else {
-		setFormValues(object)
+		setFormValues(options['object'])
 		$('#btnEdit').show();
 		$('#btnSave').hide();
+	}
+
+	var tabs = $('#objectModal').find('.nav-tabs').find('a');
+	
+	if(tabs) {
+		if (options['tabs']) {
+			tabs.hide();
+			for(var i in options['tabs']) {
+				var index = options['tabs'][i]
+				$(tabs[index-1]).show();
+			}
+			$(tabs[options['tabs'][0]-1]).tab('show');			
+		}else{
+			tabs.show();
+			$(tabs[0]).tab('show');
+		}
 	}
 
 	$('#objectModal').modal('show');	

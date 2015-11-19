@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from django.forms.models import modelform_factory
 from django.forms import model_to_dict
@@ -43,6 +44,9 @@ class AllocationListView(ListView):
     		allocation_form = allocation_modelform(request.POST)
     		if allocation_form.is_valid():
     			object = allocation_form.save()
+    			dict = json.loads(request.POST['specifications'])
+    			object.device.specifications.update(dict)
+    			object.device.save()
     			data = model_to_dict(object)
     			return JsonResponse(data)    		
     		return JsonResponse({}, status=400)				

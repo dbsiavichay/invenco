@@ -60,7 +60,7 @@
 	    	<a id="tab-equipment" href="#equipment" aria-controls="equipment" role="tab" data-toggle="tab">Datos de equipos</a>
 	    </li>
 	    <li role="presentation">
-	    	<a id="tab-summary" href="#summary" aria-controls="summary" role="tab" data-toggle="tab">Resumen</a>
+	    	<a id="tab-specifications" href="#specifications" aria-controls="specifications" role="tab" data-toggle="tab">Especificaciones</a>
 	    </li>
 	</ul>
 	  
@@ -126,7 +126,7 @@
 				<div class="form-group">
 				    <label for="inputType" class="col-md-2 control-label">Tipo</label>
 				    <div class="col-md-10">
-				        <select id="inputType" type="select" name="type" class="form-control selectpicker" data-size="10" data-live-search="true" title="--- Seleccionar ---"> 				        	
+				        <select id="inputType" type="select" name="type" class="form-control selectpicker" data-size="10" data-live-search="true" title="--- Seleccionar ---" req="true"> 				        	
 				        	{% for type in types %}
 				        	<option value="{{ type.id }}">{{ type.name }}</option>
 				        	{% endfor %}
@@ -136,35 +136,33 @@
 				<div class="form-group">
 				    <label for="inputDevice" class="col-md-2 control-label">Dispositivos</label>
 				    <div class="col-md-10">
-				        <select id="inputDevice" type="select" name="area" class="form-control selectpicker" data-size="10" data-live-search="true" multiple title="--- Seleccionar ---" data-selected-text-format="count>1">				        	
+				        <select id="inputDevice" type="select" name="device" class="form-control selectpicker" data-size="10" data-live-search="true" title="--- Seleccionar ---" req="true">				        	
 				        </select>
 				    </div>
-				</div>
-				<button id="btnAdd" class="btn btn-success btn-sm">
-					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 
-					Añadir selección
-				</button>
+				</div>			
 			</div>	    		    	
 	    </div>    
-	    <div role="tabpanel" class="tab-pane" id="summary">
-	    	<table class="table table-striped">
-				<thead>
-					<tr>
-						<th>Dispositivo</th>						
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody id="table_detail">												
-					<tr class="empty"><td colspan="2">No existen registros</td></tr>							
-				</tbody>
-			</table>
-	    </div>						    						   
+	    <div role="tabpanel" class="tab-pane" id="specifications">
+	    	<div id="form-specifications" class="form-horizontal">
+	    						
+	    	</div>
+	    	<div id="form-suboptions" class="form-horizontal">
+	    						
+	    	</div>
+	    	<div id="empty-specifications" class="form-horizontal">
+	    		<p><em>"No existen especificaciones para este dispositivo"</em></p>
+	    	</div>
+	    </div>					    						   
 	</div>
+{% endblock %}
+{% block modal_buttons %}
+	<button id="btnSaveOther" class="btn btn-success">Guardar y agregar otro</button>
 {% endblock %}
 
 {% block imports%}
 	{% load staticfiles %}
 	<script src="{% static 'libs/js/bootstrap-select.min.js' %}"></script>
 	<script src="{% static 'libs/js/bootstrap-datepicker.min.js' %}"></script>
+	<script src="{% static 'libs/js/capitalize.js' %}"></script>
 	<script src="{% static 'allocation/js/allocations.js' %}"></script>
 {% endblock%}

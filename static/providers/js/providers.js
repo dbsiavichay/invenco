@@ -8,7 +8,7 @@ $(function () {
 	$('.glyphicon-pencil').parent().on('click', function () {
 		id = $(this).parent().attr('id');
 		$.get('/providers/'+id, function (object) {						
-			openModal(object);
+			openModal({'object':object});
 		});
 	});
 

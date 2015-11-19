@@ -13,7 +13,7 @@ $(function () {
 		$.get('/types/'+id+'/', function (object) {
 			specifications = object.specifications;
 			renderSpecifications(specifications);
-			openModal(object);
+			openModal({'object':object});
 		});
 	});
 
