@@ -43,4 +43,4 @@ class Device(models.Model):
 		return icon
 
 	def __unicode__(self):
-		return '%s %s %s - Code: %s' % (self.model.type, self.model.trademark, self.model, self.code)
+		return '%s %s %s | %s' % (self.model.type, self.model.trademark, self.model, self.code)

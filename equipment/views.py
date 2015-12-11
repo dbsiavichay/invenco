@@ -106,7 +106,11 @@ class ModelListView(ListView):
 			type = request.GET.get('type', None);
 			if (type is not None):				
 				objects = self.model.objects.filter(type=type)				
-				list = [model_to_dict(object) for object in objects]
+				list = []
+				for object in objects:
+					dict = model_to_dict(object)
+					dict['trademark'] = object.trademark.name
+					list.append(dict)
 				return JsonResponse(list, safe=False)
 			return JsonResponse({}, status=400);
 		else:

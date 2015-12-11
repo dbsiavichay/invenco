@@ -14,7 +14,6 @@
 				<tr>					
 					<th>Equipo</th>
 					<th>Responsable</th>
-					<th>Problema</th>
 					<th>Fecha</th>					
 					<th>Acciones</th>
 				</tr>
@@ -22,11 +21,10 @@
 			<tbody>
 				{% for item in object_list %}
 				<tr>
-					<td class="col-xs-2">{{ item.device.model.type.name }} {{item.device.model.trademark}} {{item.device.model}}</td>
-					<td class="col-xs-2">{{ item.get_responsability }}</td>
-					<td class="col-xs-1">{{ item.problem }}</td>
+					<td class="col-xs-3">{{ item.device.model.type }} {{item.device.model.trademark }} {{item.device.model}}</td>
+					<td class="col-xs-3">{{ item.responsible }}</td>
 					<td class="col-xs-3">{{ item.date }}</td>
-					<td id="{{ item.id }}" class="col-xs-2">
+					<td id="{{ item.id }}" class="col-xs-3">
 						<button class="btn btn-sm btn-default">
 							<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
 						</button>
@@ -39,7 +37,7 @@
 				<tr>
 					<td colspan="10">'No existen registros'</td>
 				</tr>
-				{%endfor %}
+				{% endfor %}
 			</tbody>
 		</table>
 	</section>	
@@ -52,19 +50,22 @@
 	    	<a href="#equipment" aria-controls="equipment" role="tab" data-toggle="tab">Equipo</a>
 	    </li>
 	    <li role="presentation">
-	    	<a href="#company" aria-controls="company" role="tab" data-toggle="tab">Datos de empresa</a>
+	    	<a href="#assistance" aria-controls="assistance" role="tab" data-toggle="tab">Asistencia</a>
 	    </li>
 	    <li role="presentation">
-	    	<a href="#session" aria-controls="session" role="tab" data-toggle="tab">Datos de sesión</a>
+	    	<a href="#parts" aria-controls="parts" role="tab" data-toggle="tab">Repuestos usados</a>
 	    </li>
 	</ul>
 	  
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active" id="equipment">
+			<div id="error-equipment" class="alert alert-danger" style="display: none;" role="alert">			  	
+			  	<strong>Error!</strong> Debe seleccionar un equipo
+			</div>
 			<div class="row">				
 				<div class="col-sm-12">
 				    <div class="input-group">				    			            		            
-			            <input id="search" type="text" class="form-control" placeholder="Búsqueda de equipos">    
+			            <input id="search-allocations" type="text" class="form-control" placeholder="Búsqueda de equipos">    
 					    <span class="input-group-btn">
 					        <button class="btn btn-primary" type="button">
 					        	<span class="glyphicon glyphicon-search"></span>
@@ -74,108 +75,59 @@
 				</div>
 			</div>
 			<hr>
-			<div class="well well-sm well-listbox">
+			<div id="allocations-listbox" class="well well-sm well-listbox">
 				<div class="list-group">
 					{% for allo in allocations %}
-					<a href="#" key="{{ allo.device.id }}" class="list-group-item">						
-					    <p class="list-group-item-heading">{{ allo.device.model.type }} {{ allo.device.model.trademark }} {{ allo.device.model}} | {{ allo.device.code }}</p>
+					<a href="#" key="{{ allo.device.id }}" class="list-group-item">					
+					    <p class="list-group-item-heading">{{ allo.device }}</p>
 					    <p class="list-group-item-text"><strong>{{ allo.short_responsible }}</strong> > {{ allo.short_location }}</p>
 					</a>
 					{% endfor %}
 				</div>
 			</div>
 	    </div>					    
-	    <div role="tabpanel" class="tab-pane" id="company">
-	    	<div class="form-horizontal">						    		
+	    <div role="tabpanel" class="tab-pane" id="assistance">
+	    	<div class="form-horizontal">
+	    		<div class="form-group">
+				    <label for="inputDate" class="col-md-2 control-label">Fecha de asistencia</label>
+				    <div class="col-md-10">
+				        <input id="inputDate" type="text" name="date" class="form-control datepicker" placeholder="Fecha de asistencia técnica" req="true">
+				    </div>
+				</div>					    		
 		    	<div class="form-group">
-				    <label for="inputDepartment" class="col-md-3 control-label">Departamento</label>
-				    <div class="col-md-9">
-				        <select id="inputDepartment" type="select" name="department" class="form-control selectpicker" data-size="10" data-live-search="true" req="true"> 
-				        	<option value="">--- Seleccionar ---</option>
-				        	{% for department in departments %}
-				        	<option value="{{ department.id }}">{{ department.name }}</option>
-				        	{% endfor %}
-				        </select>
+				    <label for="inputProblem" class="col-md-2 control-label">Problema</label>
+				    <div class="col-md-10">
+				    	<textarea id="inputProblem" class="form-control" name="problem" type="text" req="true" placeholder="Problemas que presentaba el equipo"></textarea>				        
 				    </div>
 				</div>
 				<div class="form-group">
-				    <label for="inputArea" class="col-md-3 control-label">Area</label>
-				    <div class="col-md-9">
-				        <select id="inputArea" type="select" name="area" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
-				        	<option value="">--- Seleccionar ---</option>
-				        </select>
-				    </div>
-				</div>
-				<div class="form-group">
-				    <label for="inputJob" class="col-md-3 control-label">Cargo</label>
-				    <div class="col-md-9">
-				        <select id="inputJob" type="select" name="job" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
-				        	<option value="">--- Seleccionar ---</option>
-				        	{% for job in jobs %}
-				        	<option value="{{ job.id }}">{{ job.name }}</option>
-				        	{% endfor %}
-				        </select>
-				    </div>
-				</div>
-				<div class="form-group">
-				    <label for="inputExtension" class="col-md-3 control-label">Extensión</label>
-				    <div class="col-md-9">
-				        <input id="inputExtension" type="text" name="extension" class="form-control" placeholder="Extensión del empleado">
-				    </div>
-				</div>
-				<div class="form-group">
-				    <label for="inputIsHead" class="col-md-3 control-label">Jefe de</label>
-				    <div class="col-md-9" id="inputIsHead" type="radio" name="is_head">
-				        <label class="radio-inline">
-						 	<input type="radio" name="optIsHead" value="0"> Ninguno
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="optIsHead" value="1"> Departamento
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="optIsHead" value="2"> Area
-						</label>
-				    </div>
-				</div>								
-				<div class="form-group">
-				    <label for="inputDateJoined" class="col-md-3 control-label">Ingreso</label>
-				    <div class="col-md-9">
-				        <input id="inputDateJoined" type="text" name="date_joined" class="form-control datepicker" req="true">
-				    </div>
-				</div>																		
-	    	</div>
-	    </div>	    
-	    <div role="tabpanel" class="tab-pane" id="session">
-	    	<div class="form-horizontal">						    		
-		    	<div class="form-group">
-				    <label for="inputEmail" class="col-md-3 control-label">Email</label>
-				    <div class="col-md-9">
-				        <input id="inputEmail" type="text" name="email" class="form-control" placeholder="Email del empleado" req="true">
-				    </div>
-				</div>
-				<div class="form-group">
-				    <label for="inputUsername" class="col-md-3 control-label">Usuario</label>
-				    <div class="col-md-9">
-				        <input id="inputUsername" type="text" name="username" class="form-control" placeholder="Usuario del empleado" req="true">
-				    </div>
-				</div>
-				<div class="form-group">
-				    <label for="inputPassword" class="col-md-3 control-label">Password</label>
-				    <div class="col-md-9">
-				        <input id="inputPassword" type="password" name="password" class="form-control" placeholder="Password del empleado" req="true">
-				    </div>
-				</div>
-				<div class="form-group">
-				    <label for="inputActive" class="col-md-3 control-label">Activo</label>
-				    <div class="col-md-9">									        
-						<div class="checkbox">
-						    <label>
-						     	<input id="inputActive" type="checkbox" name="is_active">
-						    </label>
-						</div>
+				    <label for="inputSolution" class="col-md-2 control-label">Solución</label>
+				    <div class="col-md-10">
+				    	<textarea id="inputSolution" class="form-control" name="solution" type="text" req="true" placeholder="Actividades realizadas para solucionar el problema"></textarea>				        
 				    </div>
 				</div>
 	    	</div>
+	    </div>	    
+	    <div role="tabpanel" class="tab-pane" id="parts">	    	
+	    	<div class="form-horizontal">														
+				<div class="form-group">
+				    <label for="inputType" class="sr-only">Tipo</label>
+				    <div class="col-md-12">
+				        <input id="search-parts" type="text" class="form-control" placeholder="Búsqueda de repuestos">
+				    </div>
+				</div>
+			</div>
+			<hr>
+			<p><strong id="parts-count">0</strong><em> items seleccionados.</em></p>
+			<div id="parts-listbox" class="well well-sm well-listbox">
+				<div class="list-group">
+					{% for device in devices %}
+					<a href="#" key="{{ device.id }}" class="list-group-item">
+					    {{ device }}
+					</a>
+					{% endfor %}
+				</div>
+			</div>
 	    </div>						    						   
 	</div>
 {% endblock %}

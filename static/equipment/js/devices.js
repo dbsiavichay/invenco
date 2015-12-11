@@ -112,7 +112,7 @@ $(function () {
 	    	$('#inputModel').find("option[value!='']").remove();    	
 	    	for(var i in data) {
 	    		var model = data[i];
-	    		var option = '<option value="'+model['id']+'">'+model['name']+'</option>';
+	    		var option = '<option value="'+model['id']+'">'+model['trademark']+' '+model['name']+'</option>';
 	    		$('#inputModel').append(option);
 	    	}
 	    	$('#inputModel').selectpicker('refresh');

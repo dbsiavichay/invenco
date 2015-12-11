@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Tipos | Siscon{% endblock %}
+{% block title %}Tipos | Coninf{% endblock %}
 
 {% block content %}
 	<section class="section">
 		<button class="btn btn-success col-xs-12">
 			<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
 			Nuevo
-		</button>
-
+		</button>		
 		<table class="table table-striped">
 			<thead>
 				<tr>
@@ -112,19 +111,21 @@
 	    	</div>
 	    </div>
 	    <div role="tabpanel" class="tab-pane" id="detail">
-	    	<table class="table table-striped">
-				<thead>
-					<tr>
-						<th>Para</th>
-						<th>Especificacion</th>
-						<th>Opciones</th>
-						<th>Acciones</th>
-					</tr>
-				</thead>
-				<tbody id="table_detail">												
-												
-				</tbody>
-			</table>
+	    	<div class="table-responsive">	    		
+		    	<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Para</th>
+							<th>Especificacion</th>
+							<th>Opciones</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
+					<tbody id="table_detail">												
+													
+					</tbody>
+				</table>
+	    	</div>
 	    </div>
 	</div>
 {% endblock %}
