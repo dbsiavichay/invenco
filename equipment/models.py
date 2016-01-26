@@ -4,12 +4,18 @@ from django_pgjson.fields import JsonField
 from datetime import date
 
 class Trademark(models.Model):
+	class Meta:
+		ordering = ['name',]
+
 	name = models.CharField(max_length=32)
 
 	def __unicode__(self):
 		return self.name
 
 class Type(models.Model):
+	class Meta:
+		ordering = ['name',]
+
 	name = models.CharField(max_length=32)
 	is_part = models.BooleanField(default=False)
 	specifications = JsonField(blank=True, null=True)
@@ -18,6 +24,9 @@ class Type(models.Model):
 		return self.name
 
 class Model(models.Model):
+	class Meta:
+		ordering = ['type', 'trademark', 'name']
+
 	name = models.CharField(max_length=128)
 	specifications = JsonField(blank=True, null=True)
 	type = models.ForeignKey(Type)
@@ -27,6 +36,9 @@ class Model(models.Model):
 		return self.name
 
 class Device(models.Model):
+	class Meta:
+		ordering = ['model',]
+
 	code = models.CharField(max_length=16, unique=True)
 	serial = models.CharField(max_length=34, unique=True, blank=True, null=True)
 	part = models.CharField(max_length=32, blank=True, null=True)
@@ -39,7 +51,7 @@ class Device(models.Model):
 	provider = models.ForeignKey(Provider, blank=True, null=True)
 
 	def get_state_icon(self):
-		icon = 'ok-sign' if self.state == '1' else 'minus-sign' if self.state == '2' else 'remove-sign'		
+		icon = 'ok-sign' if self.state == '1' else 'minus-sign' if self.state == '2' else 'remove-sign'
 		return icon
 
 	def __unicode__(self):
