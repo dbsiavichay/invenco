@@ -18,22 +18,23 @@ class Section(models.Model):
         db_table = 'secciones'
 
 class Contributor(models.Model):
-    charter = models.CharField(primary_key=True, max_length=15, db_column='ctrcedula')    
-    name = models.CharField(max_length=120, blank=True, null=True, db_column='ctrnombre')        
+    charter = models.CharField(primary_key=True, max_length=15, db_column='ctrcedula')
+    name = models.CharField(max_length=120, blank=True, null=True, db_column='ctrnombre')
     email = models.CharField(max_length=60, blank=True, null=True, db_column='ctremail')
     state = models.CharField(max_length=20, blank=True, null=True, db_column='ctrestado')
 
     class Meta:
         managed = False
         db_table = 'contribuyentes'
+        ordering = ['name',]
 
 class Employee(models.Model):
     contributor = models.ForeignKey('Contributor', db_column='bicodcon')
-    code = models.CharField(primary_key=True, max_length=2, db_column='biprvcodigo')    
+    code = models.CharField(primary_key=True, max_length=2, db_column='biprvcodigo')
     department = models.FloatField(blank=True, null=True, db_column='bicoddep')
-    section = models.FloatField(blank=True, null=True, db_column='bicodsec')    
+    section = models.FloatField(blank=True, null=True, db_column='bicodsec')
 
     class Meta:
         managed = False
         db_table = 'bicondep'
-
+        ordering = ['contributor']
