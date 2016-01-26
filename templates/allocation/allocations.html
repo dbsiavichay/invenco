@@ -3,7 +3,7 @@
 {% block title %}Asignaciones | Coninf{% endblock %}
 
 {% block content %}
-	<section class="section">	
+	<section class="section">
 		<button class="btn btn-success col-xs-12">
 			<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
 			Nuevo
@@ -11,12 +11,12 @@
 
 		<table class="table table-striped">
 			<thead>
-				<tr>					
+				<tr>
 					<th>Dispositivo</th>
 					<th>Código</th>
 					<th>Estado</th>
 					<th>Ubicación</th>
-					<th>Responsable</th>					
+					<th>Responsable</th>
 					<th>Acciones</th>
 				</tr>
 			</thead>
@@ -27,7 +27,7 @@
 					<td class="col-xs-1">{{ allo.device.code }}</td>
 					<td class="col-xs-1"><span class="glyphicon glyphicon-{{ allo.device.get_state_icon }}" aria-hidden="true"></span></td>
 					<td class="col-xs-3">{{ allo.location }}</td>
-					<td class="col-xs-2">{{ allo.responsible }}</td>					
+					<td class="col-xs-2">{{ allo.responsible }}</td>
 					<td id="{{ allo.id }}" class="col-xs-2">
 						<button class="btn btn-sm btn-default btn-transfer">
 							<span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
@@ -49,7 +49,7 @@
 
 {% block modal_title %}Datos de asignación{% endblock %}
 {% block modal_content %}
-	<ul class="nav nav-tabs" role="tablist">	    
+	<ul class="nav nav-tabs" role="tablist">
 		<li role="presentation">
 	    	<a id="tab-from" href="#from" aria-controls="from" role="tab" data-toggle="tab">Equipos a transferir</a>
 	    </li>
@@ -63,7 +63,7 @@
 	    	<a id="tab-specifications" href="#specifications" aria-controls="specifications" role="tab" data-toggle="tab">Especificaciones</a>
 	    </li>
 	</ul>
-	  
+
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane" id="from">
 			<div class="alert alert-warning alert-dismissible" role="alert" style="display: none">
@@ -76,20 +76,20 @@
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<th>Dispositivo</th>						
+						<th>Dispositivo</th>
 						<th>Selección</th>
 					</tr>
 				</thead>
-				<tbody id="table_devices">									
+				<tbody id="table_devices">
 				</tbody>
-			</table>    		    	
-	    </div>							   
+			</table>
+	    </div>
 	    <div role="tabpanel" class="tab-pane active" id="employee">
-	    	<div class="form-horizontal">				    		
+	    	<div class="form-horizontal">
 		    	<div class="form-group">
 				    <label for="inputDepartment" class="col-md-3 control-label">Departamento</label>
 				    <div class="col-md-9">
-				        <select id="inputDepartment" type="select" name="department" class="form-control selectpicker" data-size="10" data-live-search="true" req="true"> 
+				        <select id="inputDepartment" type="select" name="department" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
 				        	<option value="">--- Seleccionar ---</option>
 				        	{% for department in departments %}
 				        	<option value="{{ department.code }}">{{ department.name }}</option>
@@ -109,24 +109,27 @@
 				    <label for="inputEmployee" class="col-md-3 control-label">Empleado</label>
 				    <div class="col-md-9">
 				        <select id="inputEmployee" type="select" name="employee" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
-				        	<option value="">--- Seleccionar ---</option>				        	
+				        	<option value="">--- Seleccionar ---</option>
+									{% for employee in employees %}
+				        	<option value="{{ employee.contributor.charter }}">{{ employee.contributor.charter }} | {{ employee.contributor.name }}</option>
+				        	{% endfor %}
 				        </select>
 				    </div>
-				</div>								
+				</div>
 				<div class="form-group">
 				    <label for="inputDateJoined" class="col-md-3 control-label">Fecha de asignación</label>
 				    <div class="col-md-9">
 				        <input id="inputDateJoined" type="text" name="date_joined" class="form-control datepicker" req="true">
 				    </div>
-				</div>																		
+				</div>
 	    	</div>
 	    </div>
-	    <div role="tabpanel" class="tab-pane" id="equipment">			
-			<div class="form-horizontal">						
+	    <div role="tabpanel" class="tab-pane" id="equipment">
+			<div class="form-horizontal">
 				<div class="form-group">
 				    <label for="inputType" class="col-md-2 control-label">Tipo</label>
 				    <div class="col-md-10">
-				        <select id="inputType" type="select" name="type" class="form-control selectpicker" data-size="10" data-live-search="true" title="--- Seleccionar ---" req="true"> 				        	
+				        <select id="inputType" type="select" name="type" class="form-control selectpicker" data-size="10" data-live-search="true" title="--- Seleccionar ---" req="true">
 				        	{% for type in types %}
 				        	<option value="{{ type.id }}">{{ type.name }}</option>
 				        	{% endfor %}
@@ -136,23 +139,23 @@
 				<div class="form-group">
 				    <label for="inputDevice" class="col-md-2 control-label">Dispositivos</label>
 				    <div class="col-md-10">
-				        <select id="inputDevice" type="select" name="device" class="form-control selectpicker" data-size="10" data-live-search="true" title="--- Seleccionar ---" req="true">				        	
+				        <select id="inputDevice" type="select" name="device" class="form-control selectpicker" data-size="10" data-live-search="true" title="--- Seleccionar ---" req="true">
 				        </select>
 				    </div>
-				</div>			
-			</div>	    		    	
-	    </div>    
+				</div>
+			</div>
+	    </div>
 	    <div role="tabpanel" class="tab-pane" id="specifications">
 	    	<div id="form-specifications" class="form-horizontal">
-	    						
+
 	    	</div>
 	    	<div id="form-suboptions" class="form-horizontal">
-	    						
+
 	    	</div>
 	    	<div id="empty-specifications" class="form-horizontal">
 	    		<p><em>"No existen especificaciones para este dispositivo"</em></p>
 	    	</div>
-	    </div>					    						   
+	    </div>
 	</div>
 {% endblock %}
 {% block modal_buttons %}

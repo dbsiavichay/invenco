@@ -31,21 +31,21 @@ $(function () {
 			return $.get('/allocations/?employee='+object['employee']);
 		})
 		.then(function (devices) {
-			renderDevices(devices);	
+			renderDevices(devices);
 			$('#btnSaveOther').hide();
-			object = {'date_joined': ''}		
+			object = {'date_joined': ''}
 			openModal({'object': object, 'tabs':[1,2]});
 		});
 	});
 
 	$('.glyphicon-remove').parent().on('click', function () {
-		id = $(this).parent().attr('id');		
+		id = $(this).parent().attr('id');
 		$('#objectDeleteModal').modal('show');
 	});
 
 	$('#btnSave').on('click', function () {
 		var is_valid = validateForm();
-		
+
 		if(!is_valid) return;
 
 		var data = getData();
@@ -74,23 +74,23 @@ $(function () {
 			data['is_active'] = true;
 			data['device'] = device;
 			var request = $.ajax({
-		        url: '/allocations/'+pk+'/',        
-		        method: 'POST', 
+		        url: '/allocations/'+pk+'/',
+		        method: 'POST',
 		        data: data,
-		        dataType: 'json'	        
-		    });		
+		        dataType: 'json'
+		    });
 		    requests.push(request);
 		});
 
 		$.when(requests)
 		.done(function () {
 			reloadPage();
-		});		
+		});
 	});
 
-	$('#btnSaveOther').on('click', function () {	
+	$('#btnSaveOther').on('click', function () {
 		var is_valid = validateForm();
-		
+
 		if(!is_valid) return;
 
 		var data = getData();
@@ -119,22 +119,18 @@ $(function () {
 		renderSpecifications();
 	});
 
-	$('#inputDepartment').on('change', function () {		
+	$('#inputDepartment').on('change', function () {
 		getAreas();
-	});
-
-	$('#inputArea').on('change', function () {		
-		getEmployees();		
 	});
 
 	var getDevices = function () {
 		var type = $('#inputType').val();
 		$.get('/devices/?type='+type)
 		.then(function (data) {
-			$('#inputDevice').children().remove();    	
+			$('#inputDevice').children().remove();
 	    	for(var i in data) {
 	    		var device = data[i];
-	    		var added = equipments.indexOf(device['id']) >= 0?' disabled data-subtext="Agregado" ':'';	    		
+	    		var added = equipments.indexOf(device['id']) >= 0?' disabled data-subtext="Agregado" ':'';
 	    		var asiggned = device['is_assigned']?'disabled':'';
 	    		var subtext = device['subtext']?'data-subtext="'+ device['subtext'] + '"':'';
 	    		var option = '<option '+asiggned+' '+subtext+ added +' value="'+device['id']+'">'+device['code']+' | '+device['type'] +' '+device['trademark']+' '+device['model']+'</option>';
@@ -149,35 +145,17 @@ $(function () {
 		if (!department) return;
 		$.get('/sections/?department='+parseInt(department))
 		.then(function (data) {
-			$('#inputArea').find("option[value!='']").remove();    	
-			$('#inputEmployee').find("option[value!='']").remove();
+			$('#inputArea').find("option[value!='']").remove();
 	    	for(var i in data) {
 	    		var area = data[i];
 	    		var option = '<option value="'+area['code']+'">'+area['name']+'</option>';
 	    		$('#inputArea').append(option);
 	    	}
 	    	$('#inputArea').selectpicker('refresh');
-	    	$('#inputEmployee').selectpicker('refresh')
 		});
 	}
 
-	var getEmployees = function () {
-		var department = $('#inputDepartment').val();
-		var area = $('#inputArea').val();
-		if (!department || !area) return;
-		$.get('/employees/?area='+parseInt(area)+'&department='+parseInt(department))
-		.then(function (data) {			
-			$('#inputEmployee').find("option[value!='']").remove();    	
-	    	for(var i in data) {
-	    		var employee = data[i];
-	    		var option = '<option value="'+employee['charter']+'">'+employee['charter']+' | '+employee['full_name']+'</option>';
-	    		$('#inputEmployee').append(option);
-	    	}
-	    	$('#inputEmployee').selectpicker('refresh');
-		});
-	}	
-
-	var renderDevices = function (items) {		
+	var renderDevices = function (items) {
 		var table = $('#table_devices');
 		table.children().remove();
 		for (var i in items) {
@@ -190,7 +168,7 @@ $(function () {
 									    '<label>'+
 									    	'<input pk="'+item['id']+'" value="'+item['device']+'" type="checkbox" '+checked+'>'+
 									    '</label>'+
-									'</div>'+									
+									'</div>'+
 								'</td>'+
 							'</tr>';
 			if(checked) table.prepend(template);
@@ -198,23 +176,22 @@ $(function () {
 		}
 	}
 
-
 	var renderSpecifications = function (object) {
-		var type = $('#inputType').val();		
+		var type = $('#inputType').val();
 
 		var request = $.get('/types/'+type+'/')
-	    .then(function (data) {	    	
+	    .then(function (data) {
 	    	var specifications = data.specifications;
 	    	var form = $('#form-specifications');
 	    	var empty = true;
-			form.children().remove();			
+			form.children().remove();
 	    	$('#empty-specifications').hide();
 
 			if(!specifications) {
 				console.log(specifications);
 				form.append('<p><em>"No existen especificaciones para este dispositivo"</em></p>');
 				return;
-			}			
+			}
 
 	    	for (var i in specifications) {
 	    		var item = specifications[i];
@@ -222,13 +199,13 @@ $(function () {
 	    			empty = false;
 	    			var elements = getSpecificationElements(item['specification'], item['options']);
 	    			form.append(elements);
-	    			initilizeSelectPicker();	    			
+	    			initilizeSelectPicker();
  	    		}
 	    	}
 
 	    	if (empty) $('#empty-specifications').show();
-	    	
-	    	if(object) setFormValues(object);   	
+
+	    	if(object) setFormValues(object);
 	    })
 	    .then(function () {
 	    	return addEventChanceListener();
@@ -238,7 +215,7 @@ $(function () {
 	    	return $.get('/models/?type='+type)
 	    })
 	    .then(function (data) {
-	    	$('#inputModel').find("option[value!='']").remove();    	
+	    	$('#inputModel').find("option[value!='']").remove();
 	    	for(var i in data) {
 	    		var model = data[i];
 	    		var option = '<option value="'+model['id']+'">'+model['name']+'</option>';
@@ -249,12 +226,12 @@ $(function () {
 	    });
 	}
 
-	var addEventChanceListener = function () {		
+	var addEventChanceListener = function () {
 		var selects = $('#form-specifications').find('[type=select]');
 
 		selects.on('change', function () {
 			var form = $('#form-suboptions');
-			var value = $(this).val();						
+			var value = $(this).val();
 			if (value) {
 				var option = $(this).find("option[value='"+value+"']");
 				var str = option.attr('suboptions').trim();
@@ -264,7 +241,7 @@ $(function () {
 					for (var i in suboptions) {
 						form.append(getTextElement(suboptions[i]));
 					}
-				}				
+				}
 			}else{
 				form.children().remove();
 			}
@@ -272,7 +249,6 @@ $(function () {
 
 		return selects;
 	}
-
 
 	var getSpecificationElements = function (specification, options) {
 		if(specification.length < 1) return;
@@ -286,7 +262,7 @@ $(function () {
 		}else{
 			if(options.length < 1) {
 				return getTextElement(specification[0]);
-			}else{						
+			}else{
 				return getSelectElement(specification[0], options);
 			}
 		}
@@ -303,23 +279,23 @@ $(function () {
 		return template;
 	}
 
-	var getSelectElement = function (name, options) {				
+	var getSelectElement = function (name, options) {
 		var template = '';
 		var optionElements = '';
-		var is_object = options[0] instanceof Object;		
+		var is_object = options[0] instanceof Object;
 
 		for (var i in options) {
 			var option = is_object?options[i]['name']:options[i];
 			var suboptions = is_object?options[i]['suboptions'].toString():'';
 			optionElements = optionElements + getItemSelectElement(option, suboptions);
 		}
-		
+
 		template =  '<div class="form-group">'+
 					    '<label for="input'+name.capitalize()+'" class="col-md-2 control-label">'+name.capitalize()+'</label>'+
 					    '<div class="col-md-10">'+
 					        '<select id="input'+name.capitalize()+'" name="'+name+'" type="select" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">'+
 					        	'<option value="">--- Seleccionar ---</option>'+
-								optionElements+						        	
+								optionElements+
 					        '</select>'+
 					    '</div>'+
 					'</div>';
@@ -333,5 +309,5 @@ $(function () {
 
 	var reloadPage = function (data) {
 		$(location).attr('href', '/allocations/')
-	}	
+	}
 });
