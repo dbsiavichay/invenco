@@ -11,6 +11,8 @@ from .models import Allocation
 class AllocationListView(ListView):
 	model = Allocation
 	template_name = 'allocation/allocations.html'
+	queryset = model.objects.filter(is_active=True)
+	paginate_by = 2
 
 	def get_context_data(self, **kwargs):
 		context = super(AllocationListView, self).get_context_data(**kwargs)
@@ -18,7 +20,6 @@ class AllocationListView(ListView):
 		departments = Department.objects.using('sim').all()
 		employees = Employee.objects.using('sim').filter(contributor__state='ACTIVO')
 
-		context['object_list'] = context['object_list'].filter(is_active=True)
 		context['types'] = types
 		context['departments'] = departments
 		context['employees'] = employees

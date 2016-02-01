@@ -30,18 +30,18 @@
 			        		<span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
 			        		Proveedores
 			        	</a>
-			        </li>			        			        
+			        </li>
 			        <li class="dropdown">
 				        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 				          	<span class="glyphicon glyphicon-blackboard" aria-hidden="true"></span>
-				          	Equipos 
+				          	Equipos
 				          	<span class="caret"></span>
 				        </a>
 				        <ul class="dropdown-menu" role="menu">
-				            <li><a href="/trademarks">Marcas</a></li>				            
+				            <li><a href="/trademarks">Marcas</a></li>
 				            <li><a href="/types">Tipos</a></li>
 				            <li><a href="/models">Modelos</a></li>
-				            <li><a href="/devices">Dispositivos</a></li>				            
+				            <li><a href="/devices">Dispositivos</a></li>
 				        </ul>
 			        </li>
 			        <li>
@@ -56,7 +56,7 @@
 			        		Asistencia Técnica
 			        	</a>
 			        </li>
-			    </ul>			   
+			    </ul>
 			    <ul class="nav navbar-nav navbar-right">
 			        <li>
 						<a href="/login">
@@ -70,6 +70,29 @@
 
     {% block content %}{% endblock %}
 
+		{% if is_paginated %}
+		<section class="section-pagination">
+			<ul class="pagination pagination-sm">
+				{% if page_obj.has_previous %}
+				<li><a href="/allocations/?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+				{% else %}
+				<li class="disabled"><a href="#">&laquo;</a></li>
+				{% endif %}
+
+				{% for page in paginator.page_range %}
+				<li {% if page_obj.number == page %}class="active"{% endif %}><a href="/allocations/?page={{ page }}">{{ page }}</a></li>
+				{% endfor %}
+
+				{% if page_obj.has_next %}
+				<li><a href="/allocations/?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+				{% else %}
+				<li class="disabled"><a href="#">&raquo;</a></li>
+				{% endif %}
+			</ul>
+		</section>
+		{% endif %}
+
+
     <section class="modals">
 		<div id="objectModal" class="modal fade">
 			<div class="modal-dialog">
@@ -78,13 +101,13 @@
 				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 				        <h4 class="modal-title">{% block modal_title %}Modal{% endblock %}</h4>
 				    </div>
-				    <div class="modal-body">				    	
+				    <div class="modal-body">
 				    	{% csrf_token %}
 				        {% block modal_content %}{% endblock %}
 				    </div>
 				    <div class="modal-footer">
 				        <button class="btn btn-default" data-dismiss="modal">Cerrar</button>
-				        <button id="btnEdit" class="btn btn-primary">Guardar</button>				        
+				        <button id="btnEdit" class="btn btn-primary">Guardar</button>
 				        <button id="btnSave" class="btn btn-primary">Guardar</button>
 				        {% block modal_buttons %}{% endblock %}
 				    </div>
@@ -104,13 +127,13 @@
 				    	<p>* Recuerde que esta acción podría afectar otras funciones del sistema.</p>
 				    </div>
 				    <div class="modal-footer">
-				        <button class="btn btn-default" data-dismiss="modal">Cerrar</button>				        
+				        <button class="btn btn-default" data-dismiss="modal">Cerrar</button>
 				        <button id="btnDelete" class="btn btn-primary">Aceptar</button>
 				    </div>
 			    </div>
 			</div>
 		</div>
-	</section>  
+	</section>
 
 	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script src="{% static 'libs/js/bootstrap.min.js' %}"></script>

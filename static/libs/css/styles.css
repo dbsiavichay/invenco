@@ -65,8 +65,8 @@ hr {
 	font-size: 0.9em;
 }
 
-.inner-icon { 
-    position: relative; 
+.inner-icon {
+    position: relative;
 }
 
 .inner-icon .glyphicon {
@@ -75,6 +75,10 @@ hr {
   pointer-events: none;
 }
 
+.section-pagination {
+	text-align: center;
+	width: 100%;
+}
 /*.inner-icon-left .glyphicon  { left:  0px;}
 .inner-icon-right .glyphicon { right: 0px;}*/
 
