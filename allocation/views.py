@@ -12,7 +12,7 @@ class AllocationListView(ListView):
 	model = Allocation
 	template_name = 'allocation/allocations.html'
 	queryset = model.objects.filter(is_active=True)
-	paginate_by = 2
+	paginate_by = 8
 
 	def get_context_data(self, **kwargs):
 		context = super(AllocationListView, self).get_context_data(**kwargs)
