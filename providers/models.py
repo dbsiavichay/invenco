@@ -8,3 +8,6 @@ class Provider(models.Model):
 	city = models.CharField(max_length=32, blank=True, null=True)
 	cellphone = models.CharField(max_length=10, blank=True, null=True)
 	telephone = models.CharField(max_length=10, blank=True, null=True)
+
+	def __unicode__(self):
+		return self.name
