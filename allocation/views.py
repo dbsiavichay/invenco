@@ -5,6 +5,7 @@ from django.forms import model_to_dict
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, DetailView
 from organization.models import Department, Employee
+from equipment.models import Type
 from .models import Allocation
 from .reports import get_pdf
 
