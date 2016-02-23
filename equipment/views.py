@@ -1,26 +1,27 @@
 from django.shortcuts import render
 from django.forms.models import modelform_factory
 from django.forms import model_to_dict
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, DetailView
 from allocation.models import Allocation
 from organization.models import Contributor
 from providers.models import Provider
 from .models import Trademark, Type, Model, Device
+from .reports import get_pdf
 
 class TrademarkListView(ListView):
 	model = Trademark
 	template_name = 'equipment/trademarks.html'
 
 	def post(self, request, *args, **kwargs):
-		if request.is_ajax():			
-			trademark_modelform = modelform_factory(Trademark, fields=('name',))					
+		if request.is_ajax():
+			trademark_modelform = modelform_factory(Trademark, fields=('name',))
     		trademark_form = trademark_modelform(request.POST)
     		if trademark_form.is_valid():
     			object = trademark_form.save()
     			data = model_to_dict(object)
     			return JsonResponse(data)
-    		return JsonResponse({}, status=400)				
+    		return JsonResponse({}, status=400)
 
 class TrademarkDetailView(DetailView):
 	model = Trademark
@@ -28,19 +29,19 @@ class TrademarkDetailView(DetailView):
 	def get(self, request, *args, **kwargs):
 		if request.is_ajax():
 		    self.object = self.get_object()
-		    data = model_to_dict(self.object)		    
+		    data = model_to_dict(self.object)
 		    return JsonResponse(data)
 
 	def post(self, request, *args, **kwargs):
-		if request.is_ajax():				
+		if request.is_ajax():
 			self.object = self.get_object()
-			trademark_modelform = modelform_factory(Trademark, fields=('name',))					
+			trademark_modelform = modelform_factory(Trademark, fields=('name',))
     		trademark_form = trademark_modelform(request.POST, instance=self.object)
     		if trademark_form.is_valid():
     			trademark_form.save()
     			data = model_to_dict(self.object)
     			return JsonResponse(data)
-    		return JsonResponse({}, status=400)						
+    		return JsonResponse({}, status=400)
 
 	def delete(self, request, *args, **kwargs):
 		if request.is_ajax():
@@ -53,14 +54,14 @@ class TypeListView(ListView):
 	template_name = 'equipment/types.html'
 
 	def post(self, request, *args, **kwargs):
-		if request.is_ajax():				
-			type_modelform = modelform_factory(Type, fields=('name', 'is_part', 'specifications'))					
-    		type_form = type_modelform(request.POST)     		
-    		if type_form.is_valid():    			    			
+		if request.is_ajax():
+			type_modelform = modelform_factory(Type, fields=('name', 'is_part', 'specifications'))
+    		type_form = type_modelform(request.POST)
+    		if type_form.is_valid():
     			object = type_form.save()
     			data = model_to_dict(object)
     			return JsonResponse(data)
-    		return JsonResponse({}, status=400)				
+    		return JsonResponse({}, status=400)
 
 class TypeDetailView(DetailView):
 	model = Type
@@ -68,19 +69,19 @@ class TypeDetailView(DetailView):
 	def get(self, request, *args, **kwargs):
 		if request.is_ajax():
 		    self.object = self.get_object()
-		    data = model_to_dict(self.object)		    
+		    data = model_to_dict(self.object)
 		    return JsonResponse(data)
 
 	def post(self, request, *args, **kwargs):
-		if request.is_ajax():				
+		if request.is_ajax():
 			self.object = self.get_object()
-			type_modelform = modelform_factory(Type, fields=('name', 'is_part', 'specifications'))					
+			type_modelform = modelform_factory(Type, fields=('name', 'is_part', 'specifications'))
     		type_form = type_modelform(request.POST, instance=self.object)
     		if type_form.is_valid():
     			type_form.save()
     			data = model_to_dict(self.object)
     			return JsonResponse(data)
-    		return JsonResponse({}, status=400)						
+    		return JsonResponse({}, status=400)
 
 	def delete(self, request, *args, **kwargs):
 		if request.is_ajax():
@@ -101,11 +102,11 @@ class ModelListView(ListView):
 		context['trademarks'] = trademarks
 		return context
 
-	def get(self, request, *args, **kwargs):		
+	def get(self, request, *args, **kwargs):
 		if request.is_ajax():
 			type = request.GET.get('type', None);
-			if (type is not None):				
-				objects = self.model.objects.filter(type=type)				
+			if (type is not None):
+				objects = self.model.objects.filter(type=type)
 				list = []
 				for object in objects:
 					dict = model_to_dict(object)
@@ -117,14 +118,14 @@ class ModelListView(ListView):
 			return super(ModelListView, self).get(self, request, *args, **kwargs)
 
 	def post(self, request, *args, **kwargs):
-		if request.is_ajax():				
-			model_modelform = modelform_factory(Model, fields=('name', 'specifications', 'type', 'trademark'))					
-    		model_form = model_modelform(request.POST)     		
-    		if model_form.is_valid():    			    			
+		if request.is_ajax():
+			model_modelform = modelform_factory(Model, fields=('name', 'specifications', 'type', 'trademark'))
+    		model_form = model_modelform(request.POST)
+    		if model_form.is_valid():
     			object = model_form.save()
     			data = model_to_dict(object)
     			return JsonResponse(data)
-    		return JsonResponse({}, status=400)				
+    		return JsonResponse({}, status=400)
 
 class ModelDetailView(DetailView):
 	model = Model
@@ -132,19 +133,19 @@ class ModelDetailView(DetailView):
 	def get(self, request, *args, **kwargs):
 		if request.is_ajax():
 		    self.object = self.get_object()
-		    data = model_to_dict(self.object)		    
+		    data = model_to_dict(self.object)
 		    return JsonResponse(data)
 
 	def post(self, request, *args, **kwargs):
-		if request.is_ajax():				
+		if request.is_ajax():
 			self.object = self.get_object()
-			model_modelform = modelform_factory(Model, fields=('name', 'specifications', 'type', 'trademark'))					
+			model_modelform = modelform_factory(Model, fields=('name', 'specifications', 'type', 'trademark'))
     		model_form = model_modelform(request.POST, instance=self.object)
     		if model_form.is_valid():
     			model_form.save()
     			data = model_to_dict(self.object)
     			return JsonResponse(data)
-    		return JsonResponse({}, status=400)						
+    		return JsonResponse({}, status=400)
 
 	def delete(self, request, *args, **kwargs):
 		if request.is_ajax():
@@ -166,39 +167,39 @@ class DeviceListView(ListView):
 
 		return context
 
-	def get(self, request, *args, **kwargs):		
+	def get(self, request, *args, **kwargs):
 		if request.is_ajax():
 			type = request.GET.get('type', None);
-			if (type is not None):				
-				objects = self.model.objects.filter(model__type=type)				
+			if (type is not None):
+				objects = self.model.objects.filter(model__type=type)
 				list = []
 				for object in objects:
-					allocations = Allocation.objects.filter(device=object, is_active=True)	
-					is_assigned = len(allocations) > 0				
+					allocations = Allocation.objects.filter(device=object, is_active=True)
+					is_assigned = len(allocations) > 0
 					dict = model_to_dict(object)
 					dict['type'] = object.model.type.name
 					dict['trademark'] = object.model.trademark.name
 					dict['model'] = object.model.name
 					dict['is_assigned'] = is_assigned
-					if is_assigned:						
+					if is_assigned:
 						dict['subtext'] = allocations[0].short_responsible()
 
-					list.append(dict)				
+					list.append(dict)
 				return JsonResponse(list, safe=False)
 			return JsonResponse({}, status=400);
 		else:
 			return super(DeviceListView, self).get(self, request, *args, **kwargs)
 
 	def post(self, request, *args, **kwargs):
-		if request.is_ajax():				
+		if request.is_ajax():
 			model_modelform = modelform_factory(Device, fields=('code', 'serial', 'part', 'state', 'invoice', 'date_purchase', 'date_warranty', 'specifications', 'model', 'provider',))
-    		model_form = model_modelform(request.POST)     		
-    		if model_form.is_valid():    			    			
+    		model_form = model_modelform(request.POST)
+    		if model_form.is_valid():
     			object = model_form.save()
     			data = model_to_dict(object)
     			return JsonResponse(data)
     		print model_form.errors
-    		return JsonResponse({}, status=400)				
+    		return JsonResponse({}, status=400)
 
 class DeviceDetailView(DetailView):
 	model = Device
@@ -207,11 +208,11 @@ class DeviceDetailView(DetailView):
 		if request.is_ajax():
 		    self.object = self.get_object()
 		    data = model_to_dict(self.object)
-		    data['type'] = self.object.model.type.id	    
+		    data['type'] = self.object.model.type.id
 		    return JsonResponse(data)
 
 	def post(self, request, *args, **kwargs):
-		if request.is_ajax():				
+		if request.is_ajax():
 			self.object = self.get_object()
 			model_modelform = modelform_factory(Device, fields=('code', 'serial', 'part', 'state', 'invoice', 'date_purchase', 'date_warranty', 'specifications', 'model', 'provider',))
     		model_form = model_modelform(request.POST, instance=self.object)
@@ -219,10 +220,26 @@ class DeviceDetailView(DetailView):
     			model_form.save()
     			data = model_to_dict(self.object)
     			return JsonResponse(data)
-    		return JsonResponse({}, status=400)						
+    		return JsonResponse({}, status=400)
 
 	def delete(self, request, *args, **kwargs):
 		if request.is_ajax():
 			self.object = self.get_object()
 			self.object.delete()
 			return JsonResponse({})
+
+class ReportListView(ListView):
+	model = Type
+	template_name = 'equipment/reports.html'
+	queryset = model.objects.filter(is_part=False)
+
+	def get(self, request, *args, **kwargs):
+		stroptions = request.GET.get('options', None);
+		if stroptions is not None:
+			options = stroptions.split(',')
+			pdf = get_pdf(options)
+			response = HttpResponse(content_type='application/pdf')
+			response.write(pdf)
+			return response
+		else:
+			return super(ReportListView, self).get(self, request, *args, **kwargs)

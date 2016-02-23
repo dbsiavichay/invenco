@@ -2,12 +2,26 @@ hr {
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
+
+.state-icon {
+    left: -5px;
+}
+.list-group-item-primary {
+    color: rgb(255, 255, 255);
+    background-color: rgb(66, 139, 202);
+}
+
 .navbar {
 	border-radius: 0;
 }
 
 .section {
 	padding: 10px;
+}
+
+.report {
+	padding: 0 25px;
+	margin-bottom: 20px;
 }
 
 .tab-content {

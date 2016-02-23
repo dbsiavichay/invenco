@@ -1,3 +1,5 @@
+from itertools import *
+from django.db import connection
 from equipment.models import Type, Device
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib import colors
@@ -7,31 +9,44 @@ from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER
 from reportlab.lib.units import cm
 from io import BytesIO
 
-def get_pdf():
+def get_pdf(options):
 	buff = BytesIO()
 	doc = SimpleDocTemplate(buff, pagesize=landscape(A4), rightMargin=40, leftMargin=40, topMargin=20, bottomMargin=20,)
 	styles = getSampleStyleSheet()
 	report = []
-
 	report.append(Paragraph("Reporte de equipos registrados", styles['Title']))
-	report.append(Paragraph("Cpu's", styles['Heading2']))
-	report.append(get_table_cpus())
-	report.append(Paragraph("Monitores", styles['Heading2']))
-	report.append(get_table_displays())
-	report.append(Paragraph("Mouses", styles['Heading2']))
-	report.append(get_table_mouses())
-	report.append(Paragraph("Teclados", styles['Heading2']))
-	report.append(get_table_keyboards())
-	report.append(Paragraph("Reguladores", styles['Heading2']))
-	report.append(get_table_regulators())
-	report.append(Paragraph("Impresoras", styles['Heading2']))
-	report.append(get_table_printers())
+
+	for option in options:
+		if 'cpu' in option.lower():
+			report.append(Paragraph("Cpu's", styles['Heading2']))
+			report.append(get_table_cpus())
+
+			report.append(Paragraph("Informacion adicional de cpus", styles['Heading2']))
+			report.append(get_table_cpus_stats())
+		elif 'monitor' in option.lower():
+			report.append(Paragraph("Monitores", styles['Heading2']))
+			report.append(get_table_displays())
+		elif 'mouse' in option.lower():
+			report.append(Paragraph("Mouses", styles['Heading2']))
+			report.append(get_table_mouses())
+		elif 'teclado' in option.lower():
+			report.append(Paragraph("Teclados", styles['Heading2']))
+			report.append(get_table_keyboards())
+		elif 'regulador' in option.lower():
+			report.append(Paragraph("Reguladores", styles['Heading2']))
+			report.append(get_table_regulators())
+		elif 'impresora' in option.lower():
+			report.append(Paragraph("Impresoras", styles['Heading2']))
+			report.append(get_table_printers())
+		else:
+			report.append(Paragraph("Scanners", styles['Heading2']))
+			report.append(get_table_scanners())
 
 	doc.build(report)
 	return buff.getvalue()
 
 def get_table_cpus():
-	data = Device.objects.filter(model__type__name__iexact = 'cpu')
+	data = Device.objects.filter(model__type__name__icontains = 'cpu')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.7*cm, 0.8*cm, 1*cm,
 					1.2*cm, 1.2*cm, 1.5*cm, 1*cm, 1.4*cm, 1.3*cm, 1*cm, 1*cm,
@@ -63,8 +78,39 @@ def get_table_cpus():
 	table = get_table(headings, content, columns_width)
 	return table
 
+def get_table_cpus_stats():
+	stats = []
+
+	query = '''SELECt d.specifications->>'Sistema Operativo' as sistema, d.specifications->>'Bits' as arquitectura, count(d.specifications->'Bits') as cantidad FROM equipment_device as d
+		INNER JOIN equipment_model as m ON m.id = d.model_id
+		INNER JOIN equipment_type as t ON t.id = m.type_id
+		WHERE lower(t.name) LIKE '%cpu%'
+		GROUP BY sistema, arquitectura;'''
+
+	cursor = connection.cursor()
+	cursor.execute(query);
+	col_names = [desc[0] for desc in cursor.description]
+
+	while True:
+		row = cursor.fetchone()
+		if row is None:
+			break
+		row_dict = dict(izip(col_names, row))
+		stats.append(row_dict)
+
+	columns_width = (3*cm, 1.5*cm, 1.2*cm, )
+
+	headings = ['Sistema', 'Arquitectura', 'Cantidad', ]
+
+	content = [[stat['sistema'] if stat['sistema'] is not None else '',
+				stat['arquitectura'] if stat['arquitectura'] is not None else '',
+				str(stat['cantidad']) if stat['cantidad'] is not None else '',] for stat in stats]
+
+	table = get_table(headings, content, columns_width)
+	return table
+
 def get_table_printers():
-	data = Device.objects.filter(model__type__name__iexact = 'impresora')
+	data = Device.objects.filter(model__type__name__icontains = 'impresora')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.5*cm, 1.4*cm, 1*cm,
 					1.2*cm, 1.2*cm, 1.5*cm, 1.4*cm, 1*cm, 1.1*cm, 1.2*cm, 1.2*cm,
@@ -93,7 +139,7 @@ def get_table_printers():
 	return table
 
 def get_table_displays():
-	data = Device.objects.filter(model__type__name__iexact = 'monitor')
+	data = Device.objects.filter(model__type__name__icontains = 'monitor')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.1*cm, 1.4*cm, 1*cm,
 					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
@@ -115,7 +161,7 @@ def get_table_displays():
 	return table
 
 def get_table_mouses():
-	data = Device.objects.filter(model__type__name__iexact = 'mouse')
+	data = Device.objects.filter(model__type__name__icontains = 'mouse')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.2*cm, 1*cm,
 					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
@@ -136,7 +182,7 @@ def get_table_mouses():
 	return table
 
 def get_table_keyboards():
-	data = Device.objects.filter(model__type__name__iexact = 'teclado')
+	data = Device.objects.filter(model__type__name__icontains = 'teclado')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.2*cm, 1*cm,
 					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
@@ -157,7 +203,27 @@ def get_table_keyboards():
 	return table
 
 def get_table_regulators():
-	data = Device.objects.filter(model__type__name__iexact = 'regulador')
+	data = Device.objects.filter(model__type__name__icontains = 'regulador')
+
+	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1*cm,
+					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
+
+	headings = ['Modelo', 'Proveedor', 'Codigo', 'Serie', 'Parte', 'Estado',
+				'Factura', 'Compra', 'Garantia', 'Ubicacion', 'Responsable']
+
+	content = [[d.model.__unicode__() if d.model is not None else '',
+				d.provider.__unicode__() if d.provider is not None else '', d.code, d.serial, d.part,
+				d.state, d.invoice,
+				d.date_purchase.__str__() if d.date_purchase is not None else '',
+				d.date_warranty.__str__() if d.date_purchase is not None else '',
+				d.allocation_set.filter(is_active=True)[0].short_location()[:40] if len(d.allocation_set.filter(is_active=True)) > 0 else 'N/A',
+				d.allocation_set.filter(is_active=True)[0].short_responsible() if len(d.allocation_set.filter(is_active=True)) > 0 else 'No asignado'] for d in data]
+
+	table = get_table(headings, content, columns_width)
+	return table
+
+def get_table_scanners():
+	data = Device.objects.filter(model__type__name__icontains = 'scan')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1*cm,
 					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)

@@ -2,12 +2,11 @@ import json
 from django.shortcuts import render
 from django.forms.models import modelform_factory
 from django.forms import model_to_dict
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
 from organization.models import Department, Employee
 from equipment.models import Type
 from .models import Allocation
-from .reports import get_pdf
 
 class AllocationListView(ListView):
 	model = Allocation
@@ -82,9 +81,3 @@ class AllocationDetailView(DetailView):
 			self.object = self.get_object()
 			self.object.delete()
 			return JsonResponse({})
-
-
-def report_view(request):
-	response = HttpResponse(content_type='application/pdf')
-	response.write(get_pdf())
-	return response
