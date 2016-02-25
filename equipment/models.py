@@ -33,7 +33,8 @@ class Model(models.Model):
 	trademark = models.ForeignKey(Trademark)
 
 	def __unicode__(self):
-		return '%s %s %s' % (self.type, self.trademark, self.name)
+		type = self.specifications['Uso'] if self.specifications.has_key('Uso') else self.type
+		return '%s %s %s' % (type, self.trademark, self.name)
 
 class Device(models.Model):
 	class Meta:

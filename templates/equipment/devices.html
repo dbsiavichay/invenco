@@ -12,20 +12,18 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th>Tipo</th>
-					<th>Modelo</th>
-					<th>Código</th>					
+					<th>Equipo</th>
+					<th>Código</th>
 					<th>Estado</th>
 					<th>Compra</th>
 					<th>Garantía</th>
 					<th>Acciones</th>
 				</tr>
 			</thead>
-			<tbody id="objectList">							
+			<tbody id="objectList">
 				{% for device in object_list %}
 				<tr>
-					<td class="col-xs-2">{{ device.model.type }} - {{ device.model.trademark }}</td>
-					<td class="col-xs-2">{{ device.model }}</td>
+					<td class="col-xs-4">{{ device.model }}</td>
 					<td class="col-xs-1">{{ device.code }}</td>
 					<td class="col-xs-1"><span class="glyphicon glyphicon-{{ device.get_state_icon }}" aria-hidden="true"></span></td>
 					<td class="col-xs-2">{{ device.provider.name }} | {{ device.invoice }}</td>
@@ -42,11 +40,11 @@
 				{% empty %}
 				<tr>
 					<td colspan="7">'No existen registros'</td>
-				</tr>							
+				</tr>
 				{% endfor %}
 			</tbody>
 		</table>
-	</section>	
+	</section>
 {% endblock %}
 
 {% block modal_title %}Datos de dispositivo{% endblock %}
@@ -62,15 +60,15 @@
 	    	<a href="#specifications" aria-controls="specifications" role="tab" data-toggle="tab">Especificaciones</a>
 	    </li>
 	</ul>
-	  
-	<div class="tab-content">						    
+
+	<div class="tab-content">
 	    <div role="tabpanel" class="tab-pane active" id="general">
 	    	<div class="form-horizontal">
 	    		<div class="form-group">
 				    <label for="inputType" class="col-md-2 control-label">Tipo</label>
 				    <div class="col-md-10">
 				        <select id="inputType" type="select" name="type" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
-				        	<option value="">--- Seleccionar ---</option>				        	
+				        	<option value="">--- Seleccionar ---</option>
 				        	{% for type in types %}
 				        	<option value="{{ type.id }}">{{ type.name }}</option>
 				        	{% endfor %}
@@ -81,16 +79,16 @@
 				    <label for="inputModel" class="col-md-2 control-label">Modelo</label>
 				    <div class="col-md-10">
 				        <select id="inputModel" type="select" name="model" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
-				        	<option value="">--- Seleccionar ---</option>		
+				        	<option value="">--- Seleccionar ---</option>
 				        </select>
 				    </div>
-				</div>				
+				</div>
 				<div class="form-group">
 				    <label for="inputCode" class="col-md-2 control-label">Código</label>
 				    <div class="col-md-10">
 				        <input id="inputCode" type="text" name="code" class="form-control" placeholder="Código del dispositivo" req="true">
 				    </div>
-				</div>																	
+				</div>
 				<div class="form-group">
 				    <label for="inputSerial" class="col-md-2 control-label">Serial</label>
 				    <div class="col-md-10">
@@ -107,13 +105,13 @@
 				    <label for="inputModel" class="col-md-2 control-label">Estado</label>
 				    <div class="col-md-10">
 				        <select id="inputModel" type="select" name="state" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
-				        	<option value="">--- Seleccionar ---</option>		
-				        	<option value="1">Bueno</option>				        	
+				        	<option value="">--- Seleccionar ---</option>
+				        	<option value="1">Bueno</option>
 				        	<option value="2">Reparación</option>
-				        	<option value="3">Dañado - Baja</option>				        	
+				        	<option value="3">Dañado - Baja</option>
 				        </select>
 				    </div>
-				</div>				
+				</div>
 	    	</div>
 	    </div>
 	    <div role="tabpanel" class="tab-pane" id="purchase">
@@ -122,19 +120,19 @@
 				    <label for="inputProvider" class="col-md-2 control-label">Proveedor</label>
 				    <div class="col-md-10">
 				        <select id="inputProvider" type="select" name="provider" class="form-control selectpicker" data-size="10" data-live-search="true">
-				        	<option value="">--- Seleccionar ---</option>				        	
+				        	<option value="">--- Seleccionar ---</option>
 				        	{% for provider in providers %}
 				        	<option value="{{ provider.id }}">{{ provider.name }}</option>
 				        	{% endfor %}
 				        </select>
 				    </div>
-				</div>	    				
+				</div>
 				<div class="form-group">
 				    <label for="inputInvoice" class="col-md-2 control-label">Factura</label>
 				    <div class="col-md-10">
 				        <input id="inputInvoice" type="text" name="invoice" class="form-control" placeholder="Número de factura">
 				    </div>
-				</div>																					
+				</div>
 				<div class="form-group">
 				    <label for="inputDatePurchase" class="col-md-2 control-label">Fecha compra</label>
 				    <div class="col-md-10">
@@ -151,15 +149,15 @@
 	    </div>
 	    <div role="tabpanel" class="tab-pane" id="specifications">
 	    	<div id="form-specifications" class="form-horizontal">
-	    						
+
 	    	</div>
 	    	<div id="form-suboptions" class="form-horizontal">
-	    						
+
 	    	</div>
 	    	<div id="empty-specifications" class="form-horizontal">
 	    		<p><em>"No existen especificaciones para este dispositivo"</em></p>
 	    	</div>
-	    </div>	    
+	    </div>
 	</div>
 {% endblock %}
 

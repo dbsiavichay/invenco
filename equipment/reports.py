@@ -1,4 +1,3 @@
-from itertools import *
 from django.db import connection
 from equipment.models import Type, Device
 from reportlab.lib.pagesizes import A4, landscape
@@ -17,12 +16,12 @@ def get_pdf(options):
 	report.append(Paragraph("Reporte de equipos registrados", styles['Title']))
 
 	for option in options:
-		if 'cpu' in option.lower():
-			report.append(Paragraph("Cpu's", styles['Heading2']))
-			report.append(get_table_cpus())
+		if 'pc' in option.lower():
+			report.append(Paragraph("Pc's", styles['Heading2']))
+			report.append(get_table_pcs())
 
-			report.append(Paragraph("Informacion adicional de cpus", styles['Heading2']))
-			report.append(get_table_cpus_stats())
+			report.append(Paragraph("Informacion adicional de pc's", styles['Heading2']))
+			report.append(get_table_pcs_stats())
 		elif 'monitor' in option.lower():
 			report.append(Paragraph("Monitores", styles['Heading2']))
 			report.append(get_table_displays())
@@ -45,8 +44,8 @@ def get_pdf(options):
 	doc.build(report)
 	return buff.getvalue()
 
-def get_table_cpus():
-	data = Device.objects.filter(model__type__name__icontains = 'cpu')
+def get_table_pcs():
+	data = Device.objects.filter(model__type__name__icontains = 'pc')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.7*cm, 0.8*cm, 1*cm,
 					1.2*cm, 1.2*cm, 1.5*cm, 1*cm, 1.4*cm, 1.3*cm, 1*cm, 1*cm,
@@ -78,33 +77,44 @@ def get_table_cpus():
 	table = get_table(headings, content, columns_width)
 	return table
 
-def get_table_cpus_stats():
+def get_table_pcs_stats():
 	stats = []
+	content = []
+	count = 0
 
-	query = '''SELECt d.specifications->>'Sistema Operativo' as sistema, d.specifications->>'Bits' as arquitectura, count(d.specifications->'Bits') as cantidad FROM equipment_device as d
+	query_with_allocations = '''SELECt d.specifications->>'Sistema Operativo' as sistema, d.specifications->>'Bits' as arquitectura, count(d.specifications->'Bits') as cantidad
+		FROM equipment_device as d
 		INNER JOIN equipment_model as m ON m.id = d.model_id
 		INNER JOIN equipment_type as t ON t.id = m.type_id
-		WHERE lower(t.name) LIKE '%cpu%'
-		GROUP BY sistema, arquitectura;'''
+		WHERE lower(t.name) LIKE '%pc%' AND d.specifications->>'Sistema Operativo' != ''
+		GROUP BY sistema, arquitectura
+		ORDER BY sistema, arquitectura;'''
+
+	query_without_allocations = '''SELECt count(d.id) as cantidad FROM equipment_device as d
+		INNER JOIN equipment_model as m ON m.id = d.model_id
+		INNER JOIN equipment_type as t ON t.id = m.type_id
+		WHERE lower(t.name) LIKE '%pc%' AND
+		(SELECt count(*) FROM allocation_allocation WHERE device_id = d.id) <= 0;'''
 
 	cursor = connection.cursor()
-	cursor.execute(query);
-	col_names = [desc[0] for desc in cursor.description]
+	cursor.execute(query_with_allocations)
 
 	while True:
-		row = cursor.fetchone()
-		if row is None:
+		t = cursor.fetchone()
+		if t is None:
 			break
-		row_dict = dict(izip(col_names, row))
-		stats.append(row_dict)
+		count += t[2]
+		row = (t[0], t[1], str(t[2]))
+		content.append(row)
+
+	cursor.execute(query_without_allocations)
+	t = cursor.fetchone()
+	count += t[0]
+	content.append(('SIN ASIGNAR', '', str(t[0])))
+	content.append(('--TOTAL--', '', str(count)))
 
 	columns_width = (3*cm, 1.5*cm, 1.2*cm, )
-
 	headings = ['Sistema', 'Arquitectura', 'Cantidad', ]
-
-	content = [[stat['sistema'] if stat['sistema'] is not None else '',
-				stat['arquitectura'] if stat['arquitectura'] is not None else '',
-				str(stat['cantidad']) if stat['cantidad'] is not None else '',] for stat in stats]
 
 	table = get_table(headings, content, columns_width)
 	return table
