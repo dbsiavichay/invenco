@@ -33,7 +33,7 @@ class Model(models.Model):
 	trademark = models.ForeignKey(Trademark)
 
 	def __unicode__(self):
-		type = self.specifications['Uso'] if self.specifications.has_key('Uso') else self.type
+		type = self.specifications['Uso'] if self.specifications.has_key('Uso') and 'laptop' in self.specifications['Uso'].lower() else self.type
 		return '%s %s %s' % (type, self.trademark, self.name)
 
 class Device(models.Model):

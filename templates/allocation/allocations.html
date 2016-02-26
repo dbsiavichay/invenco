@@ -23,7 +23,7 @@
 			<tbody>
 				{% for allo in object_list %}
 				<tr>
-					<td class="col-xs-3">{{ allo.device.model.type }}  {{ allo.device.model.trademark }} {{ allo.device.model }}</td>
+					<td class="col-xs-3">{{ allo.device.model }}</td>
 					<td class="col-xs-1">{{ allo.device.code }}</td>
 					<td class="col-xs-1"><span class="glyphicon glyphicon-{{ allo.device.get_state_icon }}" aria-hidden="true"></span></td>
 					<td class="col-xs-3">{{ allo.location }}</td>
