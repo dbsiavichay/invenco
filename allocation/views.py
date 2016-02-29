@@ -22,7 +22,7 @@ class AllocationListView(ListView):
 
 		context['types'] = types
 		context['departments'] = departments
-		context['employees'] = employees
+		#context['employees'] = employees
 		return context
 
 	def get(self, request, *args, **kwargs):

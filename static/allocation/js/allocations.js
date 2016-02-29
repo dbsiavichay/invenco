@@ -310,4 +310,16 @@ $(function () {
 	var reloadPage = function (data) {
 		$(location).attr('href', '/allocations/')
 	}
+
+	var renderEmployees = function (data) {
+		$('#inputEmployee').find("option[value!='']").remove();
+		for(var i in data) {
+			var employee = data[i];
+			var option = '<option value="'+employee['charter']+'">'+employee['charter']+ ' | ' +employee['fullname']+'</option>';
+			$('#inputEmployee').append(option);
+		}
+		$('#inputEmployee').selectpicker('refresh');
+	}
+
+	makeRequest('/employees/', 'GET', {}, renderEmployees);
 });
