@@ -18,7 +18,7 @@ class AllocationListView(ListView):
 		context = super(AllocationListView, self).get_context_data(**kwargs)
 		types = Type.objects.all()
 		departments = Department.objects.using('sim').all()
-		employees = Employee.objects.using('sim').filter(contributor__state='ACTIVO')
+		#employees = Employee.objects.using('sim').filter(contributor__state='ACTIVO')
 
 		context['types'] = types
 		context['departments'] = departments

@@ -1,3 +1,4 @@
+import json, ast
 from django.db import models
 from providers.models import Provider
 from django_pgjson.fields import JsonField
@@ -35,6 +36,9 @@ class Model(models.Model):
 	def __unicode__(self):
 		type = self.specifications['Uso'] if self.specifications.has_key('Uso') and 'laptop' in self.specifications['Uso'].lower() else self.type
 		return '%s %s %s' % (type, self.trademark, self.name)
+
+	def get_specifications(self):
+		return ast.literal_eval(json.dumps(self.specifications))
 
 class Device(models.Model):
 	class Meta:

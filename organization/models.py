@@ -37,4 +37,4 @@ class Employee(models.Model):
     class Meta:
         managed = False
         db_table = 'bicondep'
-        ordering = ['contributor']
+        ordering = ['contributor',]

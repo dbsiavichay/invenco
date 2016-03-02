@@ -1,9 +1,9 @@
 var makeRequest = function (url, method, data, callback) {
 	var request = $.ajax({
-        url: url,        
-        method: method, 
+        url: url,
+        method: method,
         data: data,
-        dataType: 'json'	        
+        dataType: 'json'
     });
 
     request.then(callback);
@@ -19,12 +19,12 @@ var getData = function (container) {
 
 	fields.each(function (index, field) {
 		var type = 	$(field).attr('type');
-		var name = $(field).attr('name');		
+		var name = $(field).attr('name');
 		var value = type==='radio'?$(field).find('input:checked').val():type==='checkbox'?$(field).prop('checked'):$(field).val();
-		data[name] = value;		
+		data[name] = value;
 	});
 
-	return data;	
+	return data;
 }
 
 var cleanFormErrors = function () {
@@ -32,11 +32,11 @@ var cleanFormErrors = function () {
 
 	fields.each(function (index, field) {
 		var form_group = $(field).parents('.form-group');
-		if(form_group.hasClass('has-error')) form_group.removeClass('has-error');		
-	});	
+		if(form_group.hasClass('has-error')) form_group.removeClass('has-error');
+	});
 }
 
-var resetFormValues = function () {	
+var resetFormValues = function () {
 	var fields = $('[id*=input]');
 
 	fields.each(function (index, field) {
@@ -52,14 +52,34 @@ var resetFormValues = function () {
 		}else{
 			$(field).val('');
 		}
-	});	
+	});
 }
 
-var setFormValues = function (object) {	
+var setFormValues = function (object) {
+	for(name in object) {
+		var $field = $('[name="'+name+'"]');
+		var type = $field.attr('type');
+		if(type==='radio') {
+			var radio = $field.find("input[value='"+object[name]+"']");
+			$(radio).prop('checked', true);
+		}else if (type === 'checkbox') {
+			$field.prop('checked', object[name]);
+		}else if (type === 'select'){
+			$field.selectpicker('val', object[name]);
+		}else if (type === 'date'){
+			var matches = object[name].match(/\d{4}-\d{1,2}-\d{1,2}/);
+			if (matches) $field.val(matches[0]);
+		}else{
+			$field.val(object[name]);
+		}
+	}
+}
+
+/*var setFormValues = function (object) {
 	var fields = $('[id*=input]');
 	fields.each(function (index, field) {
 		var type = $(field).attr('type');
-		var name = $(field).attr('name');	
+		var name = $(field).attr('name');
 		if(type==='radio') {
 			var radio = $(field).find("input[value='"+object[name]+"']");
 			$(radio).prop('checked', true);
@@ -69,12 +89,12 @@ var setFormValues = function (object) {
 			$(field).selectpicker('val', object[name]);
 		}else if (type === 'date'){
 			var matches = object[name].match(/\d{4}-\d{1,2}-\d{1,2}/);
-			if (matches) $(field).val(matches[0]);			
+			if (matches) $(field).val(matches[0]);
 		}else{
 			$(field).val(object[name]);
 		}
 	});
-}
+}*/
 
 var validateForm = function (form) {
 	var fields = form?$(form).find('[id*=input]'):$('[id*=input]');
@@ -84,14 +104,14 @@ var validateForm = function (form) {
 	fields.each(function (index, field) {
 		var type = $(field).attr('type');
 		var is_required = $(field).attr('req');
-		if(type!='radio' && is_required) {			
+		if(type!='radio' && is_required) {
 			var value = $(field).val().trim();
 			if(!value) {
 				$(field).parents('.form-group').addClass('has-error');
 				is_valid = false;
 			}
 		}
-	});	
+	});
 
 	return is_valid;
 }
@@ -103,7 +123,7 @@ var openModal = function (options) {
 	if(!options['object']) {
 		resetFormValues();
 		$('#btnEdit').hide();
-		$('#btnSave').show();		
+		$('#btnSave').show();
 	} else {
 		setFormValues(options['object'])
 		$('#btnEdit').show();
@@ -111,7 +131,7 @@ var openModal = function (options) {
 	}
 
 	var tabs = $('#objectModal').find('.nav-tabs').find('a');
-	
+
 	if(tabs) {
 		if (options['tabs']) {
 			tabs.hide();
@@ -119,13 +139,12 @@ var openModal = function (options) {
 				var index = options['tabs'][i]
 				$(tabs[index-1]).show();
 			}
-			$(tabs[options['tabs'][0]-1]).tab('show');			
+			$(tabs[options['tabs'][0]-1]).tab('show');
 		}else{
 			tabs.show();
 			$(tabs[0]).tab('show');
 		}
 	}
 
-	$('#objectModal').modal('show');	
+	$('#objectModal').modal('show');
 }
-

@@ -3,6 +3,9 @@ from equipment.models import Device
 from organization.models import Contributor, Department, Section
 
 class Allocation(models.Model):
+	class Meta:
+		ordering = ['device',]
+
 	employee = models.CharField(max_length=16)
 	department = models.FloatField()
 	area = models.FloatField()

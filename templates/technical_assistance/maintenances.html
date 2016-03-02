@@ -11,17 +11,17 @@
 
 		<table class="table table-striped">
 			<thead>
-				<tr>					
+				<tr>
 					<th>Equipo</th>
 					<th>Responsable</th>
-					<th>Fecha</th>					
+					<th>Fecha</th>
 					<th>Acciones</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for item in object_list %}
 				<tr>
-					<td class="col-xs-3">{{ item.device.model.type }} {{item.device.model.trademark }} {{item.device.model}}</td>
+					<td class="col-xs-3">{{ item.device.model }}</td>
 					<td class="col-xs-3">{{ item.responsible }}</td>
 					<td class="col-xs-3">{{ item.date }}</td>
 					<td id="{{ item.id }}" class="col-xs-3">
@@ -40,7 +40,7 @@
 				{% endfor %}
 			</tbody>
 		</table>
-	</section>	
+	</section>
 {% endblock %}
 
 {% block modal_title %}Datos de asistencia{% endblock %}
@@ -55,17 +55,20 @@
 	    <li role="presentation">
 	    	<a href="#parts" aria-controls="parts" role="tab" data-toggle="tab">Repuestos usados</a>
 	    </li>
+			<li role="presentation">
+	    	<a href="#specifications" aria-controls="specifications" role="tab" data-toggle="tab">Nuevo estado del equipo</a>
+	    </li>
 	</ul>
-	  
+
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active" id="equipment">
-			<div id="error-equipment" class="alert alert-danger" style="display: none;" role="alert">			  	
+			<div id="error-equipment" class="alert alert-danger" style="display: none;" role="alert">
 			  	<strong>Error!</strong> Debe seleccionar un equipo
 			</div>
-			<div class="row">				
+			<div class="row">
 				<div class="col-sm-12">
-				    <div class="input-group">				    			            		            
-			            <input id="search-allocations" type="text" class="form-control" placeholder="Búsqueda de equipos">    
+				    <div class="input-group">
+			            <input id="search-allocations" type="text" class="form-control" placeholder="Búsqueda de equipos">
 					    <span class="input-group-btn">
 					        <button class="btn btn-primary" type="button">
 					        	<span class="glyphicon glyphicon-search"></span>
@@ -78,14 +81,14 @@
 			<div id="allocations-listbox" class="well well-sm well-listbox">
 				<div class="list-group">
 					{% for allo in allocations %}
-					<a href="#" key="{{ allo.device.id }}" class="list-group-item">					
+					<a href="#" key="{{ allo.device.id }}" class="list-group-item">
 					    <p class="list-group-item-heading">{{ allo.device }}</p>
 					    <p class="list-group-item-text"><strong>{{ allo.short_responsible }}</strong> > {{ allo.short_location }}</p>
 					</a>
 					{% endfor %}
 				</div>
 			</div>
-	    </div>					    
+	    </div>
 	    <div role="tabpanel" class="tab-pane" id="assistance">
 	    	<div class="form-horizontal">
 	    		<div class="form-group">
@@ -93,23 +96,23 @@
 				    <div class="col-md-10">
 				        <input id="inputDate" type="text" name="date" class="form-control datepicker" placeholder="Fecha de asistencia técnica" req="true">
 				    </div>
-				</div>					    		
+				</div>
 		    	<div class="form-group">
 				    <label for="inputProblem" class="col-md-2 control-label">Problema</label>
 				    <div class="col-md-10">
-				    	<textarea id="inputProblem" class="form-control" name="problem" type="text" req="true" placeholder="Problemas que presentaba el equipo"></textarea>				        
+				    	<textarea id="inputProblem" class="form-control" name="problem" type="text" req="true" placeholder="Problemas que presentaba el equipo"></textarea>
 				    </div>
 				</div>
 				<div class="form-group">
 				    <label for="inputSolution" class="col-md-2 control-label">Solución</label>
 				    <div class="col-md-10">
-				    	<textarea id="inputSolution" class="form-control" name="solution" type="text" req="true" placeholder="Actividades realizadas para solucionar el problema"></textarea>				        
+				    	<textarea id="inputSolution" class="form-control" name="solution" type="text" req="true" placeholder="Actividades realizadas para solucionar el problema"></textarea>
 				    </div>
 				</div>
 	    	</div>
-	    </div>	    
-	    <div role="tabpanel" class="tab-pane" id="parts">	    	
-	    	<div class="form-horizontal">														
+	    </div>
+	    <div role="tabpanel" class="tab-pane" id="parts">
+	    	<div class="form-horizontal">
 				<div class="form-group">
 				    <label for="inputType" class="sr-only">Tipo</label>
 				    <div class="col-md-12">
@@ -122,13 +125,25 @@
 			<div id="parts-listbox" class="well well-sm well-listbox">
 				<div class="list-group">
 					{% for device in devices %}
-					<a href="#" key="{{ device.id }}" class="list-group-item">
+					<a href="#" key="{{ device.id }}" data="{{ device.model.get_specifications }}" class="list-group-item">
 					    {{ device }}
 					</a>
 					{% endfor %}
 				</div>
 			</div>
-	    </div>						    						   
+			<p id="parts-detail"></p>
+	    </div>
+			<div role="tabpanel" class="tab-pane" id="specifications">
+	    	<div id="form-specifications" class="form-horizontal">
+
+	    	</div>
+	    	<div id="form-suboptions" class="form-horizontal">
+
+	    	</div>
+	    	<div id="empty-specifications" class="form-horizontal">
+	    		<p><em>"No existen especificaciones para este dispositivo"</em></p>
+	    	</div>
+	    </div>
 	</div>
 {% endblock %}
 
@@ -136,5 +151,6 @@
 	{% load staticfiles %}
 	<script src="{% static 'libs/js/bootstrap-select.min.js' %}"></script>
 	<script src="{% static 'libs/js/bootstrap-datepicker.min.js' %}"></script>
+	<script src="{% static 'libs/js/capitalize.js' %}"></script>
 	<script src="{% static 'technical_assistance/js/maintenances.js' %}"></script>
 {% endblock%}
