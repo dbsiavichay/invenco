@@ -12,6 +12,7 @@ from .reports import get_pdf
 class TrademarkListView(ListView):
 	model = Trademark
 	template_name = 'equipment/trademarks.html'
+	paginate_by = 10
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():
@@ -52,6 +53,7 @@ class TrademarkDetailView(DetailView):
 class TypeListView(ListView):
 	model = Type
 	template_name = 'equipment/types.html'
+	paginate_by = 10
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():
@@ -92,6 +94,7 @@ class TypeDetailView(DetailView):
 class ModelListView(ListView):
 	model = Model
 	template_name = 'equipment/models.html'
+	paginate_by = 10
 
 	def get_context_data(self, **kwargs):
 		context = super(ModelListView, self).get_context_data(**kwargs)
@@ -156,6 +159,7 @@ class ModelDetailView(DetailView):
 class DeviceListView(ListView):
 	model = Device
 	template_name = 'equipment/devices.html'
+	paginate_by = 10
 
 	def get_context_data(self, **kwargs):
 		context = super(DeviceListView, self).get_context_data(**kwargs)

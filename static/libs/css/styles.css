@@ -13,10 +13,17 @@ hr {
 
 .navbar {
 	border-radius: 0;
+	margin-bottom: 0;
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 2
 }
 
 .section {
 	padding: 10px;
+	margin-top: 60px;
 }
 
 .report {

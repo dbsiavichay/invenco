@@ -11,6 +11,7 @@ from .models import Maintenance, Parts
 class MaintenanceListView(ListView):
 	model = Maintenance
 	template_name = 'technical_assistance/maintenances.html'
+	paginate_by = 10
 
 	def get_context_data(self, **kwargs):
 		context = super(MaintenanceListView, self).get_context_data(**kwargs)
