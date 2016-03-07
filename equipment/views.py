@@ -1,3 +1,5 @@
+from django.db.models import Q
+from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.forms.models import modelform_factory
 from django.forms import model_to_dict
@@ -13,6 +15,23 @@ class TrademarkListView(ListView):
 	model = Trademark
 	template_name = 'equipment/trademarks.html'
 	paginate_by = 10
+
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+			keyword = request.GET.get('keyword', None)
+			num_page = request.GET.get('page', None)
+			list = self.model.objects.filter(name__icontains=keyword)
+			paginator = Paginator(list, self.paginate_by)
+			page = paginator.page(num_page) if num_page is not None else paginator.page(1)
+			object_list = page.object_list
+			data = [model_to_dict(object) for object in object_list]
+			data.append({
+				'has_next': page.has_next(),
+				'next_page_number': page.next_page_number() if page.has_next() else -1
+			})
+			return JsonResponse(data, safe=False)
+		else:
+			return super(TrademarkListView, self).get(self, request, *args, **kwargs)
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():
@@ -107,8 +126,25 @@ class ModelListView(ListView):
 
 	def get(self, request, *args, **kwargs):
 		if request.is_ajax():
-			type = request.GET.get('type', None);
-			if (type is not None):
+			keyword = request.GET.get('keyword', None)
+			num_page = request.GET.get('page', None)
+			list = self.model.objects.filter(name__icontains=keyword)
+			paginator = Paginator(list, self.paginate_by)
+			page = paginator.page(num_page) if num_page is not None else paginator.page(1)
+			object_list = page.object_list
+			data = [model_to_dict(object) for object in object_list]
+			data.append({
+				'has_next': page.has_next(),
+				'next_page_number': page.next_page_number() if page.has_next() else -1
+			})
+			return JsonResponse(data, safe=False)
+
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+			type = request.GET.get('type', None)
+			keyword = request.GET.get('keyword', None)
+			num_page = request.GET.get('page', None)
+			if type is not None:
 				objects = self.model.objects.filter(type=type)
 				list = []
 				for object in objects:
@@ -116,7 +152,19 @@ class ModelListView(ListView):
 					dict['trademark'] = object.trademark.name
 					list.append(dict)
 				return JsonResponse(list, safe=False)
-			return JsonResponse({}, status=400);
+			elif keyword is not None:
+				objects = self.model.objects.filter(name__icontains=keyword)
+				paginator = Paginator(objects, self.paginate_by)
+				page = paginator.page(num_page) if num_page is not None else paginator.page(1)
+				object_list = page.object_list
+				data = [model_to_dict(object) for object in object_list]
+				data.append({
+					'has_next': page.has_next(),
+					'next_page_number': page.next_page_number() if page.has_next() else -1
+				})
+				return JsonResponse(data, safe=False)
+
+			return JsonResponse({}, status=400)
 		else:
 			return super(ModelListView, self).get(self, request, *args, **kwargs)
 

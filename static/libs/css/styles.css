@@ -86,6 +86,11 @@ hr {
 	font-size: 0.9em;
 }
 
+.load-searchs {
+	text-align: center;
+	display: none;
+}
+
 .inner-icon {
     position: relative;
 }

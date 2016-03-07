@@ -1,39 +1,74 @@
-$(function () { 
+$(function () {
 	var id;
+	addEventListenerOnNew();
+	addEventListenerOnEdit();
+	addEventListenerOnRemove();
+	addEventListenerOnCreate();
+	addEventListenerOnUpdate();
+	addEventListenerOnDelete();
+});
 
-	$('.glyphicon-plus-sign').parent().on('click', function () {				
+var getUrl = function () {
+	return '/trademarks/'
+}
+
+var addEventListenerOnNew = function () {
+	$('.glyphicon-plus-sign').parent().on('click', function () {
 		openModal()
 	});
+}
 
+var addEventListenerOnEdit = function () {
 	$('.glyphicon-pencil').parent().on('click', function () {
 		id = $(this).parent().attr('id');
-		$.get('/trademarks/'+id, function (object) {						
+		$.get(getUrl()+id+'/', function (object) {
 			openModal({'object':object});
 		});
 	});
+}
 
+var addEventListenerOnRemove = function () {
 	$('.glyphicon-remove').parent().on('click', function () {
-		id = $(this).parent().attr('id');		
+		id = $(this).parent().attr('id');
 		$('#objectDeleteModal').modal('show');
 	});
+}
 
-	$('#btnSave').on('click', function () {		
+var addEventListenerOnCreate = function () {
+	$('#btnSave').on('click', function () {
 		var is_valid = validateForm();
 		if(!is_valid) return;
-		makeRequest('/trademarks/', 'POST', getData(), reloadPage);
+		makeRequest(getUrl(), 'POST', getData(), reloadPage);
 	});
+}
 
-	$('#btnEdit').on('click', function () {		
+var addEventListenerOnUpdate = function () {
+	$('#btnEdit').on('click', function () {
 		var is_valid = validateForm();
 		if(!is_valid) return;
-		makeRequest('/trademarks/'+id+'/', 'POST', getData(), reloadPage);
+		makeRequest(getUrl()+id+'/', 'POST', getData(), reloadPage);
 	});
+}
 
+var addEventListenerOnDelete = function () {
 	$('#btnDelete').on('click', function () {
-		makeRequest('/trademarks/'+id+'/', 'DELETE', {}, reloadPage);
+		makeRequest(getUrl()+id+'/', 'DELETE', {}, reloadPage);
 	});
+}
 
-	var reloadPage = function (data) {
-		$(location).attr('href', '/trademarks/');
-	}	
-});
+var reloadPage = function (data) {
+	$(location).attr('href', getUrl());
+}
+
+//Funcionalidad para busquedas
+var getRow = function (object) {
+	var $row = $rowTemplate.clone();
+	for (var attr in object) {
+		if(attr=='id') {
+			$row.find('[name=actions]').attr('id', object[attr])
+		}else{
+			$row.find('[name="'+attr+'"]').text(object[attr]);
+		}
+	}
+	return $row;
+}

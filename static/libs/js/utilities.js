@@ -1,3 +1,21 @@
+var $rowTemplate = $($('#objectList tr')[0]).clone();
+
+$(function () {
+	var delay;
+	$('#search').focus();
+
+	$('#loadSearchs').on('click', function (event) {
+		event.preventDefault();
+		search();
+	});
+
+	$('#search').on('keyup', function (event) {
+		clearTimeout(delay);
+		delay = setTimeout(search, 300);
+	});
+
+});
+
 var makeRequest = function (url, method, data, callback) {
 	var request = $.ajax({
         url: url,
@@ -147,4 +165,40 @@ var openModal = function (options) {
 	}
 
 	$('#objectModal').modal('show');
+}
+
+//Funcionalidad para busquedas
+var renderTable = function (data, page) {
+	var $table = $('#objectList');
+	if (!page) $table.children().remove();
+	for (var i = 0; i < data.length - 1; i++) {
+		var object = data[i];
+		$table.append(getRow(object));
+	}
+	addEventListenerOnEdit();
+	addEventListenerOnRemove();
+	if (data[data.length - 1].has_next) {
+		$('.load-searchs').show();
+		$('.load-searchs').attr('next-page', data[data.length - 1].next_page_number)
+	} else {
+		$('.load-searchs').hide();
+	}
+}
+
+var hidePagination = function () {
+	var $pagination = $('.section-pagination');
+	if ($pagination.is(':visible')) $pagination.hide();
+}
+
+var search = function () {
+	var page = $('.load-searchs').attr('next-page');
+	var keyword = $('#search').val();
+	var url = getUrl() + '?keyword=' + keyword;
+	if (!keyword) reloadPage();
+	if (page) url = url + '&page='+ page;
+	hidePagination();
+	$.get(url)
+	.then(function (data) {
+		renderTable(data, page);
+	});
 }

@@ -63,12 +63,20 @@
 			        	</a>
 			        </li>
 			    </ul>
-			    <ul class="nav navbar-nav navbar-right">
-			        <li>
-						<a href="/login">
-							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Iniciar sesión
-						</a>
-					</li>
+					<div class="navbar-form navbar-left" role="search">
+		        <div class="form-group">
+							<div class="inner-icon inner-icon-left">
+								<span class="glyphicon glyphicon-search"></span>
+								<input id="search" type="text" class="form-control" placeholder="Búsqueda">
+							</div>
+		        </div>
+		      </div>
+					<ul class="nav navbar-nav navbar-right">
+			      <li>
+							<a href="/login">
+								<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Iniciar sesión
+							</a>
+						</li>
 			    </ul>
 		    </div>
 	  	</div>
@@ -98,6 +106,9 @@
 		</section>
 		{% endif %}
 
+		<div class="load-searchs">
+			<a id="loadSearchs" href="#">Mostrar mas resultados</a>			
+		</div>
 
     <section class="modals">
 		<div id="objectModal" class="modal fade">
