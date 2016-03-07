@@ -1,22 +1,35 @@
 $(function () {
-	var id;	
+	var id;
+	initSelectPicker();
+	addEventListenerOnNew();
+	addEventListenerOnEdit();
+	addEventListenerOnRemove();
+	addEventListenerOnCreate();
+	addEventListenerOnUpdate();
+	addEventListenerOnDelete();
+	addEventChangeListenerOnType();
+});
 
-	var initilizeSelectPicker = function () {		
-		$('.selectpicker').selectpicker();
-	}
+var getUrl = function () {
+	return '/models/'
+}
 
-	initilizeSelectPicker();
+var initSelectPicker = function () {
+	$('.selectpicker').selectpicker();
+}
 
-
+var addEventListenerOnNew = function () {
 	$('.glyphicon-plus-sign').parent().on('click', function () {
-		$('#form-specifications').children().remove();	
+		$('#form-specifications').children().remove();
 		$('#form-suboptions').children().remove();
 		openModal()
 	});
+}
 
+var addEventListenerOnEdit = function () {
 	$('.glyphicon-pencil').parent().on('click', function () {
 		id = $(this).parent().attr('id');
-		$.get('/models/'+id, function (object) {
+		$.get(getUrl()+id+'/', function (object) {
 			for(attr in object.specifications) {
 				object[attr] = object.specifications[attr];
 			}
@@ -25,152 +38,175 @@ $(function () {
 			openModal({'object': object});
 		});
 	});
+}
 
+var addEventListenerOnRemove = function () {
 	$('.glyphicon-remove').parent().on('click', function () {
-		id = $(this).parent().attr('id');		
+		id = $(this).parent().attr('id');
 		$('#objectDeleteModal').modal('show');
 	});
+}
 
-	$('#btnSave').on('click', function () {		
+var addEventListenerOnCreate = function () {
+	$('#btnSave').on('click', function () {
 		var is_valid = validateForm();
 		if(!is_valid) return;
 		var data = getData($('#general'));
 		data['specifications'] = JSON.stringify(getData($('#specifications')));
-		makeRequest('/models/', 'POST', data, reloadPage);
+		makeRequest(getUrl(), 'POST', data, reloadPage);
 	});
+}
 
-	$('#btnEdit').on('click', function () {		
+var addEventListenerOnUpdate = function () {
+	$('#btnEdit').on('click', function () {
 		var is_valid = validateForm();
 		if(!is_valid) return;
 		var data = getData($('#general'));
 		data['specifications'] = JSON.stringify(getData($('#specifications')));
-		makeRequest('/models/'+id+'/', 'POST', data, reloadPage);
+		makeRequest(getUrl()+id+'/', 'POST', data, reloadPage);
 	});
+}
 
+var addEventListenerOnDelete = function () {
 	$('#btnDelete').on('click', function () {
-		makeRequest('/models/'+id+'/', 'DELETE', {}, reloadPage);
+		makeRequest(getUrl()+id+'/', 'DELETE', {}, reloadPage);
 	});
+}
 
+var addEventChangeListenerOnType = function () {
 	$('#inputType').on('change', function () {
-		renderSpecifications();		
+		renderSpecifications();
+	});
+}
+
+var reloadPage = function (data) {
+	$(location).attr('href', getUrl());
+}
+
+var renderSpecifications = function (object) {
+	var type = $('#inputType').val();
+
+	var request = $.get('/types/'+type+'/');
+
+	request
+	.then(function (data) {
+		var specifications = data.specifications;
+		var form = $('#form-specifications');
+		form.children().remove();
+
+		for (var i in specifications) {
+			var item = specifications[i];
+			if (item['for']==='model') {
+				var elements = getSpecificationElements(item['specification'], item['options']);
+				form.append(elements);
+				initSelectPicker();
+			}
+		}
+
+		if(object) setFormValues(object);
+	})
+	.then(function () {
+		return addEventChanceListener();
+	})
+	.then(function (selects) {
+		if(object) {
+			selects.trigger('change');
+			setFormValues(object);
+		}
+	});
+}
+
+var addEventChanceListener = function () {
+	var selects = $('#form-specifications').find('[type=select]');
+
+	selects.on('change', function () {
+		var form = $('#form-suboptions');
+		var value = $(this).val();
+		if (value) {
+			var option = $(this).find('option[value='+value+']');
+			var str = option.attr('suboptions').trim();
+			if(str) {
+				form.children().remove();
+				var suboptions = str.split(',');
+				for (var i in suboptions) {
+					form.append(getTextElement(suboptions[i]));
+				}
+			}
+		}else{
+			form.children().remove();
+		}
 	});
 
-	var renderSpecifications = function (object) {
-		var type = $('#inputType').val();		
-
-		var request = $.get('/types/'+type+'/');
-
-	    request
-	    .then(function (data) {	    	
-	    	var specifications = data.specifications;
-	    	var form = $('#form-specifications');
-			form.children().remove();			
-
-	    	for (var i in specifications) {
-	    		var item = specifications[i];
-	    		if (item['for']==='model') {
-	    			var elements = getSpecificationElements(item['specification'], item['options']);
-	    			form.append(elements);
-	    			initilizeSelectPicker();	    			
- 	    		}
-	    	}
-	    	
-	    	if(object) setFormValues(object);   	
-	    })
-	    .then(function () {
-	    	return addEventChanceListener();
-	    })
-	    .then(function (selects) {
-	    	if(object) {
-		    	selects.trigger('change');
-		    	setFormValues(object);	    		
-	    	}
-	    });
-	}
-
-	var addEventChanceListener = function () {		
-		var selects = $('#form-specifications').find('[type=select]');
-
-		selects.on('change', function () {
-			var form = $('#form-suboptions');
-			var value = $(this).val();						
-			if (value) {
-				var option = $(this).find('option[value='+value+']');
-				var str = option.attr('suboptions').trim();
-				if(str) {
-					form.children().remove();
-					var suboptions = str.split(',');
-					for (var i in suboptions) {
-						form.append(getTextElement(suboptions[i]));
-					}
-				}				
-			}else{
-				form.children().remove();
-			}
-		});
-
-		return selects;
-	}
+	return selects;
+}
 
 
-	var getSpecificationElements = function (specification, options) {
-		if(specification.length < 1) return;
+var getSpecificationElements = function (specification, options) {
+	if(specification.length < 1) return;
 
-		if(specification.length > 1) {
-			var array = [];
-			for(var i in specification) {
-				array.push(getTextElement(specification[i]));
-			}
-			return array;
+	if(specification.length > 1) {
+		var array = [];
+		for(var i in specification) {
+			array.push(getTextElement(specification[i]));
+		}
+		return array;
+	}else{
+		if(options.length < 1) {
+			return getTextElement(specification[0]);
 		}else{
-			if(options.length < 1) {
-				return getTextElement(specification[0]);
-			}else{						
-				return getSelectElement(specification[0], options);
-			}
+			return getSelectElement(specification[0], options);
 		}
 	}
+}
 
-	var getTextElement = function (name) {
-		var template =  '<div class="form-group">'+
-						    '<label for="input'+name.capitalize()+'" class="col-md-2 control-label">'+name.capitalize()+'</label>'+
-						    '<div class="col-md-10">'+
-						        '<input id="input'+name.capitalize()+'" name="'+name+'" type="text" class="form-control" req="true">'+
-						    '</div>'+
-						'</div>'
+var getTextElement = function (name) {
+	var template =  '<div class="form-group">'+
+											'<label for="input'+name.capitalize()+'" class="col-md-2 control-label">'+name.capitalize()+'</label>'+
+											'<div class="col-md-10">'+
+													'<input id="input'+name.capitalize()+'" name="'+name+'" type="text" class="form-control" req="true">'+
+											'</div>'+
+									'</div>';
 
-		return template;
+	return template;
+}
+
+var getSelectElement = function (name, options) {
+	var template = '';
+	var optionElements = '';
+	var is_object = options[0] instanceof Object;
+
+	for (var i in options) {
+		var option = is_object?options[i]['name']:options[i];
+		var suboptions = is_object?options[i]['suboptions'].toString():'';
+		optionElements = optionElements + getItemSelectElement(option, suboptions);
 	}
 
-	var getSelectElement = function (name, options) {				
-		var template = '';
-		var optionElements = '';
-		var is_object = options[0] instanceof Object;		
+	template =  '<div class="form-group">'+
+									'<label for="input'+name.capitalize()+'" class="col-md-2 control-label">'+name.capitalize()+'</label>'+
+									'<div class="col-md-10">'+
+											'<select id="input'+name.capitalize()+'" name="'+name+'" type="select" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">'+
+												'<option value="">--- Seleccionar ---</option>'+
+										optionElements+
+											'</select>'+
+									'</div>'+
+							'</div>';
+	return template;
+}
 
-		for (var i in options) {
-			var option = is_object?options[i]['name']:options[i];
-			var suboptions = is_object?options[i]['suboptions'].toString():'';
-			optionElements = optionElements + getItemSelectElement(option, suboptions);
+var getItemSelectElement = function (name, suboptions) {
+	var template = '<option suboptions="'+suboptions+'" value="'+name.capitalize()+'">'+name.capitalize()+'</option>';
+	return template;
+}
+
+//Funcionalidad para busquedas
+var getRow = function (object) {
+	var $row = $rowTemplate.clone();
+	for (var attr in object) {
+		if(attr=='id') {
+			$row.find('[name=actions]').attr('id', object[attr])
+		}else{
+			$row.find('[name="'+attr+'"]').text(object[attr]);
 		}
-		
-		template =  '<div class="form-group">'+
-					    '<label for="input'+name.capitalize()+'" class="col-md-2 control-label">'+name.capitalize()+'</label>'+
-					    '<div class="col-md-10">'+
-					        '<select id="input'+name.capitalize()+'" name="'+name+'" type="select" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">'+
-					        	'<option value="">--- Seleccionar ---</option>'+
-								optionElements+						        	
-					        '</select>'+
-					    '</div>'+
-					'</div>';
-		return template;
 	}
-
-	var getItemSelectElement = function (name, suboptions) {
-		var template = '<option suboptions="'+suboptions+'" value="'+name.capitalize()+'">'+name.capitalize()+'</option>';
-		return template;
-	}
-
-	var reloadPage = function (data) {
-		$(location).attr('href', '/models/');
-	}
-});
+	return $row;
+}

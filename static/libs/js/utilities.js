@@ -10,6 +10,7 @@ $(function () {
 	});
 
 	$('#search').on('keyup', function (event) {
+		$('.load-searchs').removeAttr('next-page');
 		clearTimeout(delay);
 		delay = setTimeout(search, 300);
 	});
@@ -75,7 +76,7 @@ var resetFormValues = function () {
 
 var setFormValues = function (object) {
 	for(name in object) {
-		var $field = $('[name="'+name+'"]');
+		var $field = $('[id*=input][name="'+name+'"]');
 		var type = $field.attr('type');
 		if(type==='radio') {
 			var radio = $field.find("input[value='"+object[name]+"']");

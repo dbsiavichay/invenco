@@ -126,21 +126,6 @@ class ModelListView(ListView):
 
 	def get(self, request, *args, **kwargs):
 		if request.is_ajax():
-			keyword = request.GET.get('keyword', None)
-			num_page = request.GET.get('page', None)
-			list = self.model.objects.filter(name__icontains=keyword)
-			paginator = Paginator(list, self.paginate_by)
-			page = paginator.page(num_page) if num_page is not None else paginator.page(1)
-			object_list = page.object_list
-			data = [model_to_dict(object) for object in object_list]
-			data.append({
-				'has_next': page.has_next(),
-				'next_page_number': page.next_page_number() if page.has_next() else -1
-			})
-			return JsonResponse(data, safe=False)
-
-	def get(self, request, *args, **kwargs):
-		if request.is_ajax():
 			type = request.GET.get('type', None)
 			keyword = request.GET.get('keyword', None)
 			num_page = request.GET.get('page', None)
@@ -153,11 +138,11 @@ class ModelListView(ListView):
 					list.append(dict)
 				return JsonResponse(list, safe=False)
 			elif keyword is not None:
-				objects = self.model.objects.filter(name__icontains=keyword)
+				objects = self.model.objects.filter(Q(name__icontains=keyword)|Q(type__name__icontains=keyword)|Q(trademark__name__icontains=keyword))
 				paginator = Paginator(objects, self.paginate_by)
 				page = paginator.page(num_page) if num_page is not None else paginator.page(1)
 				object_list = page.object_list
-				data = [model_to_dict(object) for object in object_list]
+				data = [{'id': object.id,  'name':object.name, 'type': object.type.name, 'trademark': object.trademark.name,} for object in object_list]
 				data.append({
 					'has_next': page.has_next(),
 					'next_page_number': page.next_page_number() if page.has_next() else -1
