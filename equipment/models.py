@@ -21,6 +21,9 @@ class Type(models.Model):
 	is_part = models.BooleanField(default=False)
 	specifications = JsonField(blank=True, null=True)
 
+	def get_specifications(self):
+		return ast.literal_eval(json.dumps(self.specifications))
+
 	def __unicode__(self):
 		return self.name
 
@@ -58,6 +61,29 @@ class Device(models.Model):
 	def get_state_icon(self):
 		icon = 'ok-sign' if self.state == '1' else 'minus-sign' if self.state == '2' else 'remove-sign'
 		return icon
+
+	def get_timeuntil(self):
+		if self.date_warranty is None:
+			return ''
+
+		now = date.today()
+		delta = self.date_warranty - now
+
+		if delta.days <= 0:
+			return 'Garantia vencida'
+
+		dmonts = delta.days/30
+		days = delta.days%30
+		if dmonts == 0:
+			return '%s dias' % (days)
+
+		years = dmonts/12
+		months = dmonts%12
+
+		if years == 0:
+			return u'%s meses %s dias' % (months, days)
+
+		return u'%s a\xf1os, %s meses %s dias' % (years, months, days)
 
 	def __unicode__(self):
 		return '%s | %s' % (self.model, self.code)
