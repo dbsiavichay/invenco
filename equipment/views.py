@@ -268,6 +268,7 @@ class DeviceListView(ListView):
 				object_list = page.object_list
 				data = [{'id':object.id, 'model': str(object.model), 'code': object.code,
 					'provider': '%s | %s' % (str(object.provider), object.invoice) if object.provider else '',
+					'state': object.get_state_icon(),
 					'date_warranty': object.get_timeuntil()} for object in object_list]
 				data.append({
 					'has_next': page.has_next(),

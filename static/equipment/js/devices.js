@@ -239,6 +239,12 @@ var getRow = function (object) {
 	for (var attr in object) {
 		if(attr=='id') {
 			$row.find('[name=actions]').attr('id', object[attr])
+		} else if (attr == 'state') {
+			var $icon = $row.find('.glyphicon[name=state]');
+			if ($icon.hasClass('glyphicon-ok-sign')) $icon.removeClass('glyphicon-ok-sign');
+			if ($icon.hasClass('glyphicon-minus-sign')) $icon.removeClass('glyphicon-minus-sign');
+			if ($icon.hasClass('glyphicon-remove-sign')) $icon.removeClass('glyphicon-remove-sign')
+			$icon.addClass(object['state']);
 		}else{
 			$row.find('[name="'+attr+'"]').text(object[attr]);
 		}

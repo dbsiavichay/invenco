@@ -201,5 +201,8 @@ var search = function () {
 	$.get(url)
 	.then(function (data) {
 		renderTable(data, page);
+	})
+	.fail(function (error) {
+		console.log(error)
 	});
 }

@@ -59,7 +59,7 @@ class Device(models.Model):
 	date_warranty = models.DateField(blank=True, null=True, verbose_name='Garantia')
 
 	def get_state_icon(self):
-		icon = 'ok-sign' if self.state == '1' else 'minus-sign' if self.state == '2' else 'remove-sign'
+		icon = 'glyphicon-ok-sign' if self.state == '1' else 'glyphicon-minus-sign' if self.state == '2' else 'glyphicon-remove-sign'
 		return icon
 
 	def get_timeuntil(self):

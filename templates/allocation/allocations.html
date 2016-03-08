@@ -20,15 +20,15 @@
 					<th>Acciones</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id="objectList">
 				{% for allo in object_list %}
 				<tr>
-					<td class="col-xs-3">{{ allo.device.model }}</td>
-					<td class="col-xs-1">{{ allo.device.code }}</td>
-					<td class="col-xs-1"><span class="glyphicon glyphicon-{{ allo.device.get_state_icon }}" aria-hidden="true"></span></td>
-					<td class="col-xs-3">{{ allo.location }}</td>
-					<td class="col-xs-2">{{ allo.responsible }}</td>
-					<td id="{{ allo.id }}" class="col-xs-2">
+					<td name="model" class="col-xs-3">{{ allo.device.model }}</td>
+					<td name="code" class="col-xs-1">{{ allo.device.code }}</td>
+					<td name="state" class="col-xs-1"><span class="glyphicon {{ allo.device.get_state_icon }}" aria-hidden="true"></span></td>
+					<td name="location" class="col-xs-3">{{ allo.location }}</td>
+					<td name="responsible" class="col-xs-2">{{ allo.responsible }}</td>
+					<td id="{{ allo.id }}" name="actions" class="col-xs-2">
 						<button class="btn btn-sm btn-default btn-transfer">
 							<span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
 						</button>
