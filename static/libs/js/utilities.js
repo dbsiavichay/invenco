@@ -1,7 +1,6 @@
 var $rowTemplate = $($('#objectList tr')[0]).clone();
 
 $(function () {
-	var delay;
 	$('#search').focus();
 
 	$('#loadSearchs').on('click', function (event) {
@@ -10,9 +9,9 @@ $(function () {
 	});
 
 	$('#search').on('keyup', function (event) {
+		if(event.keyCode != 13) return;
 		$('.load-searchs').removeAttr('next-page');
-		clearTimeout(delay);
-		delay = setTimeout(search, 300);
+		search();
 	});
 
 });

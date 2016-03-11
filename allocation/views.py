@@ -6,7 +6,7 @@ from django.forms.models import modelform_factory
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
-from organization.models import Department, Employee
+from organization.models import Department, Section, Employee
 from equipment.models import Type
 from .models import Allocation
 
@@ -14,7 +14,7 @@ class AllocationListView(ListView):
 	model = Allocation
 	template_name = 'allocation/allocations.html'
 	queryset = model.objects.filter(is_active=True)
-	paginate_by = 10
+	paginate_by = 20
 
 	def get_context_data(self, **kwargs):
 		context = super(AllocationListView, self).get_context_data(**kwargs)
@@ -42,15 +42,19 @@ class AllocationListView(ListView):
 					list.append(dict)
 				return JsonResponse(list, safe=False)
 			elif keyword is not None:
+				employees = [emp['contributor__charter'] for emp in Employee.objects.values('contributor__charter').using('sim').filter(contributor__name__icontains=keyword)]
+				departments = [dep['code'] for dep in Department.objects.values('code').using('sim').filter(name__icontains=keyword)]
+				areas = [are['code'] for are in Section.objects.values('code').using('sim').filter(name__icontains=keyword)]
 				list = self.queryset.filter(Q(device__model__name__icontains=keyword) |
 					Q(device__model__specifications__icontains=keyword) | Q(device__model__type__name__icontains=keyword) |
-					Q(device__model__trademark__name__icontains=keyword) | Q(device__code__icontains=keyword))
+					Q(device__model__trademark__name__icontains=keyword) | Q(device__code__icontains=keyword) |
+					Q(employee__in=employees) | Q(department__in=departments) | Q(area__in=areas))
 				paginator = Paginator(list, self.paginate_by)
 				page = paginator.page(num_page) if num_page is not None else paginator.page(1)
 				object_list = page.object_list
 				data = [{'id':object.id, 'model': str(object.device.model), 'code': object.device.code,
 					'state': object.device.get_state_icon(),
-					'location': object.location(), 'reponsible': object.responsible()} for object in object_list]
+					'location': object.location(), 'responsible': object.responsible()} for object in object_list]
 				data.append({
 					'has_next': page.has_next(),
 					'next_page_number': page.next_page_number() if page.has_next() else -1

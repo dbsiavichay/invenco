@@ -209,7 +209,7 @@ class ModelDetailView(DetailView):
 class DeviceListView(ListView):
 	model = Device
 	template_name = 'equipment/devices.html'
-	paginate_by = 10
+	paginate_by = 20
 
 	def get_context_data(self, **kwargs):
 		context = super(DeviceListView, self).get_context_data(**kwargs)
