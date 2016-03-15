@@ -1,5 +1,6 @@
 from django.db import connection
 from equipment.models import Type, Device
+from organization.models import Department
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
@@ -9,6 +10,7 @@ from reportlab.lib.units import cm
 from io import BytesIO
 
 def get_pdf(options):
+	departments=Department.objects.using('sim').all().exclude(name__icontains='jubilados')
 	buff = BytesIO()
 	doc = SimpleDocTemplate(buff, pagesize=landscape(A4), rightMargin=40, leftMargin=40, topMargin=20, bottomMargin=20,)
 	styles = getSampleStyleSheet()
@@ -18,34 +20,47 @@ def get_pdf(options):
 	for option in options:
 		if 'pc' in option.lower():
 			report.append(Paragraph("Pc's", styles['Heading2']))
-			report.append(get_table_pcs())
-
+			for department in departments:
+				report.append(Paragraph(department.name, styles['Heading4']))
+				report.append(get_table_pcs(department.code))
 			report.append(Paragraph("Informacion adicional de pc's", styles['Heading2']))
 			report.append(get_table_pcs_stats())
 		elif 'monitor' in option.lower():
 			report.append(Paragraph("Monitores", styles['Heading2']))
-			report.append(get_table_displays())
+			for department in departments:
+				report.append(Paragraph(department.name, styles['Heading4']))
+				report.append(get_table_displays(department.code))
 		elif 'mouse' in option.lower():
 			report.append(Paragraph("Mouses", styles['Heading2']))
-			report.append(get_table_mouses())
+			for department in departments:
+				report.append(Paragraph(department.name, styles['Heading4']))
+				report.append(get_table_mouses(department.code))
 		elif 'teclado' in option.lower():
 			report.append(Paragraph("Teclados", styles['Heading2']))
-			report.append(get_table_keyboards())
+			for department in departments:
+				report.append(Paragraph(department.name, styles['Heading4']))
+				report.append(get_table_keyboards(department.code))
 		elif 'regulador' in option.lower():
 			report.append(Paragraph("Reguladores", styles['Heading2']))
-			report.append(get_table_regulators())
+			for department in departments:
+				report.append(Paragraph(department.name, styles['Heading4']))
+				report.append(get_table_regulators(department.code))
 		elif 'impresora' in option.lower():
 			report.append(Paragraph("Impresoras", styles['Heading2']))
-			report.append(get_table_printers())
+			for department in departments:
+				report.append(Paragraph(department.name, styles['Heading4']))
+				report.append(get_table_printers(department.code))
 		else:
-			report.append(Paragraph("Scanners", styles['Heading2']))
-			report.append(get_table_scanners())
+			report.append(Paragraph("Escanners", styles['Heading2']))
+			for department in departments:
+				report.append(Paragraph(department.name, styles['Heading4']))
+				report.append(get_table_scanners(department.code))
 
 	doc.build(report)
 	return buff.getvalue()
 
-def get_table_pcs():
-	data = Device.objects.filter(model__type__name__icontains = 'pc')
+def get_table_pcs(department):
+	data = Device.objects.filter(model__type__name__icontains = 'pc', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.7*cm, 0.8*cm, 1*cm,
 					1.2*cm, 1.2*cm, 1.5*cm, 1*cm, 1.4*cm, 1.3*cm, 1*cm, 1*cm,
@@ -119,8 +134,8 @@ def get_table_pcs_stats():
 	table = get_table(headings, content, columns_width)
 	return table
 
-def get_table_printers():
-	data = Device.objects.filter(model__type__name__icontains = 'impresora')
+def get_table_printers(department):
+	data = Device.objects.filter(model__type__name__icontains = 'impresora', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.5*cm, 1.4*cm, 1*cm,
 					1.2*cm, 1.2*cm, 1.5*cm, 1.4*cm, 1*cm, 1.1*cm, 1.2*cm, 1.2*cm,
@@ -148,8 +163,8 @@ def get_table_printers():
 	table = get_table(headings, content, columns_width)
 	return table
 
-def get_table_displays():
-	data = Device.objects.filter(model__type__name__icontains = 'monitor')
+def get_table_displays(department):
+	data = Device.objects.filter(model__type__name__icontains = 'monitor', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.1*cm, 1.4*cm, 1*cm,
 					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
@@ -170,8 +185,8 @@ def get_table_displays():
 	table = get_table(headings, content, columns_width)
 	return table
 
-def get_table_mouses():
-	data = Device.objects.filter(model__type__name__icontains = 'mouse')
+def get_table_mouses(department):
+	data = Device.objects.filter(model__type__name__icontains = 'mouse', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.2*cm, 1*cm,
 					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
@@ -191,8 +206,8 @@ def get_table_mouses():
 	table = get_table(headings, content, columns_width)
 	return table
 
-def get_table_keyboards():
-	data = Device.objects.filter(model__type__name__icontains = 'teclado')
+def get_table_keyboards(department):
+	data = Device.objects.filter(model__type__name__icontains = 'teclado', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.2*cm, 1*cm,
 					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
@@ -212,8 +227,8 @@ def get_table_keyboards():
 	table = get_table(headings, content, columns_width)
 	return table
 
-def get_table_regulators():
-	data = Device.objects.filter(model__type__name__icontains = 'regulador')
+def get_table_regulators(department):
+	data = Device.objects.filter(model__type__name__icontains = 'regulador', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1*cm,
 					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
@@ -232,8 +247,8 @@ def get_table_regulators():
 	table = get_table(headings, content, columns_width)
 	return table
 
-def get_table_scanners():
-	data = Device.objects.filter(model__type__name__icontains = 'scan')
+def get_table_scanners(department):
+	data = Device.objects.filter(model__type__name__icontains = 'scan', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
 
 	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1*cm,
 					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)

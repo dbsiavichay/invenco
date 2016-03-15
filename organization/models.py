@@ -7,6 +7,7 @@ class Department(models.Model):
     class Meta:
         managed = False
         db_table = 'departamentos'
+        ordering = ['name',]
 
 class Section(models.Model):
     department = models.ForeignKey(Department, db_column='coddepar')
@@ -16,6 +17,7 @@ class Section(models.Model):
     class Meta:
         managed = False
         db_table = 'secciones'
+        ordering = ['name',]
 
 class Contributor(models.Model):
     charter = models.CharField(primary_key=True, max_length=15, db_column='ctrcedula')

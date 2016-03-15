@@ -4,7 +4,7 @@ from organization.models import Contributor, Department, Section
 
 class Allocation(models.Model):
 	class Meta:
-		ordering = ['device',]
+		ordering = ['department', 'area']
 
 	employee = models.CharField(max_length=16)
 	department = models.FloatField()
