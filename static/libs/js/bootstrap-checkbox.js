@@ -57,7 +57,7 @@ $(function () {
             var $btn = $('#genpdf');
             var $boxes = $("#check-list-box li.active");
             $boxes.each(function (index, elem) {
-              url+= $(elem).text()+',';
+              url+= $(elem).attr('key')+',';
             });
 
             url = url.substring(0, url.length -1).toLowerCase();

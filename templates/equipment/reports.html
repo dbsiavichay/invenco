@@ -7,7 +7,7 @@
     <div id="check-list-box" class="report">
 			<ul class="list-group checked-list-box">
 				{% for type in object_list %}
-				<li class="list-group-item">{{type.name|upper}}</li>
+				<li class="list-group-item" key="{{ type.id }}">{{type.name|upper}}</li>
 				{% endfor %}
 			</ul>
     </div>

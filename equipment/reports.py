@@ -9,7 +9,7 @@ from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER
 from reportlab.lib.units import cm
 from io import BytesIO
 
-def get_pdf(options):
+def get_pdf(options, type):
 	departments=Department.objects.using('sim').all().exclude(name__icontains='jubilados')
 	buff = BytesIO()
 	doc = SimpleDocTemplate(buff, pagesize=landscape(A4), rightMargin=40, leftMargin=40, topMargin=20, bottomMargin=20,)
@@ -18,81 +18,109 @@ def get_pdf(options):
 	report.append(Paragraph("Reporte de equipos registrados", styles['Title']))
 
 	for option in options:
-		if 'pc' in option.lower():
-			report.append(Paragraph("Pc's", styles['Heading2']))
-			for department in departments:
-				report.append(Paragraph(department.name, styles['Heading4']))
-				report.append(get_table_pcs(department.code))
+		t = Type.objects.get(pk=option)
+		report.append(Paragraph(t.name.capitalize(), styles['Heading2']))
+		for department in departments:
+			values = Device.objects.filter(model__type = t, allocation__is_active=True, allocation__department=department.code).order_by('allocation__area')
+
+			report.append(Paragraph(department.name, styles['Heading4']))
+			headings = get_table_headings(Device, t)
+			data = get_table_content(values, t) if len(values) > 0 else []
+			columns_width = [s*cm for s in t.get_print_sizes()]
+
+			report.append(get_table(headings, data, columns_width))
+
+		if 'pc' in t.name.lower():
 			report.append(Paragraph("Informacion adicional de pc's", styles['Heading2']))
-			report.append(get_table_pcs_stats())
-		elif 'monitor' in option.lower():
-			report.append(Paragraph("Monitores", styles['Heading2']))
-			for department in departments:
-				report.append(Paragraph(department.name, styles['Heading4']))
-				report.append(get_table_displays(department.code))
-		elif 'mouse' in option.lower():
-			report.append(Paragraph("Mouses", styles['Heading2']))
-			for department in departments:
-				report.append(Paragraph(department.name, styles['Heading4']))
-				report.append(get_table_mouses(department.code))
-		elif 'teclado' in option.lower():
-			report.append(Paragraph("Teclados", styles['Heading2']))
-			for department in departments:
-				report.append(Paragraph(department.name, styles['Heading4']))
-				report.append(get_table_keyboards(department.code))
-		elif 'regulador' in option.lower():
-			report.append(Paragraph("Reguladores", styles['Heading2']))
-			for department in departments:
-				report.append(Paragraph(department.name, styles['Heading4']))
-				report.append(get_table_regulators(department.code))
-		elif 'impresora' in option.lower():
-			report.append(Paragraph("Impresoras", styles['Heading2']))
-			for department in departments:
-				report.append(Paragraph(department.name, styles['Heading4']))
-				report.append(get_table_printers(department.code))
-		else:
-			report.append(Paragraph("Escanners", styles['Heading2']))
-			for department in departments:
-				report.append(Paragraph(department.name, styles['Heading4']))
-				report.append(get_table_scanners(department.code))
+			report.append(get_pc_stats())
 
 	doc.build(report)
 	return buff.getvalue()
 
-def get_table_pcs(department):
-	data = Device.objects.filter(model__type__name__icontains = 'pc', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
+def get_table_headings(model_obj, type):
+	headings = []
 
-	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.7*cm, 0.8*cm, 1*cm,
-					1.2*cm, 1.2*cm, 1.5*cm, 1*cm, 1.4*cm, 1.3*cm, 1*cm, 1*cm,
-					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
+	for field in model_obj._meta.fields:
+		if field.name.lower() != 'id':
+			if field.get_internal_type() != 'JsonField':
+				headings.append(field.verbose_name)
+			else:
+				values = get_specifications_headings(type.specifications)
+				for val in values: headings.append(val)
 
-	headings = ['Modelo', 'Proveedor', 'Codigo', 'Serie', 'Parte', 'Procesador',
-				'Disco', 'Ram', 'Unidad Optica', 'Unidad Lectora', 'Sistema Operativo',
-				'Bits', 'Ip', 'Usuario', 'Acceso Remoto', 'Estado',
-				'Factura', 'Compra', 'Garantia', 'Ubicacion', 'Responsable']
+	headings+=['Ubicacion', 'Responsable']
+	return headings
 
-	content = [[d.model.__unicode__() if d.model is not None else '',
-				d.provider.__unicode__() if d.provider is not None else '', d.code, d.serial, d.part,
-				d.specifications['Procesador'] if d.specifications.has_key('Procesador') else '...',
-				d.specifications['Disco']if d.specifications.has_key('Disco') else '...',
-				d.specifications['Ram'] if d.specifications.has_key('Ram') else '...',
-				d.specifications['Unidad Optica'] if d.specifications.has_key('Unidad Optica') else '...',
-				d.specifications['Unidad Lectora'] if d.specifications.has_key('Unidad Lectora') else '...',
-				d.specifications['Sistema Operativo'] if d.specifications.has_key('Sistema Operativo') else '...',
-				d.specifications['Bits'] if d.specifications.has_key('Bits') else '...',
-				d.specifications['Ip'] if d.specifications.has_key('Ip') else '...',
-				d.specifications['Usuario'].lower() if d.specifications.has_key('Usuario') else '...',
-				d.specifications['Acceso Remoto'] if d.specifications.has_key('Acceso Remoto') else '...',
-				d.state, d.invoice,
-				d.date_purchase.__str__() if d.date_purchase is not None else '',
-				d.date_warranty.__str__() if d.date_purchase is not None else '',
-				d.allocation_set.filter(is_active=True)[0].short_location()[:40] if len(d.allocation_set.filter(is_active=True)) > 0 else 'N/A',
-				d.allocation_set.filter(is_active=True)[0].short_responsible() if len(d.allocation_set.filter(is_active=True)) > 0 else 'No asignado'] for d in data]
+def get_specifications_headings(object_keys):
+	values = []
+	object_keys = sorted(object_keys, key = lambda k: k['for'], reverse=True)
 
-	table = get_table(headings, content, columns_width)
+	for item in object_keys:
+		keys = item['specification']
+
+		for key in keys:
+			if str(key) not in values:
+				values.append(str(key))
+
+		options = item['options']
+		for option in options:
+			if type(option).__name__ == 'dict':
+				suboptions = option['suboptions']
+				for suboption in suboptions:
+					if str(suboption) not in values:
+						values.append(str(suboption))
+
+	return values
+
+def get_table_content(object_list, type):
+	rows = []
+	specification_keys = get_specifications_headings(type.specifications)
+
+	for object in object_list:
+		row = []
+		for field in object._meta.fields:
+			if field.name.lower() != 'id':
+				if field.get_internal_type() != 'JsonField':
+					val = object.__getattribute__(field.name)
+					row.append(str(val) if val is not None else '')
+				else:
+					for key in specification_keys:
+						if object.model.specifications.has_key(key):
+							row.append(str(object.model.specifications[key]))
+						elif object.specifications.has_key(key):
+							row.append(str(object.specifications[key]))
+						else:
+							row.append('')
+		allocations = object.allocation_set.filter(is_active=True)
+		row.append(allocations[0].short_location()[:30] if len(allocations) > 0 else '')
+		row.append(allocations[0].short_responsible() if len(allocations) > 0 else 'Sin asignar')
+		rows.append(row)
+	return rows
+
+def get_table(headings, data, columns_width):
+	styles = getSampleStyleSheet()
+
+	headingStyle = styles['Heading5']
+	headingStyle.fontSize = 6
+	headingStyle.bulletFontSize = 1
+
+	contentStyle = styles['BodyText']
+	contentStyle.fontSize = 5
+
+	headings = [Paragraph(h, headingStyle) for h in headings]
+	content = [[Paragraph(cell, contentStyle) for cell in row] for row in data]
+
+	table = Table([headings]+content, columns_width)
+	table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+							('LEFTPADDING',(0,0),(-1,-1), 3),
+							('RIGHTPADDING',(0,0),(-1,-1), 3),
+							('BOX', (0, 0), (-1, -1), 0.5, colors.black),
+							('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+							('BACKGROUND', (0, 0), (-1, 0), colors.gray)]))
+
 	return table
 
-def get_table_pcs_stats():
+def get_pc_stats():
 	stats = []
 	content = []
 	count = 0
@@ -132,226 +160,4 @@ def get_table_pcs_stats():
 	headings = ['Sistema', 'Arquitectura', 'Cantidad', ]
 
 	table = get_table(headings, content, columns_width)
-	return table
-
-def get_table_printers(department):
-	data = Device.objects.filter(model__type__name__icontains = 'impresora', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
-
-	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.5*cm, 1.4*cm, 1*cm,
-					1.2*cm, 1.2*cm, 1.5*cm, 1.4*cm, 1*cm, 1.1*cm, 1.2*cm, 1.2*cm,
-					2*cm, 1.6*cm,)
-
-	headings = ['Modelo', 'Proveedor', 'Codigo', 'Serie', 'Parte', 'Tipo', 'Suministro',
-	 			'Negro', 'Cyan', 'Magenta', 'Amarillo', 'Ip', 'Estado',
-				'Factura', 'Compra', 'Garantia', 'Ubicacion', 'Responsable']
-
-	content = [[d.model.__unicode__() if d.model is not None else '',
-				d.provider.__unicode__() if d.provider is not None else '', d.code, d.serial, d.part,
-				d.model.specifications['Tipo'] if d.model.specifications.has_key('Tipo') else '...',
-				d.model.specifications['Suministro']if d.model.specifications.has_key('Suministro') else '...',
-				d.model.specifications['Cart. Negro'] if d.model.specifications.has_key('Cart. Negro') else '...',
-				d.model.specifications['Cart. Cyan'] if d.model.specifications.has_key('Cart. Cyan') else '...',
-				d.model.specifications['Cart. Magenta'] if d.model.specifications.has_key('Cart. Magenta') else '...',
-				d.model.specifications['Cart. Amarillo'] if d.model.specifications.has_key('Cart. Amarillo') else '...',
-				d.specifications['Ip'] if d.specifications.has_key('Ip') else '...',
-				d.state, d.invoice,
-				d.date_purchase.__str__() if d.date_purchase is not None else '',
-				d.date_warranty.__str__() if d.date_purchase is not None else '',
-				d.allocation_set.filter(is_active=True)[0].short_location()[:40] if len(d.allocation_set.filter(is_active=True)) > 0 else 'N/A',
-				d.allocation_set.filter(is_active=True)[0].short_responsible() if len(d.allocation_set.filter(is_active=True)) > 0 else 'No asignado'] for d in data]
-
-	table = get_table(headings, content, columns_width)
-	return table
-
-def get_table_displays(department):
-	data = Device.objects.filter(model__type__name__icontains = 'monitor', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
-
-	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.1*cm, 1.4*cm, 1*cm,
-					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
-
-	headings = ['Modelo', 'Proveedor', 'Codigo', 'Serie', 'Parte', 'Tipo', 'Dimension', 'Estado',
-				'Factura', 'Compra', 'Garantia', 'Ubicacion', 'Responsable']
-
-	content = [[d.model.__unicode__() if d.model is not None else '',
-				d.provider.__unicode__() if d.provider is not None else '', d.code, d.serial, d.part,
-				d.model.specifications['Tipo'] if d.model.specifications.has_key('Tipo') else '...',
-				d.model.specifications['Dimension']if d.model.specifications.has_key('Dimension') else '...',
-				d.state, d.invoice,
-				d.date_purchase.__str__() if d.date_purchase is not None else '',
-				d.date_warranty.__str__() if d.date_purchase is not None else '',
-				d.allocation_set.filter(is_active=True)[0].short_location()[:40] if len(d.allocation_set.filter(is_active=True)) > 0 else 'N/A',
-				d.allocation_set.filter(is_active=True)[0].short_responsible() if len(d.allocation_set.filter(is_active=True)) > 0 else 'No asignado'] for d in data]
-
-	table = get_table(headings, content, columns_width)
-	return table
-
-def get_table_mouses(department):
-	data = Device.objects.filter(model__type__name__icontains = 'mouse', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
-
-	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.2*cm, 1*cm,
-					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
-
-	headings = ['Modelo', 'Proveedor', 'Codigo', 'Serie', 'Parte', 'Conector', 'Estado',
-				'Factura', 'Compra', 'Garantia', 'Ubicacion', 'Responsable']
-
-	content = [[d.model.__unicode__() if d.model is not None else '',
-				d.provider.__unicode__() if d.provider is not None else '', d.code, d.serial, d.part,
-				d.model.specifications['Conector'] if d.model.specifications.has_key('Conector') else '...',
-				d.state, d.invoice,
-				d.date_purchase.__str__() if d.date_purchase is not None else '',
-				d.date_warranty.__str__() if d.date_purchase is not None else '',
-				d.allocation_set.filter(is_active=True)[0].short_location()[:40] if len(d.allocation_set.filter(is_active=True)) > 0 else 'N/A',
-				d.allocation_set.filter(is_active=True)[0].short_responsible() if len(d.allocation_set.filter(is_active=True)) > 0 else 'No asignado'] for d in data]
-
-	table = get_table(headings, content, columns_width)
-	return table
-
-def get_table_keyboards(department):
-	data = Device.objects.filter(model__type__name__icontains = 'teclado', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
-
-	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1.2*cm, 1*cm,
-					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
-
-	headings = ['Modelo', 'Proveedor', 'Codigo', 'Serie', 'Parte', 'Conector', 'Estado',
-				'Factura', 'Compra', 'Garantia', 'Ubicacion', 'Responsable']
-
-	content = [[d.model.__unicode__() if d.model is not None else '',
-				d.provider.__unicode__() if d.provider is not None else '', d.code, d.serial, d.part,
-				d.model.specifications['Conector'] if d.model.specifications.has_key('Conector') else '...',
-				d.state, d.invoice,
-				d.date_purchase.__str__() if d.date_purchase is not None else '',
-				d.date_warranty.__str__() if d.date_purchase is not None else '',
-				d.allocation_set.filter(is_active=True)[0].short_location()[:40] if len(d.allocation_set.filter(is_active=True)) > 0 else 'N/A',
-				d.allocation_set.filter(is_active=True)[0].short_responsible() if len(d.allocation_set.filter(is_active=True)) > 0 else 'No asignado'] for d in data]
-
-	table = get_table(headings, content, columns_width)
-	return table
-
-def get_table_regulators(department):
-	data = Device.objects.filter(model__type__name__icontains = 'regulador', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
-
-	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1*cm,
-					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
-
-	headings = ['Modelo', 'Proveedor', 'Codigo', 'Serie', 'Parte', 'Estado',
-				'Factura', 'Compra', 'Garantia', 'Ubicacion', 'Responsable']
-
-	content = [[d.model.__unicode__() if d.model is not None else '',
-				d.provider.__unicode__() if d.provider is not None else '', d.code, d.serial, d.part,
-				d.state, d.invoice,
-				d.date_purchase.__str__() if d.date_purchase is not None else '',
-				d.date_warranty.__str__() if d.date_purchase is not None else '',
-				d.allocation_set.filter(is_active=True)[0].short_location()[:40] if len(d.allocation_set.filter(is_active=True)) > 0 else 'N/A',
-				d.allocation_set.filter(is_active=True)[0].short_responsible() if len(d.allocation_set.filter(is_active=True)) > 0 else 'No asignado'] for d in data]
-
-	table = get_table(headings, content, columns_width)
-	return table
-
-def get_table_scanners(department):
-	data = Device.objects.filter(model__type__name__icontains = 'scan', allocation__is_active=True, allocation__department=department).order_by('allocation__area')
-
-	columns_width = (2.5*cm, 1.7*cm, 1*cm, 1.5*cm, 1.5*cm, 1*cm,
-					1.1*cm, 1.2*cm, 1.2*cm, 2*cm, 1.6*cm,)
-
-	headings = ['Modelo', 'Proveedor', 'Codigo', 'Serie', 'Parte', 'Estado',
-				'Factura', 'Compra', 'Garantia', 'Ubicacion', 'Responsable']
-
-	content = [[d.model.__unicode__() if d.model is not None else '',
-				d.provider.__unicode__() if d.provider is not None else '', d.code, d.serial, d.part,
-				d.state, d.invoice,
-				d.date_purchase.__str__() if d.date_purchase is not None else '',
-				d.date_warranty.__str__() if d.date_purchase is not None else '',
-				d.allocation_set.filter(is_active=True)[0].short_location()[:40] if len(d.allocation_set.filter(is_active=True)) > 0 else 'N/A',
-				d.allocation_set.filter(is_active=True)[0].short_responsible() if len(d.allocation_set.filter(is_active=True)) > 0 else 'No asignado'] for d in data]
-
-	table = get_table(headings, content, columns_width)
-	return table
-
-def get_table_headings(model_obj):
-	headings = []
-
-	styles = getSampleStyleSheet()
-	paragraphStyle = styles['Normal']
-	paragraphStyle.fontSize = 6
-
-	for field in model_obj._meta.fields:
-		if field.name.lower() != 'id':
-			if field.get_internal_type() == 'JsonField':
-				for key in model_obj.__getattribute__(field.name):
-					headings.append(Paragraph(key, paragraphStyle))
-			else:
-				headings.append(Paragraph(field.verbose_name, paragraphStyle))
-
-			if field.name.lower() == 'model':
-				for key in model_obj.model.specifications:
-					headings.append(Paragraph(key, paragraphStyle))
-	headings+=[Paragraph('Ubicacion', paragraphStyle), Paragraph('Responsable', paragraphStyle)]
-	return tuple(headings)
-
-def get_table_content(obj_list):
-	rows = row =  []
-
-	styles = getSampleStyleSheet()
-	paragraphStyle = styles['Normal']
-	paragraphStyle.fontSize = 5
-
-	for obj in obj_list:
-		row = []
-		val = None
-		for field in obj._meta.fields:
-			if field.name.lower() != 'id':
-				if field.get_internal_type() == 'JsonField':
-					field_json = obj.__getattribute__(field.name)
-					for key in field_json:
-						row.append(Paragraph(field_json[key], paragraphStyle))
-				elif field.get_internal_type() == 'ForeignKey':
-					if field.name.lower() == 'model':
-						field_json = obj.__getattribute__('model').specifications
-						for key in field_json:
-							row.append(Paragraph(field_json[key], paragraphStyle))
-					else:
-						value = obj.__getattribute__(field.name)
-						val = value.__unicode__() if value is not None else ''
-				elif field.get_internal_type() == 'DateField':
-					value = obj.__getattribute__(field.name)
-					val = value.__str__() if value is not None else ''
-				else:
-					value = obj.__getattribute__(field.name)
-					val = val if val is not None else ''
-
-				print val
-				if val is not None: row.append(Paragraph(val, paragraphStyle))
-
-		#Data for location and responsible
-		data = obj.allocation_set.filter(is_active=True)
-		if len(data) > 0:
-			data = data[0]
-			row+=[Paragraph(data.short_location(), paragraphStyle), Paragraph(data.short_responsible(), paragraphStyle)]
-		rows.append(row)
-		print len(row)
-		print '---------------------------------'
-
-	return rows
-
-def get_table(headings, data, columns_width):
-	styles = getSampleStyleSheet()
-
-	headingStyle = styles['Heading5']
-	headingStyle.fontSize = 6
-	headingStyle.bulletFontSize = 1
-
-	contentStyle = styles['BodyText']
-	contentStyle.fontSize = 5
-
-	headings = [Paragraph(h, headingStyle) for h in headings]
-	content = [[Paragraph(cell, contentStyle) for cell in row] for row in data]
-
-	table = Table([headings]+content, columns_width)
-	table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
-							('LEFTPADDING',(0,0),(-1,-1), 3),
-							('RIGHTPADDING',(0,0),(-1,-1), 3),
-							('BOX', (0, 0), (-1, -1), 0.5, colors.black),
-							('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-							('BACKGROUND', (0, 0), (-1, 0), colors.gray)]))
-
 	return table

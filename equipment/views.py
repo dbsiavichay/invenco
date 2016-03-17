@@ -93,7 +93,7 @@ class TypeListView(ListView):
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():
-			type_modelform = modelform_factory(Type, fields=('name', 'is_part', 'specifications'))
+			type_modelform = modelform_factory(Type, fields=('name', 'is_part', 'specifications', 'print_sizes'))
     		type_form = type_modelform(request.POST)
     		if type_form.is_valid():
     			object = type_form.save()
@@ -113,7 +113,7 @@ class TypeDetailView(DetailView):
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():
 			self.object = self.get_object()
-			type_modelform = modelform_factory(Type, fields=('name', 'is_part', 'specifications'))
+			type_modelform = modelform_factory(Type, fields=('name', 'is_part', 'specifications', 'print_sizes'))
     		type_form = type_modelform(request.POST, instance=self.object)
     		if type_form.is_valid():
     			type_form.save()
@@ -266,7 +266,7 @@ class DeviceListView(ListView):
 				paginator = Paginator(list, self.paginate_by)
 				page = paginator.page(num_page) if num_page is not None else paginator.page(1)
 				object_list = page.object_list
-				data = [{'id':object.id, 'model': str(object.model), 'code': object.code,
+				data = [{'id':object.id, 'model': str(object.model.type) + ' ' + str(object.model), 'code': object.code,
 					'provider': '%s | %s' % (str(object.provider), object.invoice) if object.provider else '',
 					'state': object.get_state_icon(),
 					'date_warranty': object.get_timeuntil()} for object in object_list]
@@ -323,10 +323,11 @@ class ReportListView(ListView):
 	queryset = model.objects.filter(is_part=False)
 
 	def get(self, request, *args, **kwargs):
-		stroptions = request.GET.get('options', None);
+		stroptions = request.GET.get('options', None)
+		number = request.GET.get('number', None)
 		if stroptions is not None:
-			options = stroptions.split(',')
-			pdf = get_pdf(options)
+			options = [int(opt) for opt in stroptions.split(',')]
+			pdf = get_pdf(options, number)
 			response = HttpResponse(content_type='application/pdf')
 			response.write(pdf)
 			return response

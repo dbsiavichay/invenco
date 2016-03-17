@@ -20,9 +20,13 @@ class Type(models.Model):
 	name = models.CharField(max_length=32)
 	is_part = models.BooleanField(default=False)
 	specifications = JsonField(blank=True, null=True)
+	print_sizes = JsonField(blank=True, null=True)
 
 	def get_specifications(self):
 		return ast.literal_eval(json.dumps(self.specifications))
+
+	def get_print_sizes(self):
+		return [float(n) for n in self.print_sizes.split(',')]
 
 	def __unicode__(self):
 		return self.name
@@ -37,8 +41,8 @@ class Model(models.Model):
 	trademark = models.ForeignKey(Trademark)
 
 	def __unicode__(self):
-		type = self.specifications['Uso'] if self.specifications.has_key('Uso') and 'laptop' in self.specifications['Uso'].lower() else self.type
-		return '%s %s %s' % (type, self.trademark, self.name)
+		#type = self.specifications['Uso'] if self.specifications.has_key('Uso') and 'laptop' in self.specifications['Uso'].lower() else self.type
+		return '%s %s' % (self.trademark, self.name)
 
 	def get_specifications(self):
 		return ast.literal_eval(json.dumps(self.specifications))
@@ -48,12 +52,12 @@ class Device(models.Model):
 		ordering = ['model',]
 
 	model = models.ForeignKey(Model, verbose_name='Modelo')
-	provider = models.ForeignKey(Provider, blank=True, null=True, verbose_name='Proveedor')
 	code = models.CharField(max_length=16, unique=True, verbose_name='Codigo')
 	serial = models.CharField(max_length=34, unique=True, blank=True, null=True, verbose_name='Serie')
 	part = models.CharField(max_length=32, blank=True, null=True, verbose_name='Parte')
 	specifications = JsonField(blank=True, null=True)
 	state = models.CharField(max_length=16, blank=True, null=True, verbose_name='Estado')
+	provider = models.ForeignKey(Provider, blank=True, null=True, verbose_name='Proveedor')
 	invoice = models.CharField(max_length=16, blank=True, null=True, verbose_name='Factura')
 	date_purchase = models.DateField(blank=True, null=True, verbose_name='Compra')
 	date_warranty = models.DateField(blank=True, null=True, verbose_name='Garantia')
