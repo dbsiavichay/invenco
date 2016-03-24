@@ -19,15 +19,22 @@ def get_pdf(options, type):
 
 	for option in options:
 		t = Type.objects.get(pk=option)
+		columns_width = [s*cm for s in t.get_print_sizes()]
+
 		report.append(Paragraph(t.name.capitalize(), styles['Heading2']))
 		for department in departments:
 			values = Device.objects.filter(model__type = t, allocation__is_active=True, allocation__department=department.code).order_by('allocation__area')
+			if len(values) > 0:
+				report.append(Paragraph(department.name, styles['Heading4']))
+				headings = get_table_headings(Device, t)
+				data = get_table_content(values, t)
+				report.append(get_table(headings, data, columns_width))
 
-			report.append(Paragraph(department.name, styles['Heading4']))
+		values = Device.objects.filter(model__type=t).exclude(allocation__is_active=True)
+		if len(values) > 0:
+			report.append(Paragraph('SIN ASIGNAR', styles['Heading4']))
 			headings = get_table_headings(Device, t)
-			data = get_table_content(values, t) if len(values) > 0 else []
-			columns_width = [s*cm for s in t.get_print_sizes()]
-
+			data = get_table_content(values, t)
 			report.append(get_table(headings, data, columns_width))
 
 		if 'pc' in t.name.lower():
