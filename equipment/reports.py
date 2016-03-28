@@ -9,7 +9,7 @@ from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER
 from reportlab.lib.units import cm
 from io import BytesIO
 
-def get_pdf(options, type):
+def get_pdf(options):
 	departments=Department.objects.using('sim').all().exclude(name__icontains='jubilados')
 	buff = BytesIO()
 	doc = SimpleDocTemplate(buff, pagesize=landscape(A4), rightMargin=40, leftMargin=40, topMargin=20, bottomMargin=20,)
@@ -40,6 +40,49 @@ def get_pdf(options, type):
 		if 'pc' in t.name.lower():
 			report.append(Paragraph("Informacion adicional de pc's", styles['Heading2']))
 			report.append(get_pc_stats())
+
+	doc.build(report)
+	return buff.getvalue()
+
+def get_pcdir():
+	departments=Department.objects.using('sim').all().exclude(name__icontains='jubilados')
+	buff = BytesIO()
+	doc = SimpleDocTemplate(buff, pagesize=A4, rightMargin=40, leftMargin=40, topMargin=20, bottomMargin=20,)
+	styles = getSampleStyleSheet()
+	report = []
+	report.append(Paragraph("Directorio de equipos", styles['Title']))
+
+	t = Type.objects.filter(name__icontains='pc')[0]
+	columns_width = [3.5*cm, 1*cm, 1.5*cm, 1.4*cm, 1.4*cm, 1.3*cm, 1.5*cm, 1*cm, 1*cm, 1*cm, 3*cm, 2*cm]
+	headings = ['Modelo', 'Codigo', 'Serie', 'Uso', 'Ip', 'Usuario', 'SO', 'Bits', 'Acc', 'Estado', 'Ubicacion', 'Responsable']
+
+	for department in departments:
+		values = Device.objects.filter(model__type = t, allocation__is_active=True, allocation__department=department.code).order_by('allocation__area')
+		if len(values) > 0:
+			report.append(Paragraph(department.name, styles['Heading4']))
+			data = [[str(d.model), d.code, d.serial,
+					 d.model.specifications['Uso'],
+					 d.specifications['Ip'],
+					 d.specifications['Usuario'],
+					 d.specifications['Sistema Operativo'],
+					 d.specifications['Bits'],
+					 d.specifications['Acceso Remoto'],
+					 d.state,
+					 d.allocation_set.filter(is_active=True)[0].short_location()[:50],
+					 d.allocation_set.filter(is_active=True)[0].short_responsible()] for d in values]
+			report.append(get_table(headings, data, columns_width))
+
+	values = Device.objects.filter(model__type=t).exclude(allocation__is_active=True)
+	if len(values) > 0:
+		report.append(Paragraph('SIN ASIGNAR', styles['Heading4']))
+		data = [[str(d.model), d.code, d.serial,
+				 d.model.specifications['Uso'],
+				 d.specifications['Ip'],
+				 d.specifications['Sistema Operativo'],
+				 d.specifications['Bits'],
+				 d.specifications['Acceso Remoto'],
+				 d.state, '', ''] for d in values]
+		report.append(get_table(headings, data, columns_width))
 
 	doc.build(report)
 	return buff.getvalue()

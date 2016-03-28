@@ -9,7 +9,7 @@ from allocation.models import Allocation
 from organization.models import Contributor
 from providers.models import Provider
 from .models import Trademark, Type, Model, Device
-from .reports import get_pdf
+from .reports import get_pdf, get_pcdir
 
 class TrademarkListView(ListView):
 	model = Trademark
@@ -324,10 +324,15 @@ class ReportListView(ListView):
 
 	def get(self, request, *args, **kwargs):
 		stroptions = request.GET.get('options', None)
-		number = request.GET.get('number', None)
+		t = request.GET.get('type', None)
 		if stroptions is not None:
 			options = [int(opt) for opt in stroptions.split(',')]
-			pdf = get_pdf(options, number)
+			pdf = get_pdf(options)
+			response = HttpResponse(content_type='application/pdf')
+			response.write(pdf)
+			return response
+		elif t is not None:
+			pdf = get_pcdir()
 			response = HttpResponse(content_type='application/pdf')
 			response.write(pdf)
 			return response
