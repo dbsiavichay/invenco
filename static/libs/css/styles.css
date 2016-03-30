@@ -3,6 +3,15 @@ hr {
 	margin-bottom: 10px;
 }
 
+.consulta-equipos {
+	margin-top: 100px;
+}
+
+.consulta-equipos > h3, .consulta-equipos > .form-inline {
+	text-align: center;
+	margin-bottom: 25px;
+}
+
 .state-icon {
     left: -5px;
 }

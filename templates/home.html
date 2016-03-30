@@ -23,7 +23,7 @@
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
 			    <ul class="nav navbar-nav navbar-right">
 			        <li>
-						<a href="/">
+						<a href="/devices/">
 							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Iniciar sesión
 						</a>
 					</li>
@@ -31,42 +31,64 @@
 		    </div>
 	  	</div>
 	</nav>
-	<div class="modal-dialog" style="margin-top: 100px">
-	    <div class="modal-content">
-		    <div class="form-horizontal">
-		        <div class="modal-header">
-		        	<h4 class="modal-title">Inicie sesión en su cuenta</h4>
-		        </div>
-		        <div class="modal-body">
-			        <div class="form-group">
-			            <label for="inputUser" class="sr-only">Username</label>
-			            <div class="col-sm-10 col-sm-offset-1 inner-icon inner-icon-left">
-			            	<span class="glyphicon glyphicon-user"></span>
-			            	<input id="inputUser" type="text" name="username" class="form-control" placeholder="Nombre de usuario" req="true">
-			            </div>
-			        </div>
-			        <div class="form-group">
-			            <label for="inputPassword" class="sr-only">Contraseña</label>
-			            <div class="col-sm-10 col-sm-offset-1 inner-icon inner-icon-left">
-			            	<span class="glyphicon glyphicon-lock"></span>
-			            	<input id="inputPassword" type="password" name="password" class="form-control" placeholder="Contraseña" req="true">
-			            </div>
-			        </div>
-			        <div class="form-group">
-			            <label class="sr-only">Entrar</label>
-			            <div class="col-sm-10 col-sm-offset-1">
-			            	<a  href="/allocations/" class="btn btn-success col-xs-12">Acceder</a>
-			            </div>
-			        </div>
-		        </div>
-		        <div class="modal-footer">
-		        	<a href="/" class="col-xs-12 center">¿Has olvidado tu contraseña?</a>
-		        </div>
-		    </div>
-	    </div>
-	</div>
+	<section class="consulta-equipos">
+		<h3>CONSULTA DE EQUIPOS ASIGNADOS</h3>
+		<div class="form-inline">
+		  <div class="form-group">
+		    <label class="sr-only">Cedula</label>
+		    <input id="txtCharter" type="text" class="form-control" placeholder="Digite su cédula">
+		  </div>
+		  <button id="btnConsulta" class="btn btn-default">Buscar</button>
+		</div>
+
+		<div style="padding: 0 200px;">
+			<h4>{{ message }}</h4>
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Equipo</th>
+						<th>Código</th>
+						<th>Serie</th>
+						<th>Estado</th>
+					</tr>
+				</thead>
+				<tbody id="objectList">
+					{% for device in object_list %}
+					<tr>
+						<td name="model" class="col-xs-5">{{device.model.type}} {{ device.model }}</td>
+						<td name="code" class="col-xs-2">{{ device.code }}</td>
+						<td name="serial" class="col-xs-4">{{ device.serial }}</td>
+						<td name="state" class="col-xs-1"><span class="glyphicon {{ device.get_state_icon }}" aria-hidden="true"></span></td>
+					</tr>
+					{% empty %}
+					<tr>
+						<td colspan="4">'No existen registros'</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+
 	<script src="{% static 'libs/js/jquery-2.1.4.min.js' %}"></script>
 	<script src="{% static 'libs/js/bootstrap.min.js' %}"></script>
 	<script src="{% static 'libs/js/csfrtoken.js' %}"></script>
+	<script src="{% static 'libs/js/check-charter.js' %}"></script>
+	<script type="text/javascript">
+		$(function () {
+			var consultar = function () {
+				var charter = $('#txtCharter').val();
+				if (charter) {
+						$(location).attr('href', '.?charter='+charter);
+				}
+			}
+
+			$('#btnConsulta').on('click', consultar);
+
+			$('#txtCharter').on('keyup', function (event) {
+				if (event.keyCode==13) consultar();
+			});
+		});
+	</script>
 </body>
 </html>
