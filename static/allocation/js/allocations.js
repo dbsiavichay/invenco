@@ -45,7 +45,56 @@ var addEventListenerOnNew = function () {
 	});
 }
 
+var addEventListenerOnView = function () {
+	$('.glyphicon-search').parent().on('click', function () {
+		var deviceId = $(this).attr('dev-id');
+		$.get('/devices/'+deviceId+'/')
+		.then(function (data) {
+			$('.detail-item:not([style])').remove();
+			var $temp = $('.detail-item').clone().removeAttr('style');
+
+			var $li = $temp.clone()
+			$li.find('.key > strong').text('Tipo');
+			$li.find('.value').text(data['type_name']);
+			$('.detail-list').append($li);
+
+			$li = $temp.clone()
+			$li.find('.key > strong').text('Modelo');
+			$li.find('.value').text(data['model']);
+			$('.detail-list').append($li);
+
+			$li = $temp.clone()
+			$li.find('.key > strong').text('Codigo');
+			$li.find('.value').text(data['code']);
+			$('.detail-list').append($li);
+
+			$li = $temp.clone()
+			$li.find('.key > strong').text('Serial');
+			$li.find('.value').text(data['serial']);
+			$('.detail-list').append($li);
+
+			for (attr in data['model_specifications']) {
+				$li = $temp.clone()
+				$li.find('.key > strong').text(attr);
+				$li.find('.value').text(data['model_specifications'][attr]);
+				$('.detail-list').append($li);
+			}
+
+			for (attr in data['specifications']) {
+				$li = $temp.clone()
+				$li.find('.key > strong').text(attr);
+				$li.find('.value').text(data['specifications'][attr]);
+				$('.detail-list').append($li);
+			}
+
+			$('#equipmentDetail').modal('show');
+		});
+	});
+}
+
 var addEventListenerOnEdit = function () {
+	addEventListenerOnView()
+
 	$('.btn-transfer').on('click', function () {
 		id = $(this).parent().attr('id');
 		$.get(getUrl()+id+'/')
@@ -363,7 +412,8 @@ var getRow = function (object) {
 	var $row = $rowTemplate.clone();
 	for (var attr in object) {
 		if(attr=='id') {
-			$row.find('[name=actions]').attr('id', object[attr])
+			$row.find('[name=actions]').attr('id', object[attr]);
+			$row.find('[name=actions] button').first().attr('dev-id', object['device']);
 		} else if (attr == 'state') {
 			var $icon = $row.find('.glyphicon[name=state]');
 			if ($icon.hasClass('glyphicon-ok-sign')) $icon.removeClass('glyphicon-ok-sign');

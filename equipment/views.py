@@ -223,26 +223,10 @@ class DeviceListView(ListView):
 
 	def get(self, request, *args, **kwargs):
 		if request.is_ajax():
-			keyword = request.GET.get('keyword', None)
-			num_page = request.GET.get('page', None)
-			list = self.model.objects.filter(name__icontains=keyword)
-			paginator = Paginator(list, self.paginate_by)
-			page = paginator.page(num_page) if num_page is not None else paginator.page(1)
-			object_list = page.object_list
-			data = [{'id':object.id, 'name': object.name, 'specifications': str(object.specifications)} for object in object_list]
-			data.append({
-				'has_next': page.has_next(),
-				'next_page_number': page.next_page_number() if page.has_next() else -1
-			})
-			return JsonResponse(data, safe=False)
-		else:
-			return super(TypeListView, self).get(self, request, *args, **kwargs)
-
-	def get(self, request, *args, **kwargs):
-		if request.is_ajax():
 			type = request.GET.get('type', None)
 			keyword = request.GET.get('keyword', None)
 			num_page = request.GET.get('page', None)
+			view = request.GET.get('view', None)
 			if type is not None:
 				objects = self.model.objects.filter(model__type=type)
 				list = []
@@ -295,10 +279,14 @@ class DeviceDetailView(DetailView):
 
 	def get(self, request, *args, **kwargs):
 		if request.is_ajax():
-		    self.object = self.get_object()
-		    data = model_to_dict(self.object)
-		    data['type'] = self.object.model.type.id
-		    return JsonResponse(data)
+			self.object = self.get_object()
+			data = model_to_dict(self.object)
+			data['type'] = self.object.model.type.id
+			data['type_name'] = str(self.object.model.type)
+			data['model'] = str(self.object.model)
+			data['model_specifications'] = self.object.model.specifications
+
+			return JsonResponse(data)
 
 	def post(self, request, *args, **kwargs):
 		if request.is_ajax():

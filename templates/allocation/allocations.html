@@ -29,6 +29,9 @@
 					<td name="location" class="col-xs-3">{{ allo.location }}</td>
 					<td name="responsible" class="col-xs-2">{{ allo.responsible }}</td>
 					<td id="{{ allo.id }}" name="actions" class="col-xs-2">
+						<button class="btn btn-sm btn-default" dev-id='{{ allo.device.id }}'>
+							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+						</button>
 						<button class="btn btn-sm btn-default btn-transfer">
 							<span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
 						</button>
@@ -45,6 +48,28 @@
 			</tbody>
 		</table>
 	</section>
+
+	<div id="equipmentDetail" class="modal fade">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Detalle del equipo</h4>
+	      </div>
+	      <div class="modal-body" style="max-height: 300px; overflow-y: scroll;">
+					<ul class="list-group detail-list">
+					  <li class="list-group-item detail-item" style="display: none;">
+							<p class="list-group-item-text key"><strong>Modelo</strong></p>
+							<p class="list-group-item-heading value">HP LASERJET 400</p>
+					  </li>
+					</ul>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Aceptar</button>
+	      </div>
+	    </div>
+	  </div>
+  </div>
 {% endblock %}
 
 {% block modal_title %}Datos de asignación{% endblock %}

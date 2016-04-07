@@ -52,7 +52,7 @@ class AllocationListView(ListView):
 				paginator = Paginator(list, self.paginate_by)
 				page = paginator.page(num_page) if num_page is not None else paginator.page(1)
 				object_list = page.object_list
-				data = [{'id':object.id, 'model':str(object.device.model.type) + ' ' + str(object.device.model), 'code': object.device.code,
+				data = [{'id':object.id, 'device':object.device.id, 'model':str(object.device.model.type) + ' ' + str(object.device.model), 'code': object.device.code,
 					'state': object.device.get_state_icon(),
 					'location': object.location(), 'responsible': object.responsible()} for object in object_list]
 				data.append({
