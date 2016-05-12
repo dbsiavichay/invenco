@@ -171,15 +171,15 @@ var openModal = function (options) {
 var renderTable = function (data, page) {
 	var $table = $('#objectList');
 	if (!page) $table.children().remove();
-	for (var i = 0; i < data.length - 1; i++) {
-		var object = data[i];
+	for (var i = 0; i < data['object_list'].length; i++) {
+		var object = data['object_list'][i];
 		$table.append(getRow(object));
 	}
 	addEventListenerOnEdit();
 	addEventListenerOnRemove();
-	if (data[data.length - 1].has_next) {
+	if (data['has_next']) {
 		$('.load-searchs').show();
-		$('.load-searchs').attr('next-page', data[data.length - 1].next_page_number)
+		$('.load-searchs').attr('next-page', data['next_page_number'])
 	} else {
 		$('.load-searchs').hide();
 	}
