@@ -153,7 +153,7 @@ class DeviceDetailView(DetailViewMixin, DetailView):
 			data = model_to_dict(self.object)
 			data['type'] = self.object.model.type.id
 			data['type_name'] = str(self.object.model.type)
-			data['model'] = str(self.object.model)
+			data['model_name'] = str(self.object.model)
 			data['model_specifications'] = self.object.model.specifications
 
 			return JsonResponse(data)

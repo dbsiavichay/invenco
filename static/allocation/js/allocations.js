@@ -60,7 +60,7 @@ var addEventListenerOnView = function () {
 
 			$li = $temp.clone()
 			$li.find('.key > strong').text('Modelo');
-			$li.find('.value').text(data['model']);
+			$li.find('.value').text(data['model_name']);
 			$('.detail-list').append($li);
 
 			$li = $temp.clone()
