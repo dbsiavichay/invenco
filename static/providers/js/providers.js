@@ -1,39 +1,74 @@
 $(function () {
 	var id;
+	addEventListenerOnNew();
+	addEventListenerOnEdit();
+	addEventListenerOnRemove();
+	addEventListenerOnCreate();
+	addEventListenerOnUpdate();
+	addEventListenerOnDelete();
+});
 
-	$('.glyphicon-plus-sign').parent().on('click', function () {				
+var getUrl = function () {
+	return '/providers/'
+}
+
+var addEventListenerOnNew = function () {
+	$('.glyphicon-plus-sign').parent().on('click', function () {
 		openModal()
 	});
+}
 
+var addEventListenerOnEdit = function () {
 	$('.glyphicon-pencil').parent().on('click', function () {
 		id = $(this).parent().attr('id');
-		$.get('/providers/'+id, function (object) {						
+		$.get(getUrl()+id+'/', function (object) {
 			openModal({'object':object});
 		});
 	});
+}
 
+var addEventListenerOnRemove = function () {
 	$('.glyphicon-remove').parent().on('click', function () {
-		id = $(this).parent().attr('id');		
+		id = $(this).parent().attr('id');
 		$('#objectDeleteModal').modal('show');
 	});
+}
 
-	$('#btnSave').on('click', function () {		
+var addEventListenerOnCreate = function () {
+	$('#btnSave').on('click', function () {
 		var is_valid = validateForm();
 		if(!is_valid) return;
-		makeRequest('/providers/', 'POST', getData(), reloadPage);
+		makeRequest(getUrl(), 'POST', getData(), reloadPage);
 	});
+}
 
-	$('#btnEdit').on('click', function () {		
+var addEventListenerOnUpdate = function () {
+	$('#btnEdit').on('click', function () {
 		var is_valid = validateForm();
 		if(!is_valid) return;
-		makeRequest('/providers/'+id+'/', 'POST', getData(), reloadPage);
+		makeRequest(getUrl()+id+'/', 'POST', getData(), reloadPage);
 	});
+}
 
+var addEventListenerOnDelete = function () {
 	$('#btnDelete').on('click', function () {
-		makeRequest('/providers/'+id+'/', 'DELETE', {}, reloadPage);
+		makeRequest(getUrl()+id+'/', 'DELETE', {}, reloadPage);
 	});
+}
 
-	var reloadPage = function (data) {
-		$(location).attr('href', '/providers/')
-	}	
-});
+var reloadPage = function (data) {
+	$(location).attr('href', getUrl());
+}
+
+//Funcionalidad para busquedas
+var getRow = function (object) {
+	var $row = $rowTemplate.clone();
+	for (var attr in object) {
+		if(attr=='id') {
+			$row.find('[name=actions]').attr('id', object[attr])
+		}else{
+			$row.find('[name="'+attr+'"]').text(object[attr]);
+		}
+	}
+	return $row;
+}
