@@ -13,7 +13,6 @@ $(function () {
 		$('.load-searchs').removeAttr('next-page');
 		search();
 	});
-
 });
 
 var makeRequest = function (url, method, data, callback) {
@@ -92,27 +91,6 @@ var setFormValues = function (object) {
 		}
 	}
 }
-
-/*var setFormValues = function (object) {
-	var fields = $('[id*=input]');
-	fields.each(function (index, field) {
-		var type = $(field).attr('type');
-		var name = $(field).attr('name');
-		if(type==='radio') {
-			var radio = $(field).find("input[value='"+object[name]+"']");
-			$(radio).prop('checked', true);
-		}else if (type === 'checkbox') {
-			$(field).prop('checked', object[name]);
-		}else if (type === 'select'){
-			$(field).selectpicker('val', object[name]);
-		}else if (type === 'date'){
-			var matches = object[name].match(/\d{4}-\d{1,2}-\d{1,2}/);
-			if (matches) $(field).val(matches[0]);
-		}else{
-			$(field).val(object[name]);
-		}
-	});
-}*/
 
 var validateForm = function (form) {
 	var fields = form?$(form).find('[id*=input]'):$('[id*=input]');

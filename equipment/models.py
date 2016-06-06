@@ -18,7 +18,7 @@ class Type(models.Model):
 		ordering = ['name',]
 
 	name = models.CharField(max_length=32)
-	is_part = models.BooleanField(default=False)
+	usage = models.PositiveSmallIntegerField(default=1)
 	specifications = JsonField(blank=True, null=True)
 	print_sizes = JsonField(blank=True, null=True)
 
@@ -36,9 +36,11 @@ class Model(models.Model):
 		ordering = ['type', 'trademark', 'name']
 
 	name = models.CharField(max_length=128)
+	part_number = models.CharField(max_length=32, blank=True, null=True)
 	specifications = JsonField(blank=True, null=True)
 	type = models.ForeignKey(Type)
 	trademark = models.ForeignKey(Trademark)
+	replacements = models.ManyToManyField('self')
 
 	def __unicode__(self):
 		#type = self.specifications['Uso'] if self.specifications.has_key('Uso') and 'laptop' in self.specifications['Uso'].lower() else self.type
@@ -61,6 +63,7 @@ class Device(models.Model):
 	invoice = models.CharField(max_length=16, blank=True, null=True, verbose_name='Factura')
 	date_purchase = models.DateField(blank=True, null=True, verbose_name='Compra')
 	date_warranty = models.DateField(blank=True, null=True, verbose_name='Garantia')
+	observation = models.TextField(blank=True, null=True, verbose_name='Observaciones')
 
 	def get_state_icon(self):
 		icon = 'glyphicon-ok-sign' if self.state == '1' else 'glyphicon-minus-sign' if self.state == '2' else 'glyphicon-remove-sign'
@@ -91,3 +94,9 @@ class Device(models.Model):
 
 	def __unicode__(self):
 		return '%s | %s' % (self.model, self.code)
+
+class Replacement(models.Model):
+	model = models.ForeignKey(Model)
+	unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+	total_price = models.DecimalField(max_digits=10, decimal_places=2)
+	stock = models.DecimalField(max_digits=7, decimal_places=2)

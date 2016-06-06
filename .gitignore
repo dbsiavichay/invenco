@@ -1,7 +1,6 @@
 *.pyc
 *.[oa]
 *~
-home/migrations/
 allocation/migrations/
 organization/migrations/
 equipment/migrations/
