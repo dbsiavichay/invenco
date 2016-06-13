@@ -4,7 +4,8 @@
 
 {% block content %}
 	<section class="section">
-		<button class="btn btn-success col-xs-12">
+		<h3 class="pull-left">Modelos</h3>
+		<button class="btn btn-sm col-xs-2 btn-success pull-right ">
 			<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
 			Nuevo
 		</button>
@@ -52,6 +53,9 @@
 	    <li role="presentation">
 	    	<a href="#specifications" aria-controls="specifications" role="tab" data-toggle="tab">Especificaciones</a>
 	    </li>
+			<li role="presentation">
+				<a href="#replacements" aria-controls="replacements" role="tab" data-toggle="tab">Repuestos</a>
+			</li>
 	</ul>
 
 	<div class="tab-content">
@@ -67,7 +71,7 @@
 				        	{% endfor %}
 				        </select>
 				    </div>
-				</div>
+					</div>
 				<div class="form-group">
 				    <label for="inputTrademark" class="col-md-2 control-label">Marca</label>
 				    <div class="col-md-10">
@@ -85,6 +89,12 @@
 				        <input id="inputName" type="text" name="name" class="form-control" placeholder="Nombre del modelo" req="true">
 				    </div>
 				</div>
+				<div class="form-group">
+				    <label for="inputPartNumber" class="col-md-2 control-label">Parte #</label>
+				    <div class="col-md-10">
+				        <input id="inputPartNumber" type="text" name="part_number" class="form-control" placeholder="Número de parte">
+				    </div>
+				</div>
 	    	</div>
 	    </div>
 	    <div role="tabpanel" class="tab-pane" id="specifications">
@@ -95,6 +105,31 @@
 
 	    	</div>
 	    </div>
+			<div role="tabpanel" class="tab-pane" id="replacements">
+				<div class="form-horizontal">
+					<div class="form-group">
+						<label for="inputType2" class="col-md-2 control-label">Tipo</label>
+						<div class="col-md-10">
+							<select id="inputType2" type="select" name="type" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
+								<option value="">--- Seleccionar ---</option>
+								{% for type in types %}
+								{% if type.usage == 2 %}
+								<option value="{{ type.id }}">{{ type.name }}</option>
+								{% endif %}
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+					    <label for="inputModel" class="col-md-2 control-label">Modelo</label>
+					    <div class="col-md-10">
+					        <select id="inputModel" type="select" name="model" class="form-control selectpicker" data-size="10" data-live-search="true" req="true">
+					        	<option value="">--- Seleccionar ---</option>
+					        </select>
+					    </div>
+					</div>
+				</div>
+			</div>
 	</div>
 {% endblock %}
 

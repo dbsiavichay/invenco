@@ -8,6 +8,7 @@ $(function () {
 	addEventListenerOnUpdate();
 	addEventListenerOnDelete();
 	addEventChangeListenerOnType();
+	addEventChangeListenerOnType2();
 });
 
 var getUrl = function () {
@@ -78,6 +79,22 @@ var addEventChangeListenerOnType = function () {
 		renderSpecifications();
 	});
 }
+
+var addEventChangeListenerOnType2 = function () {
+	$('#inputType2').on('change', function () {
+		var type = $('#inputType2').val();
+		$.get(getUrl()+'?type='+type, function (data) {
+			$('#inputModel').find("option[value!='']").remove();
+			for(var i in data) {
+				var model = data[i];
+				var option = '<option value="'+model['id']+'">'+model['trademark']+' '+model['name']+'</option>';
+				$('#inputModel').append(option);
+			}
+			$('#inputModel').selectpicker('refresh');
+		});
+	});
+}
+
 
 var reloadPage = function (data) {
 	$(location).attr('href', getUrl());

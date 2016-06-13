@@ -161,7 +161,7 @@ class DeviceDetailView(DetailViewMixin, DetailView):
 class ReportListView(ListView):
 	model = Type
 	template_name = 'equipment/reports.html'
-	queryset = model.objects.filter(is_part=False)
+	queryset = model.objects.filter(usage=1)
 
 	def get(self, request, *args, **kwargs):
 		stroptions = request.GET.get('options', None)
