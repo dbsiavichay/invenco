@@ -1,8 +1,8 @@
 *.pyc
 *.[oa]
 *~
-allocation/migrations/
-organization/migrations/
-equipment/migrations/
-providers/migrations/
-technical_assistance/migrations/
+server/allocation/migrations/
+server/organization/migrations/
+server/equipment/migrations/
+server/providers/migrations/
+server/technical_assistance/migrations/

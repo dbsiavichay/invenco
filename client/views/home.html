@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load staticfiles %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+    <title>Invenco</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <!--external css-->
+    <link href="{% static 'fonts/css/font-awesome.css' %}" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <section id="container" >
+      <!--header start-->
+      <header class="header black-bg">
+        <div class="sidebar-toggle-box">
+          <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
+        </div>
+        <!--logo start-->
+        <a href="#" class="logo"><b>INVENCO</b></a>
+        <!--logo end-->
+        <div class="nav notify-row" id="top_menu">
+          <!--  notification start -->
+          <ul class="nav top-menu">
+            <!-- settings start -->
+            <li class="dropdown">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="index.html#">
+                <i class="fa fa-user"></i>
+                <span class="badge bg-theme">4</span>
+              </a>
+            </li>
+            <!-- settings end -->
+            <!-- inbox dropdown start-->
+            <li id="header_inbox_bar" class="dropdown">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="index.html#">
+                <i class="fa fa-comment"></i>
+                <span class="badge bg-theme">5</span>
+              </a>
+              <ul class="dropdown-menu extended inbox">
+                <div class="notify-arrow notify-arrow-green"></div>
+                <li>
+                  <p class="green">You have 5 new messages</p>
+                </li>
+                <li>
+                  <a href="index.html#">
+                    <span class="photo"><img alt="avatar" src="assets/img/ui-zac.jpg"></span>
+                    <span class="subject">
+                      <span class="from">Zac Snider</span>
+                      <span class="time">Just now</span>
+                    </span>
+                    <span class="message">
+                        Hi mate, how is everything?
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="index.html#">
+                    <span class="photo"><img alt="avatar" src="assets/img/ui-divya.jpg"></span>
+                    <span class="subject">
+                      <span class="from">Divya Manian</span>
+                      <span class="time">40 mins.</span>
+                    </span>
+                    <span class="message">
+                     Hi, I need your help with this.
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="index.html#">
+                    <span class="photo"><img alt="avatar" src="assets/img/ui-danro.jpg"></span>
+                    <span class="subject">
+                      <span class="from">Dan Rogers</span>
+                      <span class="time">2 hrs.</span>
+                    </span>
+                    <span class="message">
+                        Love your new Dashboard.
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="index.html#">
+                    <span class="photo"><img alt="avatar" src="assets/img/ui-sherman.jpg"></span>
+                    <span class="subject">
+                      <span class="from">Dj Sherman</span>
+                      <span class="time">4 hrs.</span>
+                    </span>
+                    <span class="message">
+                        Please, answer asap.
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="index.html#">See all messages</a>
+                </li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a data-toggle="dropdown" class="dropdown-toggle" href="index.html#">
+                <i class="fa fa-bell"></i>
+                <span class="badge bg-theme">7</span>
+              </a>
+            </li>
+            <!-- inbox dropdown end -->
+          </ul>
+          <!--  notification end -->
+        </div>
+        <div class="top-menu">
+          <ul class="nav pull-right top-menu">
+            <li><a class="logout" href="login.html">Logout</a></li>
+          </ul>
+        </div>
+      </header>
+      <!--header end-->
+
+      <!--sidebar start-->
+      <aside>
+        <div id="sidebar"  class="nav-collapse ">
+          <!-- sidebar menu start-->
+          <ul class="sidebar-menu" id="nav-accordion">
+        	  <p class="centered">
+              <a href="profile.html"><img src="{% static 'img/ui-denis.jpg' %}" class="img-circle" width="60"></a>
+            </p>
+        	  <h5 class="centered">Denis Siavichay</h5>
+
+            <li class="mt">
+              <a href="#">
+                <i class="fa fa-home"></i>
+                <span>Home</span>
+              </a>
+            </li>
+
+            <li class="sub-menu">
+              <a class="active" href="#" >
+                <i class="fa fa-gear"></i>
+                <span>Configuración</span>
+              </a>
+              <ul class="sub">
+                <li><a href="#">Item 1</a></li>
+                <li><a href="#">Item 2</a></li>
+                <li><a href="#">Item 3</a></li>
+              </ul>
+            </li>
+
+            <li class="sub-menu">
+              <a href="#" >
+                <i class="fa fa-laptop"></i>
+                <span>Equipos</span>
+              </a>
+              <ul class="sub">
+                <li><a href="#">Item 1</a></li>
+                <li><a href="#">Item 2</a></li>
+                <li><a href="#">Item 3</a></li>
+              </ul>
+            </li>
+
+            <li class="mt">
+              <a href="#">
+                <i class="fa fa-check-square-o"></i>
+                <span>Asignaciones</span>
+              </a>
+            </li>
+
+            <li class="mt">
+              <a href="#">
+                <i class="fa fa-server"></i>
+                <span>Asistencia</span>
+              </a>
+            </li>
+
+            <li class="sub-menu">
+              <a href="#" >
+                <i class="fa fa-print"></i>
+                <span>Reportes</span>
+              </a>
+              <ul class="sub">
+                <li><a href="#">Item 1</a></li>
+                <li><a href="#">Item 2</a></li>
+                <li><a href="#">Item 3</a></li>
+              </ul>
+            </li>
+          </ul>
+          <!-- sidebar menu end-->
+        </div>
+      </aside>
+      <!--sidebar end-->
+
+      <!--main content start-->
+      <section id="main-content">
+        <section class="wrapper site-min-height">
+        	<h3><i class="fa fa-angle-right"></i> Blank Page</h3>
+        	<div class="row mt">
+        		<div class="col-lg-12">
+        		<p>Place your content here.</p>
+        		</div>
+        	</div>
+		    </section>
+      </section>
+      <!--main content end-->
+
+
+      <!--footer start
+      <footer class="site-footer">
+        <div class="text-center">
+          2014 - Alvarez.is
+          <a href="blank.html#" class="go-top">
+              <i class="fa fa-angle-up"></i>
+          </a>
+        </div>
+      </footer>
+      <!--footer end-->
+    </section>
+
+    <!-- js placed at the end of the document so the pages load faster -->
+    <script src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.ui.touch-punch.min.js' %}"></script>
+    <script src="{% static 'js/jquery.dcjqaccordion.2.7.js' %}"></script>
+    <script src="{% static 'js/jquery.scrollTo.min.js' %}"></script>
+    <script src="{% static 'js/jquery.nicescroll.js' %}"></script>
+
+
+    <!--common script for all pages-->
+    <script src="{% static 'js/common-scripts.js' %}"></script>
+  </body>
+</html>
