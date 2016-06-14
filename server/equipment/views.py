@@ -8,6 +8,12 @@ from providers.models import Provider
 from .models import Trademark, Type, Model, Device
 from .mixins import ListViewMixin, DetailViewMixin
 from .reports import get_pdf, get_pcdir
+from rest_framework import viewsets
+from .serializers import TrademarkSerializer
+
+class TrademarkViewSet(viewsets.ModelViewSet):
+	queryset = Trademark.objects.all()
+	serializer_class = TrademarkSerializer
 
 class TrademarkListView(ListViewMixin, ListView):
 	model = Trademark

@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
+from equipment.urls import equipment_router
 
 urlpatterns = [
     url(r'^test/', TemplateView.as_view(template_name='home.html')),
@@ -26,4 +27,5 @@ urlpatterns = [
     url(r'', include('organization.urls')),
     url(r'', include('providers.urls')),
     url(r'', include('technical_assistance.urls')),
+    url(r'^api/', include(equipment_router.urls)),
 ]
