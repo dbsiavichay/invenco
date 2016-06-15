@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="invenco">
   <head>
     {% load staticfiles %}
     <meta charset="utf-8">
@@ -8,13 +8,13 @@
     <title>Invenco</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet">
     <!--external css-->
-    <link href="{% static 'fonts/css/font-awesome.css' %}" rel="stylesheet" />
+    <link href="{% static 'assets/fonts/css/font-awesome.css' %}" rel="stylesheet" />
 
     <!-- Custom styles for this template -->
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/style-responsive.css' %}" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -57,7 +57,7 @@
                 </li>
                 <li>
                   <a href="index.html#">
-                    <span class="photo"><img alt="avatar" src="assets/img/ui-zac.jpg"></span>
+                    <span class="photo"><img alt="avatar" src="{% static 'assets/img/ui-zac.jpg' %}"></span>
                     <span class="subject">
                       <span class="from">Zac Snider</span>
                       <span class="time">Just now</span>
@@ -69,7 +69,7 @@
                 </li>
                 <li>
                   <a href="index.html#">
-                    <span class="photo"><img alt="avatar" src="assets/img/ui-divya.jpg"></span>
+                    <span class="photo"><img alt="avatar" src="{% static 'assets/img/ui-divya.jpg' %}"></span>
                     <span class="subject">
                       <span class="from">Divya Manian</span>
                       <span class="time">40 mins.</span>
@@ -81,7 +81,7 @@
                 </li>
                 <li>
                   <a href="index.html#">
-                    <span class="photo"><img alt="avatar" src="assets/img/ui-danro.jpg"></span>
+                    <span class="photo"><img alt="avatar" src="{% static 'assets/img/ui-danro.jpg' %}"></span>
                     <span class="subject">
                       <span class="from">Dan Rogers</span>
                       <span class="time">2 hrs.</span>
@@ -93,7 +93,7 @@
                 </li>
                 <li>
                   <a href="index.html#">
-                    <span class="photo"><img alt="avatar" src="assets/img/ui-sherman.jpg"></span>
+                    <span class="photo"><img alt="avatar" src="{% static 'assets/img/ui-sherman.jpg' %}"></span>
                     <span class="subject">
                       <span class="from">Dj Sherman</span>
                       <span class="time">4 hrs.</span>
@@ -132,7 +132,7 @@
           <!-- sidebar menu start-->
           <ul class="sidebar-menu" id="nav-accordion">
         	  <p class="centered">
-              <a href="profile.html"><img src="{% static 'img/ui-denis.jpg' %}" class="img-circle" width="60"></a>
+              <a href="profile.html"><img src="{% static 'assets/img/ui-denis.jpg' %}" class="img-circle" width="60"></a>
             </p>
         	  <h5 class="centered">Denis Siavichay</h5>
 
@@ -161,7 +161,7 @@
                 <span>Equipos</span>
               </a>
               <ul class="sub">
-                <li><a href="#">Item 1</a></li>
+                <li><a href="#/marcas">Marcas</a></li>
                 <li><a href="#">Item 2</a></li>
                 <li><a href="#">Item 3</a></li>
               </ul>
@@ -200,13 +200,7 @@
 
       <!--main content start-->
       <section id="main-content">
-        <section class="wrapper site-min-height">
-        	<h3><i class="fa fa-angle-right"></i> Blank Page</h3>
-        	<div class="row mt">
-        		<div class="col-lg-12">
-        		<p>Place your content here.</p>
-        		</div>
-        	</div>
+        <section ng-view class="wrapper site-min-height">
 		    </section>
       </section>
       <!--main content end-->
@@ -214,17 +208,18 @@
     </section>
 
     <!-- js placed at the end of the document so the pages load faster -->
-    <script src="{% static 'js/jquery-2.1.1.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/jquery.ui.touch-punch.min.js' %}"></script>
-    <script src="{% static 'js/jquery.dcjqaccordion.2.7.js' %}"></script>
-    <script src="{% static 'js/jquery.scrollTo.min.js' %}"></script>
-    <script src="{% static 'js/jquery.nicescroll.js' %}"></script>
-    <script src="{% static 'js/angular.min.js' %}"></script>
-    <script src="{% static 'js/angular-route.min.js' %}"></script>
-
+    <script src="{% static 'assets/js/jquery-2.1.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.ui.touch-punch.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.dcjqaccordion.2.7.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.scrollTo.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.nicescroll.js' %}"></script>
+    <script src="{% static 'assets/js/angular.min.js' %}"></script>
+    <script src="{% static 'assets/js/angular-route.min.js' %}"></script>
+    <script src="{% static 'assets/js/app.js' %}"></script>
+    <script src="{% static 'controllers/trademark.js' %}"></script>
 
     <!--common script for all pages-->
-    <script src="{% static 'js/common-scripts.js' %}"></script>
+    <script src="{% static 'assets/js/common-scripts.js' %}"></script>
   </body>
 </html>

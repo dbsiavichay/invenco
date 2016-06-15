@@ -1,0 +1,26 @@
+<h3><i class="fa fa-angle-right"></i> Marcas</h3>
+<div class="row mt">
+  <div class="col-lg-12">
+    <table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Nombre</th>
+					<th>Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="object in objectList">
+					<td name="name" class="col-xs-10">{{ object.name }}</td>
+					<td name="actions" id="{{ object.id }}" class="col-xs-2">
+						<button class="btn btn-sm btn-default">
+							<span class="fa fa-pencil"></span>
+						</button>
+						<button class="btn btn-sm btn-default">
+							<span class="fa fa-remove"></span>
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+  </div>
+</div>
