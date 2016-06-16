@@ -1,26 +1,37 @@
 <h3><i class="fa fa-angle-right"></i> Marcas</h3>
 <div class="row mt">
   <div class="col-lg-12">
-    <table class="table table-striped">
-			<thead>
-				<tr>
-					<th>Nombre</th>
-					<th>Acciones</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="object in objectList">
-					<td name="name" class="col-xs-10">{{ object.name }}</td>
-					<td name="actions" id="{{ object.id }}" class="col-xs-2">
-						<button class="btn btn-sm btn-default">
-							<span class="fa fa-pencil"></span>
-						</button>
-						<button class="btn btn-sm btn-default">
-							<span class="fa fa-remove"></span>
-						</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+    <div class="content-panel">
+      <div class="content-panel-header">
+        <h4>
+          <i class="fa fa-angle-right"></i>
+          Listado
+        </h4>
+        <a href="#" class="btn btn-sm btn-primary pull-right col-xs-2">
+          <i class="fa fa-plus-circle"></i> Agregar
+        </a>
+      </div>
+      <table datatable="ng" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="object in objectList">
+            <td name="name" class="col-xs-10">{{ object.name }}</td>
+            <td name="actions" id="{{ object.id }}" class="col-xs-2">
+              <button class="btn btn-xs btn-default">
+                <span class="fa fa-pencil"></span>
+              </button>
+              <button class="btn btn-xs btn-default">
+                <span class="fa fa-remove"></span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

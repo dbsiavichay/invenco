@@ -16,4 +16,4 @@ urlpatterns = patterns('',
 )
 
 equipment_router = routers.DefaultRouter()
-equipment_router.register(r'marcas', TrademarkViewSet)
+equipment_router.register(r'trademarks', TrademarkViewSet)

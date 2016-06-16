@@ -1,7 +1,8 @@
 (function () {
   var app = angular.module('invenco', [
     'ngRoute',
-    'controllers.trademark'
+    'equipment.controllers',
+    'datatables'
   ]);
 
   app.config(['$routeProvider', function ($routeProvider) {
