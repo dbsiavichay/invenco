@@ -1180,6 +1180,13 @@ PANELS CONFIGURATIONS
   display: inline;
 }
 
+.btn-panel-footer {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+
+
 /*WEATHER PANELS*/
 
 /* Weather 1 */

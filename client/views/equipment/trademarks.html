@@ -1,5 +1,5 @@
 <h3><i class="fa fa-angle-right"></i> Marcas</h3>
-<div class="row mt">
+<div ng-hide="edit" class="row mt">
   <div class="col-lg-12">
     <div class="content-panel">
       <div class="content-panel-header">
@@ -7,7 +7,7 @@
           <i class="fa fa-angle-right"></i>
           Listado
         </h4>
-        <a href="#" class="btn btn-sm btn-primary pull-right col-xs-2">
+        <a ng-click="add()" class="btn btn-sm btn-primary pull-right col-xs-2">
           <i class="fa fa-plus-circle"></i> Agregar
         </a>
       </div>
@@ -32,6 +32,29 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<div ng-show="edit" class="row mt">
+  <div class="col-lg-12">
+    <div class="content-panel">
+      <form>
+        <div class="form-group">
+          <label for="inputName">Nombre</label>
+          <input id="inputName" type="text" class="form-control" placeholder="Nombre de la marca">
+        </div>
+      </form>
+      <a class="btn btn-primary">
+        <i class="fa fa-check"></i> Guardar
+      </a>
+      <a class="btn btn-primary">
+        <i class="fa fa-check"></i> Guardar
+      </a>
+      <a class="btn btn-danger">
+        <i class="fa fa-trash"></i> Eliminar
+      </a>
+      <button ng-click="edit = false" type="button" class="btn btn-link">Regresar</button>
     </div>
   </div>
 </div>
