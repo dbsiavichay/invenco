@@ -4,6 +4,10 @@
   ])
 
   .factory('Trademark', function ($resource) {
-    return $resource('/api/trademarks/');
+    return $resource('/api/trademarks/:id/', {
+      id: '@id'
+    },{
+      update: {method: 'PUT'}
+    });
   });
 })();

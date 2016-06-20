@@ -5,12 +5,13 @@
     'datatables'
   ]);
 
-  app.config(['$routeProvider', function ($routeProvider) {
+  app.config(['$routeProvider', '$resourceProvider', function ($routeProvider, $resourceProvider) {
     $routeProvider
       .when('/marcas', {
         templateUrl: 'static/views/equipment/trademarks.html',
         controller: 'TrademarkController'
       });
 
+    $resourceProvider.defaults.stripTrailingSlashes = false;
   }]);
 })();

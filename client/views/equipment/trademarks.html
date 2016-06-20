@@ -1,5 +1,5 @@
 <h3><i class="fa fa-angle-right"></i> Marcas</h3>
-<div ng-hide="edit" class="row mt">
+<div ng-hide="trademark" class="row mt">
   <div class="col-lg-12">
     <div class="content-panel">
       <div class="content-panel-header">
@@ -7,7 +7,7 @@
           <i class="fa fa-angle-right"></i>
           Listado
         </h4>
-        <a ng-click="add()" class="btn btn-sm btn-primary pull-right col-xs-2">
+        <a ng-click="edit()" class="btn btn-sm btn-primary pull-right col-xs-2">
           <i class="fa fa-plus-circle"></i> Agregar
         </a>
       </div>
@@ -19,13 +19,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="object in objectList">
-            <td name="name" class="col-xs-10">{{ object.name }}</td>
-            <td name="actions" id="{{ object.id }}" class="col-xs-2">
-              <button class="btn btn-xs btn-default">
+          <tr ng-repeat="trademark in trademarks">
+            <td name="name" class="col-xs-10">{{ trademark.name }}</td>
+            <td name="actions" id="{{ trademark.id }}" class="col-xs-2">
+              <button ng-click="edit(trademark)" class="btn btn-xs btn-default">
                 <span class="fa fa-pencil"></span>
               </button>
-              <button class="btn btn-xs btn-default">
+              <button ng-click="remove(trademark)" class="btn btn-xs btn-default">
                 <span class="fa fa-remove"></span>
               </button>
             </td>
@@ -36,25 +36,34 @@
   </div>
 </div>
 
-<div ng-show="edit" class="row mt">
+<div ng-show="trademark" class="row mt">
   <div class="col-lg-12">
     <div class="content-panel">
-      <form>
-        <div class="form-group">
-          <label for="inputName">Nombre</label>
-          <input id="inputName" type="text" class="form-control" placeholder="Nombre de la marca">
+      <div class="content-panel-header">
+        <h4>
+          <i class="fa fa-angle-right"></i>
+          Datos de marca
+        </h4>
+      </div>
+      <form name="form">
+        <div class="form-group" ng-class="{'has-error':form.name.$invalid && form.name.$dirty}">
+          <label for="name">Nombre</label>
+          <input id="name" name="name" ng-required="true" ng-model="trademark.name" type="text" class="form-control" placeholder="Nombre de la marca">
+          <span ng-if="form.name.$invalid && form.name.$dirty" class="help-block">El nombre es requerido</span>
         </div>
       </form>
-      <a class="btn btn-primary">
+      <a ng-hide="trademark.id" ng-click="create()" class="btn btn-primary">
         <i class="fa fa-check"></i> Guardar
       </a>
-      <a class="btn btn-primary">
+      <a ng-show="trademark.id" ng-click="update()" class="btn btn-primary">
         <i class="fa fa-check"></i> Guardar
       </a>
-      <a class="btn btn-danger">
+      <a ng-show="trademark.id" ng-click="delete()" class="btn btn-danger">
         <i class="fa fa-trash"></i> Eliminar
       </a>
-      <button ng-click="edit = false" type="button" class="btn btn-link">Regresar</button>
+      <button ng-click="reset()" type="button" class="btn btn-link">Regresar</button>
     </div>
   </div>
 </div>
+
+<div ng-include="'static/partials/modal-delete.html'"></div>
