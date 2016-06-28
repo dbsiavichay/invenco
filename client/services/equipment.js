@@ -9,5 +9,12 @@
     },{
       update: {method: 'PUT'}
     });
+  })
+  .factory('Type', function ($resource) {
+    return $resource('/api/types/:id/', {
+      id: '@id'
+    },{
+      update: {method: 'PUT'}
+    })
   });
 })();

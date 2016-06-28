@@ -10,6 +10,10 @@
       .when('/marcas', {
         templateUrl: 'static/views/equipment/trademarks.html',
         controller: 'TrademarkController'
+      })
+      .when('/tipos', {
+        templateUrl: 'static/views/equipment/types.html',
+        controller: 'TypeController'
       });
 
     $resourceProvider.defaults.stripTrailingSlashes = false;

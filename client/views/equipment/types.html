@@ -1,0 +1,136 @@
+<h3><i class="fa fa-angle-right"></i> Tipos</h3>
+<div ng-hide="type" class="row mt">
+  <div class="col-lg-12">
+    <div class="content-panel">
+      <div class="content-panel-header">
+        <h4>
+          <i class="fa fa-angle-right"></i>
+          Listado
+        </h4>
+        <a ng-click="edit()" class="btn btn-sm btn-primary pull-right col-xs-2">
+          <i class="fa fa-plus-circle"></i> Agregar
+        </a>
+      </div>
+      <table datatable="ng" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="type in types">
+            <td name="name" class="col-xs-10">{{ type.name }}</td>
+            <td name="actions" id="{{ type.id }}" class="col-xs-2">
+              <button ng-click="edit(type)" class="btn btn-xs btn-default">
+                <span class="fa fa-pencil"></span>
+              </button>
+              <button ng-click="remove(type)" class="btn btn-xs btn-default">
+                <span class="fa fa-remove"></span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div ng-show="type" class="row mt">
+  <div class="col-lg-12">
+    <div class="content-panel">
+      <div class="content-panel-header">
+        <h4>
+          <i class="fa fa-angle-right"></i>
+          Datos de tipo
+        </h4>
+      </div>
+      <form id="form" name="form" novalidate>
+        <div class="form-group" ng-class="{'has-error': (form.$submitted || form.name.$touched) && form.name.$invalid}">
+          <label for="name">Nombre</label>
+          <input id="name" name="name" ng-model="type.name" type="text" class="form-control" placeholder="Nombre del tipo" required>
+          <span ng-if="(form.$submitted || form.name.$touched) && form.name.$invalid" class="help-block">El nombre es obligatorio</span>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error':(form.$submitted || form.usage.touched) && form.usage.$invalid}">
+					<label>Uso adicional</label>
+					<div>
+						<label class="radio-inline">
+							<input type="radio" name="usage" ng-model="type.usage" value="1" required> Ninguno
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="usage" ng-model="type.usage" value="2" required> Repuesto
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="usage" ng-model="type.usage" value="3" required> Accesorio
+						</label>
+					</div>
+          <span ng-if="(form.$submitted || form.usage.$touched) && form.usage.$invalid" class="help-block">El uso es requerido</span>
+				</div>
+      </form>
+
+      <div class="content-panel-header">
+        <h4>
+          <i class="fa fa-angle-right"></i>
+          Especificaciones de tipo
+        </h4>
+      </div>
+
+      <form name="formInline" novalidate>
+        <ng-form name="formItem" ng-repeat="specification in specifications" novalidate>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              Especificación {{ $index + 1 }}
+              <button class="btn btn-default btn-xs pull-right" ng-click="removeSpecification($index)">
+                <i class="fa fa-close text-danger"></i>
+              </button>
+            </div>
+            <div class="panel-body">
+              <div class="form-group" ng-class="{'has-error':formInline.$submitted && !specification.when && formItem.name.$valid}">
+                <label>Especificar en</label>
+                <div>
+                  <label class="radio-inline">
+                    <input type="radio" ng-model="specification.when" value="model" required> Modelo
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" ng-model="specification.when" value="device"> Dispositivo
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" ng-model="specification.when" value="allocation"> Asignación
+                  </label>
+                </div>
+                <span ng-if="formInline.$submitted && !specification.when && formItem.name.$valid" class="help-block">Este campo es requerido</span>
+              </div>
+              <div class="form-group" ng-class="{'has-error':form.$submitted && formItem.name.$invalid && specification.when}">
+                <label for="name{{$index}}">Nombre</label>
+                <input id="name{{$index}}" name="name" ng-model="specification.name" type="text" class="form-control" placeholder="Nombre de la especificación" required>
+                <span ng-if="form.$submitted && formItem.name.$invalid && specification.when" class="help-block">El nombre es requerido</span>
+              </div>
+              <div class="form-group">
+                <label for="options{{ $index }}">Opciones</label>
+                <textarea id="options{{ $index }}" name="options" ng-model="specification.options" type="text" class="form-control" placeholder="Opciones para la especificación"></textarea>
+              </div>
+            </div>
+          </div>
+        </ng-form>
+      </form>
+
+      <button ng-click="addSpecification()" class="btn btn-link btn-add-inline">
+        <i class="fa fa-plus-circle"></i> Agregar especificacion adicional
+      </button>
+      <button type="submit" form="form" ng-hide="type.id" ng-click="create()" value="Guardar" class="btn btn-primary">
+        <i class="fa fa-check"></i> Guardar
+      </button>
+      <button ng-show="type.id" ng-click="update()" class="btn btn-primary">
+        <i class="fa fa-check"></i> Guardar
+      </button>
+      <button ng-show="type.id" ng-click="delete()" class="btn btn-danger">
+        <i class="fa fa-trash"></i> Eliminar
+      </button>
+      <button ng-click="reset()" type="button" class="btn btn-link">Regresar</button>
+
+    </div>
+  </div>
+</div>
+
+<div ng-include="'static/partials/modal-delete.html'"></div>

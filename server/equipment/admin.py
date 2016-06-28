@@ -1,13 +1,17 @@
 from django.contrib import admin
-from .models import Trademark, Type, Model, Device
+from .models import Trademark, Type, TypeSpecification, Model, Device
 
 class TrademarkAdmin(admin.ModelAdmin):
 	list_display = ('name',)
 	search_fields = ('name',)
 
+class TypeSpecificationInline(admin.TabularInline):
+	model = TypeSpecification
+
 class TypeAdmin(admin.ModelAdmin):
 	list_display = ('name', 'specifications',)
 	search_fields = ('name',)
+	inlines = [TypeSpecificationInline,]
 
 class ModelAdmin(admin.ModelAdmin):
 	list_display = ('type', 'trademark', 'name', 'specifications',)

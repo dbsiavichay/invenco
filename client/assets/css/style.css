@@ -160,6 +160,12 @@ a, a:hover, a:focus {
 	color: white;
 }
 
+.btn-add-inline {
+  margin-top: -15px;
+  margin-bottom: 20px;
+  display: block;
+}
+
 hr {
   margin-top: 20px;
   margin-bottom: 20px;

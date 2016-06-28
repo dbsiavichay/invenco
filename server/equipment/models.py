@@ -18,6 +18,7 @@ class Type(models.Model):
 		ordering = ['name',]
 
 	name = models.CharField(max_length=32)
+	#options 1: Ninguno, 2: repuesto, 3: accesorio
 	usage = models.PositiveSmallIntegerField(default=1)
 	specifications = JsonField(blank=True, null=True)
 	print_sizes = JsonField(blank=True, null=True)
@@ -27,6 +28,18 @@ class Type(models.Model):
 
 	def get_print_sizes(self):
 		return [float(n) for n in self.print_sizes.split(',')]
+
+	def __unicode__(self):
+		return self.name
+
+class TypeSpecification(models.Model):
+	class Meta:
+		ordering = ['-when']
+
+	name = models.CharField(max_length=128)
+	when = models.CharField(max_length=32)
+	options = models.CharField(max_length=128, blank=True, null=True)
+	type = models.ForeignKey(Type, related_name='type_specifications')
 
 	def __unicode__(self):
 		return self.name
