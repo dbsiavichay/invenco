@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Trademark, Type, TypeSpecification
+from drf_custom_fields import fields
+from .models import Trademark, Type, TypeSpecification, Model
 
 class TrademarkSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,3 +39,12 @@ class TypeSerializer(serializers.ModelSerializer):
             TypeSpecification.objects.create(type=instance, **specification)
 
         return instance
+
+class ModelSerializer(serializers.ModelSerializer):
+    type = fields.ObjectRelatedField(queryset=Type.objects.all())
+    trademark = fields.ObjectRelatedField(queryset=Trademark.objects.all())
+    specifications = fields.JsonField()
+
+    class Meta:
+        model = Model
+        fields = ('id', 'name', 'part_number', 'specifications', 'type', 'trademark',)

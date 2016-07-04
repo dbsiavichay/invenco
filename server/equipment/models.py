@@ -53,7 +53,7 @@ class Model(models.Model):
 	specifications = JsonField(blank=True, null=True)
 	type = models.ForeignKey(Type)
 	trademark = models.ForeignKey(Trademark)
-	replacements = models.ManyToManyField('self')
+	replacements = models.ManyToManyField('self', blank=True)
 
 	def __unicode__(self):
 		#type = self.specifications['Uso'] if self.specifications.has_key('Uso') and 'laptop' in self.specifications['Uso'].lower() else self.type

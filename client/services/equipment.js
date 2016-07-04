@@ -16,5 +16,12 @@
     },{
       update: {method: 'PUT'}
     })
+  })
+  .factory('Model', function ($resource) {
+    return $resource('/api/models/:id/', {
+      id: '@id'
+    },{
+      update: {method: 'PUT'}
+    })
   });
 })();
