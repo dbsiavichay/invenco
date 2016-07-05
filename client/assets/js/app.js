@@ -18,6 +18,10 @@
       .when('/modelos', {
         templateUrl: 'static/views/equipment/models.html',
         controller: 'ModelController'
+      })
+      .when('/dispositivos', {
+        templateUrl: 'static/views/equipment/devices.html',
+        controller: 'DeviceController'
       });
 
     $resourceProvider.defaults.stripTrailingSlashes = false;

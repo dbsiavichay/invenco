@@ -1,6 +1,6 @@
 import json, ast
 from django.db import models
-from providers.models import Provider
+from purchases.models import Provider
 from django_pgjson.fields import JsonField
 from datetime import date
 

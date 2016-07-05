@@ -4,12 +4,12 @@ from django.http import JsonResponse, HttpResponse
 from django.views.generic import ListView, DetailView
 from allocation.models import Allocation
 from organization.models import Contributor
-from providers.models import Provider
+from purchases.models import Provider
 from .models import Trademark, Type, Model, Device
 from .mixins import ListViewMixin, DetailViewMixin
 from .reports import get_pdf, get_pcdir
 from rest_framework import viewsets
-from .serializers import TrademarkSerializer, TypeSerializer, ModelSerializer
+from .serializers import TrademarkSerializer, TypeSerializer, ModelSerializer, DeviceSerializer
 
 class TrademarkViewSet(viewsets.ModelViewSet):
 	queryset = Trademark.objects.all()
@@ -22,6 +22,17 @@ class TypeViewSet(viewsets.ModelViewSet):
 class ModelViewSet(viewsets.ModelViewSet):
 	queryset = Model.objects.all()
 	serializer_class = ModelSerializer
+
+	def get_queryset(self):
+		queryset = self.queryset
+		type = self.request.query_params.get('type', None)
+		if type is not None:
+			queryset = queryset.filter(type=type)
+		return queryset
+
+class DeviceViewSet(viewsets.ModelViewSet):
+	queryset = Device.objects.all()
+	serializer_class = DeviceSerializer
 
 class TrademarkListView(ListViewMixin, ListView):
 	model = Trademark

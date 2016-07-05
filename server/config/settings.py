@@ -47,10 +47,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'home',
+    'purchases',
+    'providers', #deleted app
     'equipment',
     'allocation',
     'organization',
-    'providers',
     'technical_assistance',
 )
 

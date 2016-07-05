@@ -23,5 +23,12 @@
     },{
       update: {method: 'PUT'}
     })
+  })
+  .factory('Device', function ($resource) {
+    return $resource('/api/devices/:id/', {
+      id: '@id'
+    },{
+      update: {method: 'PUT'}
+    })
   });
 })();

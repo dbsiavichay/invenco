@@ -17,15 +17,16 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 from equipment.urls import equipment_router
+from purchases.urls import purchases_router
 
 urlpatterns = [
     url(r'^test/', TemplateView.as_view(template_name='home.html')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', include('home.urls')),
-    url(r'', include('equipment.urls')),
+    #url(r'', include('equipment.urls')),
     url(r'', include('allocation.urls')),
     url(r'', include('organization.urls')),
-    url(r'', include('providers.urls')),
     url(r'', include('technical_assistance.urls')),
     url(r'^api/', include(equipment_router.urls)),
+    url(r'^api/', include(purchases_router.urls)),
 ]

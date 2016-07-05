@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from .views	import TrademarkListView, TrademarkDetailView, TypeListView, TypeDetailView, ModelListView, ModelDetailView, DeviceListView, DeviceDetailView, ReportListView
 from rest_framework import routers
-from .views import TrademarkViewSet, TypeViewSet, ModelViewSet
+from .views import TrademarkViewSet, TypeViewSet, ModelViewSet, DeviceViewSet
 
 urlpatterns = patterns('',
     url(r'^trademarks/$', TrademarkListView.as_view(), name='trademark_list'),
@@ -19,3 +19,4 @@ equipment_router = routers.DefaultRouter()
 equipment_router.register(r'trademarks', TrademarkViewSet)
 equipment_router.register(r'types', TypeViewSet)
 equipment_router.register(r'models', ModelViewSet)
+equipment_router.register(r'devices', DeviceViewSet)
