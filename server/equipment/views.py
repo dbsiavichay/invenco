@@ -9,15 +9,24 @@ from .models import Trademark, Type, Model, Device
 from .mixins import ListViewMixin, DetailViewMixin
 from .reports import get_pdf, get_pcdir
 from rest_framework import viewsets
-from .serializers import TrademarkSerializer, TypeSerializer, ModelSerializer, DeviceSerializer
+
+from .serializers import *
 
 class TrademarkViewSet(viewsets.ModelViewSet):
 	queryset = Trademark.objects.all()
 	serializer_class = TrademarkSerializer
 
+class TypeListViewSet(viewsets.ModelViewSet):
+	queryset = Type.objects.all()
+	serializer_class = TypeListSerializer
+
 class TypeViewSet(viewsets.ModelViewSet):
 	queryset = Type.objects.all()
 	serializer_class = TypeSerializer
+
+class ModelListViewSet(viewsets.ReadOnlyModelViewSet):
+	queryset = Model.objects.all()
+	serializer_class = ModelListSerializer
 
 class ModelViewSet(viewsets.ModelViewSet):
 	queryset = Model.objects.all()
@@ -29,6 +38,10 @@ class ModelViewSet(viewsets.ModelViewSet):
 		if type is not None:
 			queryset = queryset.filter(type=type)
 		return queryset
+
+class DeviceListViewSet(viewsets.ReadOnlyModelViewSet):
+	queryset = Device.objects.all()
+	serializer_class = DeviceListSerializer
 
 class DeviceViewSet(viewsets.ModelViewSet):
 	queryset = Device.objects.all()

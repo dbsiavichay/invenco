@@ -24,8 +24,8 @@
         <tbody>
           <tr ng-repeat="model in models">
             <td name="name" class="col-xs-4">{{ model.name }}</td>
-            <td name="type" class="col-xs-2">{{ model.type.name }}</td>
-            <td name="trademark" class="col-xs-2">{{ model.trademark.name }}</td>
+            <td name="type" class="col-xs-2">{{ model.type }}</td>
+            <td name="trademark" class="col-xs-2">{{ model.trademark }}</td>
             <td name="part_number" class="col-xs-2">{{ model.part_number }}</td>
             <td name="actions" id="{{ model.id }}" class="col-xs-2">
               <button ng-click="edit(model)" class="btn btn-xs btn-default">
@@ -54,7 +54,7 @@
       <form name="form" novalidate>
         <div class="form-group" ng-class="{'has-error': (form.$submitted || form.type.$touched) && form.type.$invalid}">
           <label for="type">Tipo</label>
-          <select id="type" name="type" ng-model="model.type" class="form-control" ng-options="type.name for type in types track by type.id"
+          <select id="type" name="type" ng-model="model.type" class="form-control" ng-options="type.id as type.name for type in types"
            ng-change="changeSpecifications()" required>
             <option value="">--- Seleccionar ---</option>
           </select>
@@ -62,7 +62,7 @@
         </div>
         <div class="form-group" ng-class="{'has-error': (form.$submitted || form.trademark.$touched) && form.trademark.$invalid}">
           <label for="trademark">Marca</label>
-          <select id="trademark" name="trademark" ng-model="model.trademark" class="form-control" ng-options="trademark.name for trademark in trademarks track by trademark.id" required>
+          <select id="trademark" name="trademark" ng-model="model.trademark" class="form-control" ng-options="trademark.id as trademark.name for trademark in trademarks" required>
             <option value="">-- Seleccionar --</option>
           </select>
           <span ng-if="(form.$submitted || form.trademark.$touched) && form.trademark.$invalid" class="help-block">La marca es requerida</span>
@@ -78,8 +78,8 @@
         </div>
       </form>
 
-      <div ng-if="model.type" class="content-panel-header">
-        <h4 ng-show="model.type.type_specifications.length">
+      <div ng-show="modelSpecifications.length" class="content-panel-header">
+        <h4>
           <i class="fa fa-angle-right"></i>
           Especificaciones de modelo
         </h4>

@@ -57,7 +57,7 @@ class Model(models.Model):
 
 	def __unicode__(self):
 		#type = self.specifications['Uso'] if self.specifications.has_key('Uso') and 'laptop' in self.specifications['Uso'].lower() else self.type
-		return '%s %s' % (self.trademark, self.name)
+		return self.name
 
 	def get_specifications(self):
 		return ast.literal_eval(json.dumps(self.specifications))

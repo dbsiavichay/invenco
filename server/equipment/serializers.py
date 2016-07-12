@@ -13,6 +13,11 @@ class TypeSpecificationSerializer(serializers.ModelSerializer):
         model = TypeSpecification
         fields = ('id', 'name', 'when', 'options')
 
+class TypeListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Type
+        fields = ('id', 'name')
+
 class TypeSerializer(serializers.ModelSerializer):
     type_specifications = TypeSpecificationSerializer(many=True)
 
@@ -41,20 +46,45 @@ class TypeSerializer(serializers.ModelSerializer):
 
         return instance
 
+class ModelListSerializer(serializers.ModelSerializer):
+    type = serializers.StringRelatedField()
+    trademark = serializers.StringRelatedField()
+
+    class Meta:
+        model = Model
+        fields = ('id', 'name', 'part_number', 'type', 'trademark',)
+
 class ModelSerializer(serializers.ModelSerializer):
-    type = fields.ObjectRelatedField(queryset=Type.objects.all())
-    trademark = fields.ObjectRelatedField(queryset=Trademark.objects.all())
+    #type = fields.ObjectRelatedField(queryset=Type.objects.all())
+    #trademark = fields.ObjectRelatedField(queryset=Trademark.objects.all())
     specifications = fields.JsonField()
 
     class Meta:
         model = Model
         fields = ('id', 'name', 'part_number', 'specifications', 'type', 'trademark',)
 
-class DeviceSerializer(serializers.ModelSerializer):
-    model = ModelSerializer()
+class DeviceListSerializer(serializers.ModelSerializer):
     specifications = fields.JsonField()
+    model = serializers.StringRelatedField()
+    type = serializers.SerializerMethodField()
+    trademark = serializers.SerializerMethodField()
 
     class Meta:
         model = Device
-        fields = ('model', 'code', 'serial', 'part', 'specifications', 'state',
+        fields = ('id','model', 'type', 'trademark','code', 'serial', 'specifications', 'state',
+        'provider', 'invoice', 'date_purchase', 'date_warranty', 'observation')
+
+    def get_type(self, obj):
+        return obj.model.type.name
+
+    def get_trademark(self, obj):
+        return obj.model.trademark.name
+
+class DeviceSerializer(serializers.ModelSerializer):
+    specifications = fields.JsonField()
+    model = ModelListSerializer()
+
+    class Meta:
+        model = Device
+        fields = ('id','model', 'code', 'serial', 'specifications', 'state',
         'provider', 'invoice', 'date_purchase', 'date_warranty', 'observation')
