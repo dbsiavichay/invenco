@@ -23,7 +23,12 @@
       id: '@id'
     },{
       query: {url: '/api/models/list/', method: 'GET', isArray: true},
-      update: {method: 'PUT'}
+      update: {method: 'PUT'},
+      getFromList: {
+        url: 'api/models/list/:id/',
+        id: '@id',
+        method: 'GET'
+      }
     })
   })
   .factory('Device', function ($resource) {

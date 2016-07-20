@@ -79,7 +79,7 @@
           if(!$scope.specifications.length) $scope.specifications.push({})
         });
       }else{
-        $scope.specifications = [{}];        
+        $scope.specifications = [{}];
       }
     }
 
@@ -170,7 +170,6 @@
 
       if(!model) return;
       $scope.model.$get(function(response) {
-        $scope.model = angular.copy(response)
         renderSpecifications();
       })
     }
@@ -193,8 +192,10 @@
 
       $scope.model
         .$save(function (response) {
-          $scope.models.push($scope.model);
-          $scope.reset();
+          response.$getFromList(function (data) {
+            $scope.models.push(data);
+            $scope.reset();
+          });
         });
     }
 
@@ -205,9 +206,11 @@
 
       $scope.model
         .$update(function (response) {
-          var index = getIndex($scope.model);
-          $scope.models[index] = angular.copy(response);
-          $scope.reset();
+          response.$getFromList(function (data) {
+            var index = getIndex($scope.model);
+            $scope.models[index] = angular.copy(data);
+            $scope.reset();
+          });
         });
     }
 
@@ -225,82 +228,86 @@
       $scope.modelSpecifications = [];
       $scope.modelOptions = [];
       var type_specifications = [];
-      if($scope.model.type) type_specifications = angular.copy($scope.model.type.type_specifications);
 
-      for(var i=0; i < type_specifications.length; i++) {
-        if (type_specifications[i]['when'] != 'model') {
-          type_specifications.splice(i, 1);
-          i = i - 1;
-        }
-      }
+      var promise = Type.get({id: $scope.model.type}).$promise;
 
-      for(var i=0; i < type_specifications.length; i++) {
-        var ts = type_specifications[i];
-        if(!ts['options']) {
-          angular.forEach(ts['name'].split(','), function (value) {
-            $scope.modelSpecifications.push({
-              'label' : value.trim(),
-              'type' : 'text'
-            });
-          });
-          type_specifications.splice(i, 1);
-          i = i - 1;
-        }
-      }
+      promise.then(function (response) {
+        type_specifications = angular.copy(response.type_specifications);
 
-      for(var i=0; i < type_specifications.length; i++) {
-        var ts = type_specifications[i];
-
-        if(ts['name'].indexOf('.') < 0) {
-          var options = []
-
-          angular.forEach(ts['options'].split(','), function (value) {
-            options.push(value.trim());
-          });
-
-          $scope.modelSpecifications.push({
-            'label': ts['name'],
-            'type': 'select',
-            'options': options
-          });
-
-          type_specifications.splice(i, 1);
-          i = i - 1;
-        }
-      }
-
-      for(var i=0; i < type_specifications.length; i++) {
-        var ts = type_specifications[i];
-        var label = ts['name'].split('.')[0];
-        var actions = [];
-
-        for(var j = i; j < type_specifications.length; j++){
-          var _ts = type_specifications[j];
-
-          if(_ts['name'].indexOf(label) > -1) {
-            var options = []
-            angular.forEach(_ts['options'].split(','), function (value) {
-              options.push(value.trim());
-            });
-
-            actions.push({
-              'name': _ts['name'].split('.')[1],
-              'options': options
-            });
-
-            type_specifications.splice(j, 1);
-            j = j - 1;
-            i = j;
+        for(var i=0; i < type_specifications.length; i++) {
+          if (type_specifications[i]['when'] != 'model') {
+            type_specifications.splice(i, 1);
+            i = i - 1;
           }
         }
 
-        $scope.modelSpecifications.push({
-          'label' : label,
-          'type' : 'select',
-          'actions': actions
-        });
-      }
+        for(var i=0; i < type_specifications.length; i++) {
+          var ts = type_specifications[i];
+          if(!ts['options']) {
+            angular.forEach(ts['name'].split(','), function (value) {
+              $scope.modelSpecifications.push({
+                'label' : value.trim(),
+                'type' : 'text'
+              });
+            });
+            type_specifications.splice(i, 1);
+            i = i - 1;
+          }
+        }
 
+        for(var i=0; i < type_specifications.length; i++) {
+          var ts = type_specifications[i];
+
+          if(ts['name'].indexOf('.') < 0) {
+            var options = []
+
+            angular.forEach(ts['options'].split(','), function (value) {
+              options.push(value.trim());
+            });
+
+            $scope.modelSpecifications.push({
+              'label': ts['name'],
+              'type': 'select',
+              'options': options
+            });
+
+            type_specifications.splice(i, 1);
+            i = i - 1;
+          }
+        }
+
+        for(var i=0; i < type_specifications.length; i++) {
+          var ts = type_specifications[i];
+          var label = ts['name'].split('.')[0];
+          var actions = [];
+
+          for(var j = i; j < type_specifications.length; j++){
+            var _ts = type_specifications[j];
+
+            if(_ts['name'].indexOf(label) > -1) {
+              var options = []
+              angular.forEach(_ts['options'].split(','), function (value) {
+                options.push(value.trim());
+              });
+
+              actions.push({
+                'name': _ts['name'].split('.')[1],
+                'options': options
+              });
+
+              type_specifications.splice(j, 1);
+              j = j - 1;
+              i = j;
+            }
+          }
+
+          $scope.modelSpecifications.push({
+            'label' : label,
+            'type' : 'select',
+            'actions': actions
+          });
+        }
+      });
     }
 
     $scope.changeOptions = function (label, selected) {
@@ -327,17 +334,7 @@
       });
     }
 
-
     var renderSpecifications = function () {
-      if($scope.model.type) {
-        for (var i=0 in $scope.types) {
-          var t = $scope.types[i];
-          if($scope.model.type.id == t.id) {
-            $scope.model.type = t
-            break;
-          }
-        }
-      }
       $scope.changeSpecifications();
 
       angular.forEach($scope.modelSpecifications, function (ms) {
