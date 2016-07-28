@@ -181,6 +181,8 @@
 
     $scope.reset = function () {
       $scope.model = null;
+      $scope.modelSpecifications = []
+      $scope.modelOptions = []
     }
 
     $scope.create = function () {
@@ -350,13 +352,16 @@
     }
   })
 
-  .controller('DeviceController', function ($scope, Device, Model, Type) {
+  .controller('DeviceController', function ($scope, Device, Model, Type, Department) {
     $scope.devices = Device.query();
     $scope.types = Type.query();
     $scope.models = [];
     $scope.deviceSpecifications = []
     $scope.deviceOptions = []
     $scope.device = null;
+    $scope.flag = false;
+
+    $scope.deparments = Department.query();
 
     $scope.edit = function (device) {
       $scope.form.$setPristine();
@@ -367,9 +372,7 @@
       $scope.device = angular.copy(device) || new Device();
 
       if(!device) return;
-
       $scope.device.$get(function (response) {
-        $scope.device = angular.copy(response);
         renderSpecifications();
       });
     }
@@ -381,11 +384,66 @@
 
     $scope.reset = function () {
       $scope.device = null;
+      $scope.deviceSpecifications = []
+      $scope.deviceOptions = []
+    }
+
+    $scope.create = function () {
+      $scope.form.$setSubmitted();
+      $scope.formInline.$setSubmitted();
+      if(!$scope.form.$valid || !$scope.formInline.$valid) return;
+
+      if(!$scope.device.specifications) $scope.device.specifications = []
+
+      $scope.device
+        .$save(function (response) {
+          response.$getFromList(function (data) {
+            $scope.devices.push(data);
+            $scope.reset();
+          });
+        });
+    }
+
+    $scope.update = function () {
+      $scope.form.$setSubmitted();
+      $scope.formInline.$setSubmitted();
+      if(!$scope.form.$valid || !$scope.formInline.$valid) return;
+
+      $scope.device
+        .$update(function (response) {
+          response.$getFromList(function (data) {
+            var index = getIndex($scope.device);
+            $scope.devices[index] = angular.copy(data);
+            $scope.reset();
+          });
+        });
+    }
+
+    $scope.delete = function () {
+      $scope.device
+        .$remove(function () {
+          var index = getIndex($scope.device);
+          $scope.devices.splice(index, 1);
+          $scope.reset();
+          $('#deleteModal').modal('hide');
+        });
+    }
+
+    $scope.allocation = function (device) {
+      //$scope.form.$setPristine();
+      //$scope.form.$setUntouched();
+      //$scope.formInline.$setPristine();
+      //$scope.formInline.$setUntouched();
+
+      $scope.flag = true;
+      $scope.device = angular.copy(device) || new Device();
+
+      if(!device) return;
+      $scope.device.$get();
     }
 
     $scope.updateModels = function () {
-      var type = $scope.device.type.id;
-      $scope.models = Model.query({'type': type});
+      $scope.models = Model.query({'type': $scope.device.type});
       $scope.updateSpecifications()
     }
 
@@ -393,81 +451,87 @@
       $scope.deviceSpecifications = [];
       $scope.deviceOptions = [];
       var type_specifications = [];
-      if($scope.device.type) type_specifications = angular.copy($scope.device.type.type_specifications);
+      var modelId = $scope.device.model;
+      var promise = Type.get({id: $scope.device.type}).$promise;
 
-      for(var i=0; i < type_specifications.length; i++) {
-        if (type_specifications[i]['when'] != 'device') {
-          type_specifications.splice(i, 1);
-          i = i - 1;
-        }
-      }
+      promise.then(function (data) {
+        $scope.device.model = modelId;
+        type_specifications = data.type_specifications;
 
-      for(var i=0; i < type_specifications.length; i++) {
-        var ts = type_specifications[i];
-        if(!ts['options']) {
-          angular.forEach(ts['name'].split(','), function (value) {
-            $scope.deviceSpecifications.push({
-              'label' : value.trim(),
-              'type' : 'text'
-            });
-          });
-          type_specifications.splice(i, 1);
-          i = i - 1;
-        }
-      }
-
-      for(var i=0; i < type_specifications.length; i++) {
-        var ts = type_specifications[i];
-
-        if(ts['name'].indexOf('.') < 0) {
-          var options = []
-
-          angular.forEach(ts['options'].split(','), function (value) {
-            options.push(value.trim());
-          });
-
-          $scope.deviceSpecifications.push({
-            'label': ts['name'],
-            'type': 'select',
-            'options': options
-          });
-
-          type_specifications.splice(i, 1);
-          i = i - 1;
-        }
-      }
-
-      for(var i=0; i < type_specifications.length; i++) {
-        var ts = type_specifications[i];
-        var label = ts['name'].split('.')[0];
-        var actions = [];
-
-        for(var j = i; j < type_specifications.length; j++){
-          var _ts = type_specifications[j];
-
-          if(_ts['name'].indexOf(label) > -1) {
-            var options = []
-            angular.forEach(_ts['options'].split(','), function (value) {
-              options.push(value.trim());
-            });
-
-            actions.push({
-              'name': _ts['name'].split('.')[1],
-              'options': options
-            });
-
-            type_specifications.splice(j, 1);
-            j = j - 1;
-            i = j;
+        for(var i=0; i < type_specifications.length; i++) {
+          if (type_specifications[i]['when'] != 'device') {
+            type_specifications.splice(i, 1);
+            i = i - 1;
           }
         }
 
-        $scope.deviceSpecifications.push({
-          'label' : label,
-          'type' : 'select',
-          'actions': actions
-        });
-      }
+        for(var i=0; i < type_specifications.length; i++) {
+          var ts = type_specifications[i];
+          if(!ts['options']) {
+            angular.forEach(ts['name'].split(','), function (value) {
+              $scope.deviceSpecifications.push({
+                'label' : value.trim(),
+                'type' : 'text'
+              });
+            });
+            type_specifications.splice(i, 1);
+            i = i - 1;
+          }
+        }
+
+        for(var i=0; i < type_specifications.length; i++) {
+          var ts = type_specifications[i];
+
+          if(ts['name'].indexOf('.') < 0) {
+            var options = []
+
+            angular.forEach(ts['options'].split(','), function (value) {
+              options.push(value.trim());
+            });
+
+            $scope.deviceSpecifications.push({
+              'label': ts['name'],
+              'type': 'select',
+              'options': options
+            });
+
+            type_specifications.splice(i, 1);
+            i = i - 1;
+          }
+        }
+
+        for(var i=0; i < type_specifications.length; i++) {
+          var ts = type_specifications[i];
+          var label = ts['name'].split('.')[0];
+          var actions = [];
+
+          for(var j = i; j < type_specifications.length; j++){
+            var _ts = type_specifications[j];
+
+            if(_ts['name'].indexOf(label) > -1) {
+              var options = []
+              angular.forEach(_ts['options'].split(','), function (value) {
+                options.push(value.trim());
+              });
+
+              actions.push({
+                'name': _ts['name'].split('.')[1],
+                'options': options
+              });
+
+              type_specifications.splice(j, 1);
+              j = j - 1;
+              i = j;
+            }
+          }
+
+          $scope.deviceSpecifications.push({
+            'label' : label,
+            'type' : 'select',
+            'actions': actions
+          });
+        }
+      });
     }
 
     $scope.changeOptions = function (label, selected) {
@@ -494,43 +558,6 @@
       });
     }
 
-    // $scope.create = function () {
-    //   $scope.form.$setSubmitted();
-    //   $scope.formInline.$setSubmitted();
-    //   if(!$scope.form.$valid || !$scope.formInline.$valid) return;
-    //
-    //   if(!$scope.device.specifications) $scope.device.specifications = []
-    //
-    //   $scope.device
-    //     .$save(function (response) {
-    //       $scope.devices.push($scope.device);
-    //       $scope.reset();
-    //     });
-    // }
-    //
-    // $scope.update = function () {
-    //   $scope.form.$setSubmitted();
-    //   $scope.formInline.$setSubmitted();
-    //   if(!$scope.form.$valid || !$scope.formInline.$valid) return;
-    //
-    //   $scope.device
-    //     .$update(function (response) {
-    //       var index = getIndex($scope.device);
-    //       $scope.devices[index] = angular.copy(response);
-    //       $scope.reset();
-    //     });
-    // }
-    //
-    // $scope.delete = function () {
-    //   $scope.device
-    //     .$remove(function () {
-    //       var index = getIndex($scope.device);
-    //       $scope.devices.splice(index, 1);
-    //       $scope.reset();
-    //       $('#deleteModal').modal('hide');
-    //     });
-    // }
-
     getIndex = function (device) {
       for(var i in $scope.devices) {
         var t = $scope.devices[i];
@@ -539,19 +566,7 @@
     }
 
     var renderSpecifications = function () {
-      if(!$scope.device.id) return;
-
-      for (var i=0 in $scope.types) {
-        var t = $scope.types[i];
-        if($scope.device.model.type.id == t.id) {
-          $scope.device.type = angular.copy(t)
-          break;
-        }
-      }
-
-      var type = $scope.device.type.id;
-      $scope.models = Model.query({'type': type});
-      $scope.updateSpecifications();
+      $scope.updateModels();
 
       angular.forEach($scope.deviceSpecifications, function (ds) {
         if(ds.actions) $scope.changeOptions(ds.label, $scope.device.specifications[ds.label]);

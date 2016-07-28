@@ -36,7 +36,25 @@
       id: '@id'
     },{
       query: {url: '/api/devices/list/', method: 'GET', isArray: true},
-      update: {method: 'PUT'}
+      update: {method: 'PUT'},
+      getFromList: {
+        url: 'api/devices/list/:id/',
+        id: '@id',
+        method: 'GET'
+      }
+    })
+  })
+  .factory('Department', function ($resource) {
+    return $resource('/api/devices/:id/', {
+      id: '@id'
+    },{
+      query: {url: '/api/devices/list/', method: 'GET', isArray: true},
+      update: {method: 'PUT'},
+      getFromList: {
+        url: 'api/devices/list/:id/',
+        id: '@id',
+        method: 'GET'
+      }
     })
   });
 })();

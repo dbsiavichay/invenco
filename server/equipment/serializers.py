@@ -64,15 +64,14 @@ class ModelSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'part_number', 'specifications', 'type', 'trademark',)
 
 class DeviceListSerializer(serializers.ModelSerializer):
-    specifications = fields.JsonField()
     model = serializers.StringRelatedField()
     type = serializers.SerializerMethodField()
     trademark = serializers.SerializerMethodField()
+    responsible = serializers.SerializerMethodField()
 
     class Meta:
         model = Device
-        fields = ('id','model', 'type', 'trademark','code', 'serial', 'specifications', 'state',
-        'provider', 'invoice', 'date_purchase', 'date_warranty', 'observation')
+        fields = ('id','model', 'type', 'trademark','code', 'serial', 'state', 'responsible')
 
     def get_type(self, obj):
         return obj.model.type.name
@@ -80,11 +79,22 @@ class DeviceListSerializer(serializers.ModelSerializer):
     def get_trademark(self, obj):
         return obj.model.trademark.name
 
+    def get_responsible(self, obj):
+        allocations = obj.allocation_set.all()
+        if len(allocations)>0:
+            return allocations[0].short_responsible()
+        else:
+            return ''
+
+
 class DeviceSerializer(serializers.ModelSerializer):
     specifications = fields.JsonField()
-    model = ModelListSerializer()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Device
-        fields = ('id','model', 'code', 'serial', 'specifications', 'state',
+        fields = ('id','model', 'type','code', 'serial', 'specifications', 'state',
         'provider', 'invoice', 'date_purchase', 'date_warranty', 'observation')
+
+    def get_type(self, obj):
+        return obj.model.type.id

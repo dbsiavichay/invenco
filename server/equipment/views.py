@@ -28,16 +28,16 @@ class ModelListViewSet(viewsets.ReadOnlyModelViewSet):
 	queryset = Model.objects.all()
 	serializer_class = ModelListSerializer
 
-class ModelViewSet(viewsets.ModelViewSet):
-	queryset = Model.objects.all()
-	serializer_class = ModelSerializer
-
 	def get_queryset(self):
 		queryset = self.queryset
 		type = self.request.query_params.get('type', None)
 		if type is not None:
 			queryset = queryset.filter(type=type)
 		return queryset
+
+class ModelViewSet(viewsets.ModelViewSet):
+	queryset = Model.objects.all()
+	serializer_class = ModelSerializer
 
 class DeviceListViewSet(viewsets.ReadOnlyModelViewSet):
 	queryset = Device.objects.all()
