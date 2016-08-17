@@ -45,16 +45,23 @@
     })
   })
   .factory('Department', function ($resource) {
-    return $resource('/api/devices/:id/', {
+    return $resource('/api/departments/:id/', {
       id: '@id'
-    },{
-      query: {url: '/api/devices/list/', method: 'GET', isArray: true},
-      update: {method: 'PUT'},
-      getFromList: {
-        url: 'api/devices/list/:id/',
-        id: '@id',
-        method: 'GET'
-      }
+    })
+  })
+  .factory('Section', function ($resource) {
+    return $resource('/api/sections/:id/', {
+      id: '@id'
+    })
+  })
+  .factory('Employee', function ($resource) {
+    return $resource('/api/employees/:id/', {
+      id: '@id'
+    })
+  })
+  .factory('Assignment', function ($resource) {
+    return $resource('/api/allocations/:id/', {
+      id: '@id'
     })
   });
 })();

@@ -8,7 +8,20 @@ from django.http import JsonResponse
 from django.views.generic import ListView, DetailView
 from organization.models import Department, Section, Employee
 from equipment.models import Type
-from .models import Allocation
+from rest_framework import viewsets
+from .models import *
+from .serializers import *
+
+class AllocationViewSet(viewsets.ModelViewSet):
+	queryset = Allocation.objects.all()
+	serializer_class = AllocationSerializer
+
+	def get_queryset(self):
+		queryset = self.queryset
+		device = self.request.query_params.get('device', None)
+		if device is not None:
+			queryset = queryset.filter(device=device, is_active=True)
+		return queryset
 
 class AllocationListView(ListView):
 	model = Allocation
@@ -59,7 +72,7 @@ class AllocationListView(ListView):
 
 				data['has_next'] = page.has_next()
 				data['next_page_number'] = page.next_page_number() if page.has_next() else -1
-				
+
 				return JsonResponse(data, safe=False)
 			return JsonResponse({}, status=400)
 		else:

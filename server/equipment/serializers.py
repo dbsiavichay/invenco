@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from drf_custom_fields import fields
-from .models import Trademark, Type, TypeSpecification, Model, Device
+from .models import *
 from purchases.models import Provider
 
 class TrademarkSerializer(serializers.ModelSerializer):
@@ -80,7 +80,7 @@ class DeviceListSerializer(serializers.ModelSerializer):
         return obj.model.trademark.name
 
     def get_responsible(self, obj):
-        allocations = obj.allocation_set.all()
+        allocations = obj.allocation_set.filter(is_active=True)
         if len(allocations)>0:
             return allocations[0].short_responsible()
         else:
@@ -90,11 +90,16 @@ class DeviceListSerializer(serializers.ModelSerializer):
 class DeviceSerializer(serializers.ModelSerializer):
     specifications = fields.JsonField()
     type = serializers.SerializerMethodField()
+    is_assignment = serializers.SerializerMethodField()
 
     class Meta:
         model = Device
         fields = ('id','model', 'type','code', 'serial', 'specifications', 'state',
-        'provider', 'invoice', 'date_purchase', 'date_warranty', 'observation')
+        'provider', 'invoice', 'date_purchase', 'date_warranty', 'observation', 'is_assignment')
 
     def get_type(self, obj):
         return obj.model.type.id
+
+    def get_is_assignment(self, obj):
+        allocations = obj.allocation_set.filter(is_active=True)
+        return True if len(allocations)>0 else False

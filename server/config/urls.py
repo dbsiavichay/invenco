@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from equipment.urls import equipment_router
 from purchases.urls import purchases_router
+from organization.urls import organization_router
+from allocation.urls import allocation_router
 
 urlpatterns = [
     url(r'^test/', TemplateView.as_view(template_name='home.html')),
@@ -29,4 +31,6 @@ urlpatterns = [
     url(r'', include('technical_assistance.urls')),
     url(r'^api/', include(equipment_router.urls)),
     url(r'^api/', include(purchases_router.urls)),
+    url(r'^api/', include(organization_router.urls)),
+    url(r'^api/', include(allocation_router.urls)),
 ]

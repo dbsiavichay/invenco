@@ -30,7 +30,7 @@
             <td name="state" class="col-xs-1">{{ device.state==1?'Bueno':device.state==2?'Defectuoso':'Dañado' }}</td>
             <td name="responsible" class="col-xs-3">{{ device.responsible }}</td>
             <td name="actions" class="col-xs-2">
-              <button ng-click="allocation(device)" class="btn btn-xs btn-default">
+              <button ng-click="editAllocation(device)" class="btn btn-xs btn-default">
                 <span class="fa fa-user"></span>
               </button>
               <button ng-click="edit(device)" class="btn btn-xs btn-default">
@@ -151,89 +151,53 @@
 </div>
 
 
-
-
 <div ng-show="device && flag" class="row mt">
   <div class="col-lg-12">
     <div class="content-panel">
       <div class="content-panel-header">
         <h4>
           <i class="fa fa-angle-right"></i>
-          Datos de asignación
+          Asignación de {{ device.type }} {{ device.trademark }} {{ device.model }} >> {{ device.code }}
         </h4>
       </div>
       <form name="form1" novalidate>
-        <div class="form-group" ng-class="{'has-error': (form1.$submitted || form1.type.$touched) && form1.type.$invalid}">
+        <div class="form-group" ng-class="{'has-error': (form1.$submitted || form1.department.$touched) && form1.department.$invalid}">
           <label for="department">Departamento</label>
-          <select id="department" name="department" class="form-control"
-          required>
+          <select id="department" name="department" class="form-control" ng-model="allocation.department"
+          ng-options="department.code as department.name for department in deparments"
+          ng-change="updateSections()" required>
             <option value="">--- Seleccionar ---</option>
           </select>
-          <span ng-if="(form1.$submitted || form1.type.$touched) && form1.type.$invalid" class="help-block">El departamento es requerido</span>
+          <span ng-if="(form1.$submitted || form1.department.$touched) && form1.department.$invalid" class="help-block">El departamento es requerido</span>
         </div>
-        <div class="form-group" ng-class="{'has-error': (form.$submitted || form.type.$touched) && form.type.$invalid}">
+        <div class="form-group" ng-class="{'has-error': (form1.$submitted || form1.area.$touched) && form1.area.$invalid}">
           <label for="area">Area</label>
-          <select id="area" name="area" class="form-control"
-          required>
+          <select id="area" name="area" ng-options="area.code as area.name for area in sections"
+           ng-model = "allocation.area" class="form-control" required>
             <option value="">--- Seleccionar ---</option>
           </select>
-          <span ng-if="(form.$submitted || form.type.$touched) && form.type.$invalid" class="help-block">El area es requerida</span>
+          <span ng-if="(form1.$submitted || form1.area.$touched) && form1.area.$invalid" class="help-block">El area es requerida</span>
         </div>
-        <div class="form-group" ng-class="{'has-error': (form.$submitted || form.type.$touched) && form.type.$invalid}">
+        <div class="form-group" ng-class="{'has-error': (form1.$submitted || form1.employee.$touched) && form1.employee.$invalid}">
           <label for="employee">Empleado</label>
-          <select id="employee" name="employee" class="form-control"
+          <select id="employee" name="employee" ng-options="employee.charter as employee.name for employee in employees"
+           ng-model ="allocation.employee" class="form-control"
           required>
             <option value="">--- Seleccionar ---</option>
           </select>
-          <span ng-if="(form.$submitted || form.type.$touched) && form.type.$invalid" class="help-block">El empleado es requerido</span>
+          <span ng-if="(form1.$submitted || form1.employee.$touched) && form1.employee.$invalid" class="help-block">El empleado es requerido</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': (form1.$submitted || form1.date.$touched) && form1.date.$invalid}">
+          <label for="date">Fecha</label>
+          <input id="date" type="date" name="date" value="" class="form-control"
+          ng-model="allocation.date" required>
+          <span ng-if="(form1.$submitted || form1.date.$touched) && form1.date.$invalid" class="help-block">La fecha es requerida</span>
         </div>
       </form>
 
-      <div ng-show="deviceSpecifications.length" class="content-panel-header">
-        <h4>
-          <i class="fa fa-angle-right"></i>
-          Especificaciones de asignación
-        </h4>
-      </div>
 
-      <form name="formInline" novalidate>
-        <ng-form name="formSpecification" ng-repeat="ds in deviceSpecifications" novalidate>
-          <div class="form-group" ng-class="{'has-error':(formInline.$submitted || formSpecification.name.$touched) && formSpecification.name.$invalid}">
-              <label for="name{{$index}}">{{ ds.label }}</label>
-              <input id="name{{$index}}" name="name" type="text" ng-if="ds.type=='text'"
-              ng-model="device.specifications[ds.label]" class="form-control" placeholder="{{ ds.label }} del dispositivo" required>
-              <select name="name" ng-if="ds.type=='select' && ds.options" ng-model="device.specifications[ds.label]"
-              ng-options="value for value in ds.options" class="form-control" required>
-                <option value="">-- Seleccionar --</option>
-              </select>
-              <select name="name" ng-if="ds.type=='select' && ds.actions" ng-model="device.specifications[ds.label]"
-              ng-options="action.name as action.name for action in ds.actions"
-              ng-change="changeOptions(ds.label, model.specifications[ds.label])" class="form-control" required>
-                <option value="">-- Seleccionar --</option>
-              </select>
-              <span ng-if="(formInline.$submitted || formSpecification.name.$touched) && formSpecification.name.$invalid" class="help-block">Este campo es requerido</span>
-          </div>
-        </ng-form>
-
-
-        <ng-form name="formOption" ng-repeat="do in deviceOptions" novalidate>
-          <div class="form-group" ng-class="{'has-error':(formInline.$submitted || formOption.option.$touched) && formOption.option.$invalid}">
-            <label for="option{{$index}}">{{ mo }}</label>
-            <input id="option{{$index}}" name="option" type="text" ng-model="device.specifications[do]" class="form-control" placeholder="Ingrese el {{ do | lowercase}}" required>
-            <span ng-if="(formInline.$submitted || formOption.option.$touched) && formOption.option.$invalid" class="help-block">Este campo es requerido</span>
-          </div>
-        </ng-form>
-      </form>
-
-
-      <button ng-hide="device.id" ng-click="create()" class="btn btn-primary">
+      <button ng-click="createAllocation()" class="btn btn-primary">
         <i class="fa fa-check"></i> Guardar
-      </button>
-      <button ng-show="device.id" ng-click="update()" class="btn btn-primary">
-        <i class="fa fa-check"></i> Guardar
-      </button>
-      <button ng-show="device.id" ng-click="delete()" class="btn btn-danger">
-        <i class="fa fa-trash"></i> Eliminar
       </button>
       <button ng-click="reset()" class="btn btn-link">Regresar</button>
     </div>

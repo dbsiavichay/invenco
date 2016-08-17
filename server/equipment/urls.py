@@ -1,5 +1,4 @@
 from django.conf.urls import patterns, url
-from .views	import TrademarkListView, TrademarkDetailView, TypeListView, TypeDetailView, ModelListView, ModelDetailView, DeviceListView, DeviceDetailView, ReportListView
 from rest_framework import routers
 from .views import *
 

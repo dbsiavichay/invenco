@@ -352,7 +352,8 @@
     }
   })
 
-  .controller('DeviceController', function ($scope, Device, Model, Type, Department) {
+  .controller('DeviceController', function ($scope, Device, Model, Type, Department, Section, Employee, Assignment) {
+    //Device declarations
     $scope.devices = Device.query();
     $scope.types = Type.query();
     $scope.models = [];
@@ -361,8 +362,13 @@
     $scope.device = null;
     $scope.flag = false;
 
+    //Allocation declarations
     $scope.deparments = Department.query();
+    $scope.sections = [];
+    $scope.employees = Employee.query();
+    $scope.allocation = {};
 
+    //Device functions
     $scope.edit = function (device) {
       $scope.form.$setPristine();
       $scope.form.$setUntouched();
@@ -373,6 +379,7 @@
 
       if(!device) return;
       $scope.device.$get(function (response) {
+        $scope.updateModels();
         renderSpecifications();
       });
     }
@@ -386,6 +393,9 @@
       $scope.device = null;
       $scope.deviceSpecifications = []
       $scope.deviceOptions = []
+      $scope.flag = false;
+      $scope.allocation = {};
+      $scope.sections = [];
     }
 
     $scope.create = function () {
@@ -429,19 +439,6 @@
         });
     }
 
-    $scope.allocation = function (device) {
-      //$scope.form.$setPristine();
-      //$scope.form.$setUntouched();
-      //$scope.formInline.$setPristine();
-      //$scope.formInline.$setUntouched();
-
-      $scope.flag = true;
-      $scope.device = angular.copy(device) || new Device();
-
-      if(!device) return;
-      $scope.device.$get();
-    }
-
     $scope.updateModels = function () {
       $scope.models = Model.query({'type': $scope.device.type});
       $scope.updateSpecifications()
@@ -459,9 +456,17 @@
         type_specifications = data.type_specifications;
 
         for(var i=0; i < type_specifications.length; i++) {
-          if (type_specifications[i]['when'] != 'device') {
-            type_specifications.splice(i, 1);
-            i = i - 1;
+          if ($scope.device.is_assignment) {
+            if (type_specifications[i]['when'] != 'device'
+                && type_specifications[i]['when'] != 'allocation') {
+              type_specifications.splice(i, 1);
+              i = i - 1;
+            }
+          }else{
+            if (type_specifications[i]['when'] != 'device') {
+              type_specifications.splice(i, 1);
+              i = i - 1;
+            }
           }
         }
 
@@ -566,11 +571,61 @@
     }
 
     var renderSpecifications = function () {
-      $scope.updateModels();
-
       angular.forEach($scope.deviceSpecifications, function (ds) {
         if(ds.actions) $scope.changeOptions(ds.label, $scope.device.specifications[ds.label]);
       });
     }
+
+    //Allocations functions
+    $scope.editAllocation = function (device) {
+      $scope.form1.$setPristine();
+      $scope.form1.$setUntouched();
+
+      $scope.flag = true;
+      $scope.device = angular.copy(device);
+      $scope.allocation = new Assignment();
+      $scope.allocation.date = new Date();
+      $scope.allocation.device = $scope.device.id;
+
+      Assignment.query({'device': device.id}, function (data) {
+        if(data.length) {
+          var date_joined = new Date();
+          var date = data[0].date_joined.split('-');
+          $scope.allocation = angular.copy(data[0]);
+          $scope.allocation.date = new Date(date[0], date[1] - 1, date[2]);
+          $scope.updateSections();
+        }
+      });
+    }
+
+    $scope.updateSections = function () {
+      $scope.sections = Section.query({department: $scope.allocation.department});
+    }
+
+    $scope.createAllocation = function () {
+      $scope.form1.$setSubmitted();
+      if(!$scope.form1.$valid) return;
+
+      var yyyy = $scope.allocation.date.getFullYear().toString();
+      var mm = ($scope.allocation.date.getMonth()+1).toString();
+      var dd  = $scope.allocation.date.getDate().toString();
+      $scope.allocation.date_joined =  yyyy +'-'+(mm[1]?mm:"0"+mm[0]) +'-'+ (dd[1]?dd:"0"+dd[0]);
+
+      $scope.allocation.is_active = true;
+      $scope.allocation.id = undefined;
+
+      $scope.allocation
+        .$save(function (response) {
+          $scope.device.$getFromList(function (data) {
+            var index = getIndex($scope.device);
+            $scope.devices[index] = angular.copy(data);
+            $scope.reset();
+          });
+        }, function (error) {
+          console.log(error);
+        });
+    }
+
+
   });
 })();
