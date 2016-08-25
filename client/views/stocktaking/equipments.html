@@ -1,0 +1,207 @@
+<h3><i class="fa fa-angle-right"></i> Equipos</h3>
+<div ng-hide="equipment" class="row mt">
+  <div class="col-lg-12">
+    <div class="content-panel">
+      <div class="content-panel-header">
+        <h4>
+          <i class="fa fa-angle-right"></i>
+          Listado
+        </h4>
+        <a ng-click="edit()" class="btn btn-sm btn-primary pull-right col-xs-2">
+          <i class="fa fa-plus-circle"></i> Agregar
+        </a>
+      </div>
+      <table datatable="ng" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Código</th>
+            <th>Serie</th>
+            <th>Estado</th>
+            <th>Responsable</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="equipment in equipments">
+            <td name="name" class="col-xs-4">{{ equipment.type }} {{ equipment.brand }} {{ equipment.model }}</td>
+            <td name="code" class="col-xs-1">{{ equipment.code }}</td>
+            <td name="serial" class="col-xs-2">{{ equipment.serial }}</td>
+            <td name="state" class="col-xs-1">{{ equipment.state==1?'Bueno':equipment.state==2?'Defectuoso':'Dañado' }}</td>
+            <td name="responsible" class="col-xs-2">{{ equipment.responsible }}</td>
+            <td name="actions" class="col-xs-2">
+              <button ng-click="editAssignment(equipment)" class="btn btn-xs btn-default">
+                <span class="fa fa-user"></span>
+              </button>
+              <button ng-click="edit(equipment)" class="btn btn-xs btn-default">
+                <span class="fa fa-pencil"></span>
+              </button>
+              <button ng-click="remove(equipment)" class="btn btn-xs btn-default">
+                <span class="fa fa-remove"></span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div ng-show="equipment && !flag" class="row mt">
+  <div class="col-lg-12">
+    <div class="content-panel">
+      <div class="content-panel-header">
+        <h4>
+          <i class="fa fa-angle-right"></i>
+          Datos de equipo
+        </h4>
+      </div>
+      <form name="form" novalidate>
+        <div class="form-group" ng-class="{'has-error': (form.$submitted || form.type.$touched) && form.type.$invalid}">
+          <label for="type">Tipo</label>
+          <select id="type" name="type" ng-model="equipment.type" class="form-control" ng-options="type.id as type.name for type in types"
+           ng-change="updateModels()" required>
+            <option value="">--- Seleccionar ---</option>
+          </select>
+          <span ng-if="(form.$submitted || form.type.$touched) && form.type.$invalid" class="help-block">El tipo es requerido</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': (form.$submitted || form.model.$touched) && form.model.$invalid}">
+          <label for="model">Modelo</label>
+          <select id="model" name="model" ng-model="equipment.model" class="form-control" ng-options="model.id as (model.brand +' '+ model.name) for model in models" required>
+            <option value="">-- Seleccionar --</option>
+          </select>
+          <span ng-if="(form.$submitted || form.model.$touched) && form.model.$invalid" class="help-block">El modelo es requerido</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': (form.$submitted || form.code.$touched) && form.code.$invalid}">
+          <label for="code">Código</label>
+          <input id="code" name="code" ng-model="equipment.code" type="text" class="form-control" placeholder="Código del dispositivo" required>
+          <span ng-if="(form.$submitted || form.code.$touched) && form.code.$invalid" class="help-block">El código es requerido</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': (form.$submitted || form.serial.$touched) && form.serial.$invalid}">
+          <label for="serial">Serie</label>
+          <input id="serial" name="serial" ng-model="equipment.serial" type="text" class="form-control" placeholder="N° de serie del dispositivo" required>
+          <span ng-if="(form.$submitted || form.serial.$touched) && form.serial.$invalid" class="help-block">La serie es requerida</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': (form.$submitted || form.state.$touched) && form.state.$invalid}">
+          <label for="state">Estado</label>
+          <select id="state" name="state" ng-model="equipment.state" class="form-control" required>
+            <option value="">-- Seleccionar --</option>
+            <option value="1">BUENO</option>
+            <option value="2">DEFECTUOSO</option>
+            <option value="3">DAÑADO</option>
+          </select>
+          <span ng-if="(form.$submitted || form.state.$touched) && form.state.$invalid" class="help-block">El estado es requerido</span>
+        </div>
+        <div class="form-group">
+          <label for="observation">Observación</label>
+          <textarea id="observation" name="observation" ng-model="equipment.observation" type="text" class="form-control" placeholder="Observaciones necesarias">
+          </textarea>
+        </div>
+      </form>
+
+      <div ng-show="equipmentSpecifications.length" class="content-panel-header">
+        <h4>
+          <i class="fa fa-angle-right"></i>
+          Especificaciones de dispositivo
+        </h4>
+      </div>
+
+      <form name="formInline" novalidate>
+        <ng-form name="formSpecification" ng-repeat="ds in equipmentSpecifications" novalidate>
+          <div class="form-group" ng-class="{'has-error':(formInline.$submitted || formSpecification.name.$touched) && formSpecification.name.$invalid}">
+              <label for="name{{$index}}">{{ ds.label }}</label>
+              <input id="name{{$index}}" name="name" type="text" ng-if="ds.type=='text'"
+              ng-model="equipment.specifications[ds.label]" class="form-control" placeholder="{{ ds.label }} del dispositivo" required>
+              <select name="name" ng-if="ds.type=='select' && ds.options" ng-model="equipment.specifications[ds.label]"
+              ng-options="value for value in ds.options" class="form-control" required>
+                <option value="">-- Seleccionar --</option>
+              </select>
+              <select name="name" ng-if="ds.type=='select' && ds.actions" ng-model="equipment.specifications[ds.label]"
+              ng-options="action.name as action.name for action in ds.actions"
+              ng-change="changeOptions(ds.label, model.specifications[ds.label])" class="form-control" required>
+                <option value="">-- Seleccionar --</option>
+              </select>
+              <span ng-if="(formInline.$submitted || formSpecification.name.$touched) && formSpecification.name.$invalid" class="help-block">Este campo es requerido</span>
+          </div>
+        </ng-form>
+
+
+        <ng-form name="formOption" ng-repeat="do in equipmentOptions" novalidate>
+          <div class="form-group" ng-class="{'has-error':(formInline.$submitted || formOption.option.$touched) && formOption.option.$invalid}">
+            <label for="option{{$index}}">{{ mo }}</label>
+            <input id="option{{$index}}" name="option" type="text" ng-model="equipment.specifications[do]" class="form-control" placeholder="Ingrese el {{ do | lowercase}}" required>
+            <span ng-if="(formInline.$submitted || formOption.option.$touched) && formOption.option.$invalid" class="help-block">Este campo es requerido</span>
+          </div>
+        </ng-form>
+      </form>
+
+
+      <button ng-hide="equipment.id" ng-click="create()" class="btn btn-primary">
+        <i class="fa fa-check"></i> Guardar
+      </button>
+      <button ng-show="equipment.id" ng-click="update()" class="btn btn-primary">
+        <i class="fa fa-check"></i> Guardar
+      </button>
+      <button ng-show="equipment.id" ng-click="delete()" class="btn btn-danger">
+        <i class="fa fa-trash"></i> Eliminar
+      </button>
+      <button ng-click="reset()" class="btn btn-link">Regresar</button>
+    </div>
+  </div>
+</div>
+
+
+<div ng-show="equipment && flag" class="row mt">
+  <div class="col-lg-12">
+    <div class="content-panel">
+      <div class="content-panel-header">
+        <h4>
+          <i class="fa fa-angle-right"></i>
+          Asignación de {{ equipment.type }} {{ equipment.brand }} {{ equipment.model }} >> {{ equipment.code }}
+        </h4>
+      </div>
+      <form name="form1" novalidate>
+        <div class="form-group" ng-class="{'has-error': (form1.$submitted || form1.department.$touched) && form1.department.$invalid}">
+          <label for="department">Departamento</label>
+          <select id="department" name="department" class="form-control" ng-model="assignment.department"
+          ng-options="department.code as department.name for department in deparments"
+          ng-change="updateSections()" required>
+            <option value="">--- Seleccionar ---</option>
+          </select>
+          <span ng-if="(form1.$submitted || form1.department.$touched) && form1.department.$invalid" class="help-block">El departamento es requerido</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': (form1.$submitted || form1.section.$touched) && form1.section.$invalid}">
+          <label for="section">Area</label>
+          <select id="section" name="section" ng-options="section.code as section.name for section in sections"
+           ng-model = "assignment.section" class="form-control" required>
+            <option value="">--- Seleccionar ---</option>
+          </select>
+          <span ng-if="(form1.$submitted || form1.section.$touched) && form1.section.$invalid" class="help-block">El section es requerida</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': (form1.$submitted || form1.employee.$touched) && form1.employee.$invalid}">
+          <label for="employee">Empleado</label>
+          <select id="employee" name="employee" ng-options="employee.charter as employee.name for employee in employees"
+           ng-model ="assignment.employee" class="form-control"
+          required>
+            <option value="">--- Seleccionar ---</option>
+          </select>
+          <span ng-if="(form1.$submitted || form1.employee.$touched) && form1.employee.$invalid" class="help-block">El empleado es requerido</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': (form1.$submitted || form1.date.$touched) && form1.date.$invalid}">
+          <label for="date">Fecha</label>
+          <input id="date" type="date" name="date" value="" class="form-control"
+          ng-model="assignment.date" required>
+          <span ng-if="(form1.$submitted || form1.date.$touched) && form1.date.$invalid" class="help-block">La fecha es requerida</span>
+        </div>
+      </form>
+
+
+      <button ng-click="createAssignment()" class="btn btn-primary">
+        <i class="fa fa-check"></i> Guardar
+      </button>
+      <button ng-click="reset()" class="btn btn-link">Regresar</button>
+    </div>
+  </div>
+</div>
+
+<div ng-include="'static/partials/modal-delete.html'"></div>

@@ -1,27 +1,27 @@
 (function () {
   var app = angular.module('invenco', [
     'ngRoute',
-    'equipment.controllers',
+    'stocktaking.controllers',
     'datatables'
   ]);
 
   app.config(['$routeProvider', '$resourceProvider', function ($routeProvider, $resourceProvider) {
     $routeProvider
       .when('/marcas', {
-        templateUrl: 'static/views/equipment/trademarks.html',
-        controller: 'TrademarkController'
+        templateUrl: 'static/views/stocktaking/brands.html',
+        controller: 'BrandController'
       })
       .when('/tipos', {
-        templateUrl: 'static/views/equipment/types.html',
+        templateUrl: 'static/views/stocktaking/types.html',
         controller: 'TypeController'
       })
       .when('/modelos', {
-        templateUrl: 'static/views/equipment/models.html',
+        templateUrl: 'static/views/stocktaking/models.html',
         controller: 'ModelController'
       })
-      .when('/dispositivos', {
-        templateUrl: 'static/views/equipment/devices.html',
-        controller: 'DeviceController'
+      .when('/equipos', {
+        templateUrl: 'static/views/stocktaking/equipments.html',
+        controller: 'EquipmentController'
       });
 
     $resourceProvider.defaults.stripTrailingSlashes = false;
