@@ -66,7 +66,7 @@ class EquipmentListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Equipment
-        fields = ('id','model', 'type', 'brand','code', 'serial', 'state', 'responsible')
+        fields = ('id','model', 'type', 'brand','code', 'serial', 'state','responsible')
 
     def get_type(self, obj):
         return obj.model.type.name

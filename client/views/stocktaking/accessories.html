@@ -10,15 +10,17 @@
         <a ng-click="edit()" class="btn btn-sm btn-primary pull-right col-xs-2">
           <i class="fa fa-plus-circle"></i> Agregar
         </a>
+        <a ng-click="edit()" style="margin-right: 5px;" class="btn btn-sm btn-success pull-right col-xs-2">
+          <i class="fa fa-plus-circle"></i> Asignar
+        </a>
       </div>
       <table datatable="ng" class="table table-striped">
         <thead>
           <tr>
             <th>Nombre</th>
-            <th>Código</th>
             <th>Serie</th>
             <th>Estado</th>
-            <th>Ext</th>
+            <th>Equipo</th>
             <th>Responsable</th>
             <th>Acciones</th>
           </tr>
@@ -26,10 +28,9 @@
         <tbody>
           <tr ng-repeat="equipment in equipments">
             <td name="name" class="col-xs-4">{{ equipment.type }} {{ equipment.brand }} {{ equipment.model }}</td>
-            <td name="code" class="col-xs-1">{{ equipment.code }}</td>
             <td name="serial" class="col-xs-2">{{ equipment.serial }}</td>
             <td name="state" class="col-xs-1">{{ equipment.state==1?'Bueno':equipment.state==2?'Defectuoso':'Dañado' }}</td>
-            <td name="ext" class="col-xs-1">{{ equipment.extension }}</td>
+            <td name="code" class="col-xs-1">{{ equipment.code }}</td>
             <td name="responsible" class="col-xs-2">{{ equipment.responsible }}</td>
             <td name="actions" class="col-xs-2">
               <button ng-click="editAssignment(equipment)" class="btn btn-xs btn-default">

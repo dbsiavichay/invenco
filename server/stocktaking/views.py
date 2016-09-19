@@ -11,6 +11,13 @@ class TypeListViewSet(viewsets.ModelViewSet):
 	queryset = Type.objects.all()
 	serializer_class = TypeListSerializer
 
+	def get_queryset(self):
+		queryset = self.queryset
+		usage = self.request.query_params.get('usage', None)
+		if usage is not None:
+			queryset = queryset.filter(usage=usage)
+		return queryset
+
 class TypeViewSet(viewsets.ModelViewSet):
 	queryset = Type.objects.all()
 	serializer_class = TypeSerializer
@@ -31,8 +38,15 @@ class ModelViewSet(viewsets.ModelViewSet):
 	serializer_class = ModelSerializer
 
 class EquipmentListViewSet(viewsets.ReadOnlyModelViewSet):
-	queryset = Equipment.objects.filter(model__type__usage=1)
+	queryset = Equipment.objects.all()
 	serializer_class = EquipmentListSerializer
+
+	def get_queryset(self):
+		queryset = self.queryset
+		usage = self.request.query_params.get('usage', None)
+		if usage is not None:
+			queryset = queryset.filter(model__type__usage=usage)
+		return queryset
 
 class EquipmentViewSet(viewsets.ModelViewSet):
 	queryset = Equipment.objects.all()

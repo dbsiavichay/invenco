@@ -22,6 +22,10 @@
       .when('/equipos', {
         templateUrl: 'static/views/stocktaking/equipments.html',
         controller: 'EquipmentController'
+      })
+      .when('/accesorios', {
+        templateUrl: 'static/views/stocktaking/accessories.html',
+        controller: 'AccessoryController'
       });
 
     $resourceProvider.defaults.stripTrailingSlashes = false;

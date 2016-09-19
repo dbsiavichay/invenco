@@ -66,6 +66,7 @@ class Equipment(models.Model):
 	date_purchase = models.DateField(blank=True, null=True)
 	date_warranty = models.DateField(blank=True, null=True)
 	observation = models.TextField(blank=True, null=True)
+	accessory_of = models.ForeignKey('self', blank=True, null=True)
 
 	def __unicode__(self):
 		return '%s | %s' % (self.model, self.code)
