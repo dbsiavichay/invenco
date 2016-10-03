@@ -66,7 +66,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '../client/views/')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,8 +90,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'invencodb',
         'USER': 'postgres',
-        'PASSWORD': 'alfa2010',
-        'HOST': 'localhost',
+        'PASSWORD': 'hola1234',
+        'HOST': '172.16.8.19',
         'PORT': '5432',
     },
     'sim': {
@@ -143,5 +143,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "../client/"),
+    os.path.join(BASE_DIR, "static"),
 )
