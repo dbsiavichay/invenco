@@ -1,6 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.db import models
+
+class Building(models.Model):
+    name = models.CharField(max_length=64, verbose_name='nombre')
+    address = models.CharField(max_length=128, verbose_name='dirección')
 
 class Department(models.Model):
     code = models.FloatField(primary_key=True, db_column='coddepar')

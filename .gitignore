@@ -1,6 +1,7 @@
 *.pyc
 *.[oa]
 *~
-server/purchases/migrations/
-server/stocktaking/migrations/
-server/structure/migrations/
+media/
+purchases/migrations/
+stocktaking/migrations/
+structure/migrations/

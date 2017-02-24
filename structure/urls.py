@@ -1,8 +1,9 @@
-from rest_framework import routers
-from .views	import *
+from django.conf.urls import url
+from .views import *
 
-
-structure_router = routers.DefaultRouter()
-structure_router.register(r'departments', DepartmentViewSet)
-structure_router.register(r'sections', SectionViewSet)
-structure_router.register(r'employees', EmployeeViewSet)
+urlpatterns = [	
+    url(r'^building/$', BuildingListView.as_view(), name='building_list'),
+    url(r'^building/add/$', BuildingCreateView.as_view(), name='building_create'),
+    url(r'^building/(?P<pk>\d+)/edit/$', BuildingUpdateView.as_view(), name='building_update'),
+    url(r'^building/(?P<pk>\d+)/delete/$', BuildingDeleteView.as_view(), name='building_delete'),
+]

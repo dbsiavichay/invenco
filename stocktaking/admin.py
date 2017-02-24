@@ -1,3 +1,8 @@
 from django.contrib import admin
+from reversion.admin import VersionAdmin
+from .models import *
 
-# Register your models here.
+@admin.register(Brand)
+class BrandAdmin(VersionAdmin):
+    pass
+

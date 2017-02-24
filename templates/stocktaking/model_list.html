@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Marcas{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+      	<div class="card">
+        	<div class="card-header">Listado</div>
+        	<div class="card-body">
+        		{% include "partials/pagination.html" %}
+			    <table class="table">
+				    <thead>
+				        <tr>				          
+				          <th>Tipo</th>
+				          <th>Marca</th>
+				          <th>Nombre</th>
+				          <th>#Parte</th>
+				          <th>Acciones</th>
+				        </tr>
+				    </thead>
+				    <tbody>
+				    	{% for model in object_list %}
+				        <tr>					        
+					        <td>{{ model.type }}</td>
+					        <td>{{ model.brand }}</td>
+					        <td>{{ model.name }}</td>
+					        <td>{% if model.part_number %} {{ model.part_number }} {% endif %}</td>
+					        <td class="col-xs-3">					        	
+					        	<a href="/model/{{ model.id }}/type/{{ model.type.id }}/edit/" class="btn btn-default btn-xs">
+					        		<span class="fa fa-pencil"></span>
+					        	</a>
+					        	<button class="btn btn-default btn-xs delete" data-model="model" data-id="{{ model.id }}">
+					        		<span class="fa fa-trash"></span>
+					        	</button>
+					        </td>
+				        </tr>
+				        {% endfor %}
+				    </tbody>
+			    </table>
+        	</div>
+        </div>
+    </div>
+</div>
+
+{% include "partials/delete-modal.html" %}
+
+<div class="btn-floating" id="help-actions">
+	<div class="btn-bg"></div>
+	<a href="/model/add/select-type/" class="btn btn-default btn-toggle">
+		<i class="icon fa fa-plus"></i>
+	</a>        
+</div>
+{% endblock %}
+
+{% block customjs %}
+{% load staticfiles %}
+<script src="{% static 'stocktaking/custom.js' %}"></script>
+{% endblock %}

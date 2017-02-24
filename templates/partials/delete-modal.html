@@ -1,0 +1,18 @@
+<div class="modal fade in" id="delete-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <h4 class="modal-title">¿Seguro que desea eliminar?</h4>
+      </div>
+      <div class="modal-body">
+        <p>** Recuerde que esta acción puede estar ligada con otras funciones del sistema.</p>
+      </div>
+      <form id="delete" method="POST">{% csrf_token %}</form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="submit" form="delete" class="btn btn-sm btn-danger">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>

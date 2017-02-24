@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'stocktaking/custom.css' %}">
+{% endblock %}
+
+{% block page_title %}Seleccionar{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+      	<div class="card">
+        	<div class="card-header">Seleccione un tipo</div>
+        	<div class="card-body">
+        		{% if sets %}
+			    <div class="section">
+			    	<span class="section-title">Conjuntos</span>
+			    </div>
+				
+			    <div class="row">
+			    	{% for set in sets %}			    	
+			    	<div class="col-sm-6 col-md-3 col-lg-2 text-center">
+			    		<div class="type-item" set-id="{{ set.id }}">
+				    		<img height="128" src="{{ set.icon.url }}">
+				    		<div>{{ set.name }}</div>			    			
+			    		</div>
+			    	</div>			    	
+			    	{% endfor %}
+			    </div>
+			    {% endif %}
+
+        		{% if sets %}
+        		<div class="section">
+			    	<span class="section-title">Equipos</span>
+			    </div>
+			    {% endif %}
+			    <div class="row">
+			    	{% for type in object_list %}
+			    	{% if type.image %}			    	
+			    	<div class="col-sm-6 col-md-3 col-lg-2 text-center">
+			    		<div class="type-item" type-id="{{ type.id }}">
+				    		<img height="128" src="{{ type.image.url }}">
+				    		<div>{{ type.name }}</div>			    			
+			    		</div>
+			    	</div>
+			    	{% endif %}
+			    	{% endfor %}
+			    </div>			    
+
+			    <span id="next" class="hidden">{{ model }}</span>
+			    <div class="row" style="margin-top: 30px;">
+			    	<div class="col-md-9">
+				        <a id="selectTypeNext" href="#" class="btn btn-primary">
+				        	<span class="fa fa-check"></span>
+				        	Siguiente
+				        </a>
+				        <a href="/{{ model }}/" class="btn btn-default">
+				        	<span class="fa fa-reply"></span>
+				        	Regresar
+				        </a>
+				    </div>
+			    </div>
+        	</div>
+        </div>	    
+    </div>
+</div>
+{% endblock %}
+
+{% block customjs %}
+{% load staticfiles %}
+<script src="{% static 'stocktaking/custom.js' %}"></script>
+{% endblock %}

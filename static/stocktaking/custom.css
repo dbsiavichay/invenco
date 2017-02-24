@@ -1,0 +1,15 @@
+.type-item {
+	border: 3px dashed transparent;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.type-item.active {
+	border-color: #29c75f;
+}
+
+.type-item img {
+	margin-bottom: 10px;
+}

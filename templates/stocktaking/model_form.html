@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Modelos{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+      	<div class="card">
+        	<div class="card-header">Añadir modelo</div>
+        	<div class="card-body">   
+        		{{ form.errors }}     		        		
+        		{% load widget_tweaks %}
+        		<form id="form" class="form form-horizontal" action="" method="POST" enctype="multipart/form-data" novalidate>
+        			{% csrf_token %}
+        			<input type="hidden" name="type" value="{{ type }}">        			
+        			<div class="form-group {% if form.brand.errors %} has-error {% endif %}">
+				        <label class="col-md-3 control-label" for="{{ form.brand.id_for_label }}">{{ form.brand.label }}</label>
+				        <div class="col-md-9">
+				        	{{ form.brand|add_class:"select2" }}
+					        {% for error in form.brand.errors %}
+							<span class="help-block">{{ error }}</span>
+							{% endfor %}					    
+				        </div>
+				    </div>
+        			
+				   	<div class="form-group {% if form.name.errors %} has-error {% endif %}">
+				        <label class="col-md-3 control-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+				        <div class="col-md-9">
+					        {{ form.name|add_class:"form-control"|attr:"autofocus" }}
+					        {% for error in form.name.errors %}
+							<span class="help-block">{{ error }}</span>
+							{% endfor %}					    
+				        </div>
+				    </div>
+
+				    <div class="form-group {% if form.part_number.errors %} has-error {% endif %}">
+				        <label class="col-md-3 control-label" for="{{ form.part_number.id_for_label }}">{{ form.part_number.label }}</label>
+				        <div class="col-md-9">
+					        {{ form.part_number|add_class:"form-control" }}
+					        {% for error in form.part_number.errors %}
+							<span class="help-block">{{ error }}</span>
+							{% endfor %}					    
+				        </div>
+				    </div>				    
+
+				    <div class="section">
+				    	<span class="section-title">Especificaciones de tipo</span>
+				    	{{ specification_form.errors }}
+				    	{% for field in specification_form %}
+				    	<div class="form-group {% if field.errors %} has-error {% endif %}">
+					        <label class="col-md-3 control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+					        <div class="col-md-9">
+						        {{ field|add_class:"form-control" }}
+						        {% for error in field.errors %}
+								<span class="help-block">{{ error }}</span>
+								{% endfor %}					    
+					        </div>
+					    </div>
+					   	{% endfor %}
+				    </div>					
+				</form>
+				<form id="delete" action="/model/{{ model.id }}/delete/" method="POST">{% csrf_token %}</form>
+				<div class="form form-horizontal">
+					<div class="form-footer">
+					    <div class="form-group">
+					      <div class="col-md-9">
+					        <button type="submit" form="form" class="btn btn-primary">
+					        	<span class="fa fa-floppy-o"></span>
+					        	Guardar
+					        </button>		
+					        {% if object %}
+					        <button type="submit" form="delete" class="btn btn-danger">
+					        	<span class="fa fa-trash"></span>
+					        	Eliminar
+					        </button>
+					        {% endif %}			        
+					        <a href="/model/" class="btn btn-default">
+					        	<span class="fa fa-reply"></span>
+					        	Regresar
+					        </a>
+					      </div>
+					    </div>
+					</div>
+				</div>
+        	</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
