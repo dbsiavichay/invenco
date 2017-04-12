@@ -43,21 +43,7 @@
 				        </div>
 				    </div>				    
 
-				    <div class="section">
-				    	<span class="section-title">Especificaciones de tipo</span>
-				    	{{ specification_form.errors }}
-				    	{% for field in specification_form %}
-				    	<div class="form-group {% if field.errors %} has-error {% endif %}">
-					        <label class="col-md-3 control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-					        <div class="col-md-9">
-						        {{ field|add_class:"form-control" }}
-						        {% for error in field.errors %}
-								<span class="help-block">{{ error }}</span>
-								{% endfor %}					    
-					        </div>
-					    </div>
-					   	{% endfor %}
-				    </div>					
+				    {% include 'partials/equipment-single-form.html' %}					
 				</form>
 				<form id="delete" action="/model/{{ model.id }}/delete/" method="POST">{% csrf_token %}</form>
 				<div class="form form-horizontal">

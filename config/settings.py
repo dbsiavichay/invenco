@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'reversion',
     'rest_framework',
+    'security',
     'purchases',
     'stocktaking',
     'structure',
@@ -92,7 +93,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'invenco',
+        'NAME': 'siminvenco',
         'USER': 'postgres',
         'PASSWORD': 'alfa2010',
         'HOST': 'localhost',
@@ -152,3 +153,5 @@ STATICFILES_DIRS = (
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+LOGIN_URL = '/login/'

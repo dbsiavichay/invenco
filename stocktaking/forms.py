@@ -3,7 +3,8 @@
 from django import forms
 from django.forms import ModelForm, formset_factory, modelformset_factory
 from django.forms.models import inlineformset_factory
-from .models import Type,TypeSpecification, Model,Equipment
+from .models import *
+from structure.models import *
 
 from functools import partial, wraps
 
@@ -121,17 +122,19 @@ class EquipmentForm(ModelForm):
 		exclude = ['specifications', 'provider', 'invoice', 'date_purchase', 'date_warranty', 'owner', 'in_set']
 
 	def __init__(self, *args, **kwargs):		
-		types = kwargs.pop('types', None)		
+		types = kwargs.pop('types', None)
+		instances = kwargs.pop('instances', None)		
 
 		if types and types is not None: 
-			type = types.pop(0)		
+			type = types.pop(0)
+
+		if instances and instances is not None:
+			type, instance = instances.pop(0)			
+			kwargs.update({'instance': instance})
 
 		super(EquipmentForm, self).__init__(*args, **kwargs)
-		self.empty_permitted = False
+		self.empty_permitted = False		
 
-		if self.instance.id is not None:
-			type = self.instance.model.type.id			
-		
 		self.fields['model'] = forms.ModelChoiceField(
 			queryset=Model.objects.filter(type=type),
 			label='Modelo'
@@ -212,8 +215,78 @@ def get_equipment_formset(**kwargs):
 			extra=len(types)
 		)
 	else:
-		return modelformset_factory(			
-			Equipment,		
-			form = EquipmentForm,
-			extra = 0
+		return formset_factory(			
+			wraps(EquipmentForm)(partial(EquipmentForm, instances=instances)),		
+			extra=len(instances)
 		)
+
+
+class AssignmentForm(ModelForm):
+	class Meta:
+		model = Assignment
+		fields = '__all__'	
+
+
+	def __init__(self, *args, **kwargs):		
+		pk = kwargs.pop('equipment', None)
+		pk_set = kwargs.pop('set', None)
+
+		equipment = Equipment.objects.get(pk = pk) if pk is not None else None
+
+		if pk_set is not None:
+			set = SetDetail.objects.get(pk = pk_set)
+			equipment = Equipment.objects.get(pk=set.equipments[0])
+
+
+		assignment = None
+		if equipment is not None:
+			history = Assignment.objects.filter(equipment=equipment, employee=equipment.owner).order_by('-date_joined')
+			assignment = history[0] if len(history) else None
+
+			
+		super(AssignmentForm, self).__init__(*args, **kwargs)		
+
+		def get_employee_choices():
+			choices = [('', '---------'),]
+			employees = Employee.objects.using('sim').filter(contributor__state='ACTIVO')
+			for employee in employees:
+				choices.append((employee.contributor.charter, employee.contributor.charter +' | ' +employee.contributor.name))
+
+			return choices
+
+		def get_area_choices():
+			choices = [['', '---------'],]		
+
+			departments = Department.objects.using('sim').all()
+			for department in departments:
+				group = [department.name,]
+				choice = []
+				sections = Section.objects.using('sim').filter(department=department.code)
+				for section in sections:
+					choice.append(['%s:%s' % (department.code, section.code), section.name])
+
+				group.append(choice)
+
+				choices.append(group)
+
+			return choices
+
+		self.fields['employee'] = forms.ChoiceField(
+			choices = get_employee_choices(),		
+			label = 'Empleado',
+			initial = equipment.owner if equipment is not None else None
+		)
+
+		self.fields['area'] = forms.ChoiceField(
+			choices = get_area_choices(),		
+			label = 'Departamento/Sección',
+			initial = '%s:%s' % (assignment.department, assignment.section) if assignment is not None else None
+		)
+
+		self.fields['building'] = forms.ModelChoiceField(
+			queryset = Building.objects.all(),
+			label = 'Edificio',
+			initial = assignment.building if assignment is not None else None
+		)
+
+	

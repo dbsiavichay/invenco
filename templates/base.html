@@ -48,12 +48,13 @@
             <div class="dropdown-menu">
               <ul>
                 <li class="section"><i class="fa fa-laptop" aria-hidden="true"></i> Inventario</li>
+                <li><a href="/equipment/">Equipos</a></li>                
+                <li><a href="/building/">Edificios</a></li>
+                <li class="section"><i class="fa fa-gear" aria-hidden="true"></i> Configuracion</li>
                 <li><a href="/brand/">Marcas</a></li>
                 <li><a href="/type/">Tipos</a></li>
                 <li><a href="/set/">Conjuntos</a></li>
                 <li><a href="/model/">Modelos</a></li>
-                <li><a href="/equipment/">Equipos</a></li>                
-                <li><a href="/building/">Edificios</a></li>
               </ul>
             </div>
           </li>
@@ -233,28 +234,28 @@
                 </a>
                 <div class="dropdown-menu">
                   <div class="profile-info">
-                    <h4 class="username">Scott White</h4>
+                    <h4 class="username">{{ user.get_full_name }}</h4>
                   </div>
                   <ul class="action">
                     <li>
                       <a href="#">
-                        Profile
+                        Perfil
                       </a>
                     </li>
                     <li>
                       <a href="#">
                         <span class="badge badge-danger pull-right">5</span>
-                        My Inbox
+                        Mis mensajes
                       </a>
                     </li>
                     <li>
                       <a href="#">
-                        Setting
+                        Configuración
                       </a>
                     </li>
                     <li>
                       <a href="#">
-                        Logout
+                        Salir
                       </a>
                     </li>
                   </ul>

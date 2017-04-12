@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block page_title %}Marcas{% endblock %}
+{% block page_title %}Modelos{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -35,6 +35,8 @@
 					        	</button>
 					        </td>
 				        </tr>
+				        {% empty %}
+				        <tr colspan="5"><td>"Sin registros."</td></tr>
 				        {% endfor %}
 				    </tbody>
 			    </table>

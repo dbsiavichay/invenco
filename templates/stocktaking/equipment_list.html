@@ -16,6 +16,7 @@
 				          <th>Nombre</th>
 				          <th>Código</th>
 				          <th>Serie</th>
+				          <th>Responsable</th>
 				          <th>Acciones</th>
 				        </tr>
 				    </thead>
@@ -26,8 +27,9 @@
 					        <td>{{ set.set.name }}</td>
 					        <td>#CJT{{ set.id }}</td>
 					        <td></td>
+					        <td>{{ set.get_responsible }}</td>
 					        <td class="col-xs-3">
-					        	<a href="#" class="btn btn-default btn-xs">
+					        	<a href="/assignment/add/set/{{ set.id }}/" class="btn btn-default btn-xs">
 					        		<span class="fa fa-user"></span>
 					        	</a>					        	
 					        	<a href="/equipment/set/{{ set.id }}/edit/" class="btn btn-default btn-xs">
@@ -45,8 +47,9 @@
 					        <td>{{ equipment.model }}</td>
 					        <td>{{ equipment.code }}</td>
 					        <td>{{ equipment.serial }}</td>
+					        <td>{{ equipment.get_responsible }}</td>
 					        <td class="col-xs-3">
-					        	<a href="#" class="btn btn-default btn-xs">
+					        	<a href="/assignment/add/equipment/{{ equipment.id }}/" class="btn btn-default btn-xs">
 					        		<span class="fa fa-user"></span>
 					        	</a>					        	
 					        	<a href="/equipment/{{ equipment.id }}/type/{{ equipment.model.type.id }}/edit/" class="btn btn-default btn-xs">
@@ -57,6 +60,8 @@
 					        	</button>
 					        </td>
 				        </tr>
+				        {% empty %}
+				        <tr colspan="5"><td>"Sin registros."</td></tr>
 				        {% endfor %}
 				    </tbody>
 			    </table>

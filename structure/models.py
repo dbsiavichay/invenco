@@ -8,6 +8,9 @@ class Building(models.Model):
     name = models.CharField(max_length=64, verbose_name='nombre')
     address = models.CharField(max_length=128, verbose_name='dirección')
 
+    def __unicode__(self):
+        return self.name
+
 class Department(models.Model):
     code = models.FloatField(primary_key=True, db_column='coddepar')
     name = models.CharField(max_length=60, db_column='nomdepar')
@@ -16,6 +19,9 @@ class Department(models.Model):
         managed = False
         db_table = 'departamentos'
         ordering = ['name',]
+
+    def __unicode__(self):
+        return self.name
 
 class Section(models.Model):
     department = models.ForeignKey(Department, db_column='coddepar')
@@ -38,6 +44,9 @@ class Contributor(models.Model):
         db_table = 'contribuyentes'
         ordering = ['name',]
 
+    def __unicode__(self):
+        return str(self.charter)
+
 class Employee(models.Model):
     contributor = models.ForeignKey('Contributor', db_column='bicodcon')
     code = models.CharField(primary_key=True, max_length=2, db_column='biprvcodigo')
@@ -48,3 +57,6 @@ class Employee(models.Model):
         managed = False
         db_table = 'bicondep'
         ordering = ['contributor',]
+
+    def __unicode__(self):
+        return '%s | %s' % (self.contributor.charter, self.contributor.name)

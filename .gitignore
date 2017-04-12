@@ -5,3 +5,4 @@ media/
 purchases/migrations/
 stocktaking/migrations/
 structure/migrations/
+security/migrations/

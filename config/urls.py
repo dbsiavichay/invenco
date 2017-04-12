@@ -8,6 +8,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'', include('security.urls')),
     url(r'', include('stocktaking.urls')), 
     url(r'', include('structure.urls')),
     #url(r'^api/', include(stocktaking_router.urls)),

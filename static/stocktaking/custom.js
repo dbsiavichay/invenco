@@ -27,4 +27,11 @@ $(function () {
 		$('.type-item').removeClass('active');
 		$(this).addClass('active');
 	});
+
+	//Code for assignments
+	$('#id_area').on('change', function () {
+		var codes = $('#id_area').val().split(':');
+		$('input[name=department]').val(codes[0]);
+		$('input[name=section]').val(codes[1]);
+	});
 });
