@@ -106,12 +106,6 @@ class Equipment(models.Model):
 		contributor = Contributor.objects.using('sim').get(pk=self.owner)
 		return contributor.name
 
-class Replacement(models.Model):
-	model = models.ForeignKey(Model)
-	unit_price = models.DecimalField(max_digits=10, decimal_places=2)
-	total_price = models.DecimalField(max_digits=10, decimal_places=2)
-	stock = models.DecimalField(max_digits=7, decimal_places=2)
-
 class Assignment(models.Model):
 	class Meta:
 		ordering = ['department', 'section', '-date_joined']	
@@ -130,3 +124,15 @@ class Assignment(models.Model):
 		contributor = Contributor.objects.using('sim').get(charter=self.employee)
 		arr = contributor.name.split()
 		return '%s %s' % (arr[2], arr[0])
+
+class Replacement(models.Model):
+	model = models.ForeignKey(Model)
+	stock = models.DecimalField(max_digits=10, decimal_places=2)
+
+class Kardex(models.Model):
+	unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+	total_price = models.DecimalField(max_digits=10, decimal_places=2)
+	quantity = models.DecimalField(max_digits=10, decimal_places=2)
+	date_joined = models.DateTimeField(auto_now_add=True)
+	inout = models.PositiveSmallIntegerField()
+	replacement = models.ForeignKey(Replacement)

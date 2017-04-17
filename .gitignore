@@ -6,3 +6,4 @@ purchases/migrations/
 stocktaking/migrations/
 structure/migrations/
 security/migrations/
+maintenance/migrations/

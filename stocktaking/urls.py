@@ -25,6 +25,9 @@ urlpatterns = [
     url(r'^equipment/add/set/(?P<set>\d+)/$', login_required(EquipmentCreateView.as_view()), name='equipment_create_by_set'),
     url(r'^equipment/(?P<pk>\d+)/type/(?P<type>\d+)/edit/$', login_required(EquipmentUpdateView.as_view()), name='equipment_update_by_type'),
     url(r'^equipment/set/(?P<pk>\d+)/edit/$', login_required(EquipmentUpdateView.as_view()), name='equipment_update_by_set'),
+    url(r'^replacement/$', login_required(ReplacementListView.as_view()), name='replacement_list'),
+    url(r'^replacement/add/select-type/$', login_required(SelectTypeListView.as_view()), name='replacement_select_type'),
+    url(r'^replacement/add/$', login_required(ReplacementCreateView.as_view()), name='replacement_create'),
     url(r'^assignment/add/equipment/(?P<pk>\d+)/$', login_required(AssignmentCreateView.as_view()), name='assignment_create_by_equipment'),
     url(r'^assignment/add/set/(?P<set>\d+)/$', login_required(AssignmentCreateView.as_view()), name='assignment_create_by_equipment'),
 ]

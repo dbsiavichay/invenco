@@ -221,6 +221,11 @@ def get_equipment_formset(**kwargs):
 		)
 
 
+KardexFormSet = inlineformset_factory(
+	Replacement, Kardex, fields='__all__'
+)
+
+
 class AssignmentForm(ModelForm):
 	class Meta:
 		model = Assignment

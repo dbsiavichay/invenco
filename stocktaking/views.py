@@ -401,6 +401,15 @@ class EquipmentUpdateView(AuditMixin, UpdateView):
 
 		return formset
 
+class ReplacementListView(PaginationMixin, ListView):
+	model = Replacement
+	paginate_by = 8
+
+class ReplacementCreateView(AuditMixin, CreateView):
+	model = Replacement
+	fields = '__all__'
+	success_url = '/replacement/'
+
 class AssignmentCreateView(AuditMixin, CreateView):
 	model = Assignment
 	form_class = AssignmentForm
@@ -493,6 +502,10 @@ class SelectTypeListView(ListView):
 			model = 'equipment'
 			sets = Set.objects.all()
 			context['sets'] = sets
+			context['object_list'] = self.model.objects.exclude(usage=2)
+		elif 'replacement' in self.request.path:
+			model = 'replacement'
+			context['object_list'] = self.model.objects.filter(usage=2)
 
 		context['model'] = model
 

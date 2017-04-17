@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'purchases',
     'stocktaking',
     'structure',
+    'maintenance',
 ]
 
 MIDDLEWARE = [
@@ -95,8 +96,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'siminvenco',
         'USER': 'postgres',
-        'PASSWORD': 'alfa2010',
-        'HOST': 'localhost',
+        'PASSWORD': 'omega2009a',
+        'HOST': '172.16.8.11',
         'PORT': '5432',
     },
     'sim': {
