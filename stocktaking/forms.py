@@ -77,77 +77,6 @@ class ModelSpecificationForm(forms.Form):
 			initial = instance.specifications[key] if instance is not None and key in instance.specifications else None
 
 			if specification.widget == 'number':
-				self.fields[specification.id] = forms.CharField(
-					label = specification.label,
-					widget = forms.NumberInput(),
-					initial= initial,					
-					required = specification.is_required
-				)
-			elif specification.widget == 'text':
-				self.fields[str(specification.id)] = forms.CharField(
-					label = specification.label,					
-					initial= initial,
-					required = specification.is_required
-				)
-			elif specification.widget == 'select':
-				CHOICES = [(choice, choice) for choice in specification.choices.split(',')]
-				CHOICES = [('', '---------')] + CHOICES
-				self.fields[str(specification.id)] = forms.ChoiceField(
-					label = specification.label,
-					choices = CHOICES,
-					initial= initial,
-					required = specification.is_required					
-				)
-				self.fields[str(specification.id)].widget.attrs.update({'class' : 'select2'})
-			elif specification.widget == 'radio':
-				CHOICES = [(choice, choice) for choice in specification.choices.split(',')]
-				self.fields[str(specification.id)] = forms.ChoiceField(
-					label = specification.label,
-					choices = CHOICES,
-					initial= initial,			
-					required = specification.is_required
-				)
-			elif specification.widget == 'checkbox':
-				self.fields[str(specification.id)] = forms.BooleanField(
-					label = specification.label,	
-					initial= initial,				
-				)
-			else:
-				pass
-
-class EquipmentForm(ModelForm):
-
-	class Meta:
-		model = Equipment
-		exclude = ['specifications', 'provider', 'invoice', 'date_purchase', 'date_warranty', 'owner', 'in_set']
-
-	def __init__(self, *args, **kwargs):		
-		types = kwargs.pop('types', None)
-		instances = kwargs.pop('instances', None)		
-
-		if types and types is not None: 
-			type = types.pop(0)
-
-		if instances and instances is not None:
-			type, instance = instances.pop(0)			
-			kwargs.update({'instance': instance})
-
-		super(EquipmentForm, self).__init__(*args, **kwargs)
-		self.empty_permitted = False		
-
-		self.fields['model'] = forms.ModelChoiceField(
-			queryset=Model.objects.filter(type=type),
-			label='Modelo'
-		)
-
-		specifications = TypeSpecification.objects.filter(type = type, when='device')		
-
-		for specification in specifications:
-			key = str(specification.id)
-			equipment = self.instance if self.instance.id is not None else None
-			initial = equipment.specifications[key] if equipment is not None and key in equipment.specifications else None
-
-			if specification.widget == 'number':
 				self.fields[key] = forms.CharField(
 					label = specification.label,
 					widget = forms.NumberInput(),
@@ -189,6 +118,91 @@ class EquipmentForm(ModelForm):
 					label = specification.label,
 					initial = 'separator',					
 					required = False
+				)
+
+		for name, field in self.fields.items():				
+			type_widget = self.fields[name].widget.__class__.__name__			
+			if not type_widget == 'RadioSelect' and not type_widget == 'CheckboxInput':
+				self.fields[name].widget.attrs['class'] = 'form-control' if not type_widget == 'Select' else 'select2'
+
+class EquipmentForm(ModelForm):
+
+	class Meta:
+		model = Equipment
+		exclude = ['specifications', 'provider', 'invoice', 'date_purchase', 'date_warranty', 'owner', 'in_set']
+
+	def __init__(self, *args, **kwargs):		
+		types = kwargs.pop('types', None)
+		instances = kwargs.pop('instances', None)		
+
+		if types and types is not None: 
+			type = types.pop(0)
+
+		if instances and instances is not None:
+			type, instance = instances.pop(0)			
+			kwargs.update({'instance': instance})
+
+		super(EquipmentForm, self).__init__(*args, **kwargs)
+		self.empty_permitted = False		
+
+		self.fields['model'] = forms.ModelChoiceField(
+			queryset=Model.objects.filter(type=type),
+			label='Modelo'
+		)
+		
+		if self.instance.owner == '':
+			specifications = TypeSpecification.objects.filter(type = type, when='device')		
+		else:
+			specifications = TypeSpecification.objects.filter(type = type).exclude(when='model')
+
+		for specification in specifications:
+			key = str(specification.id)
+			equipment = self.instance if self.instance.id is not None else None
+			initial = equipment.specifications[key] if equipment is not None and key in equipment.specifications else None
+
+			if specification.widget == 'number':
+				self.fields[key] = forms.CharField(
+					label = specification.label,
+					widget = forms.NumberInput(),
+					initial= initial,					
+					required = specification.is_required
+				)
+			elif specification.widget == 'text':
+				self.fields[key] = forms.CharField(
+					label = specification.label,					
+					initial= initial,
+					required = specification.is_required
+				)
+			elif specification.widget == 'select':
+				CHOICES = [(choice, choice) for choice in specification.choices.split(',')]
+				CHOICES = [('', '---------')] + CHOICES
+				self.fields[key] = forms.ChoiceField(
+					label = specification.label,
+					choices = CHOICES,
+					initial= initial,
+					required = specification.is_required					
+				)
+				self.fields[key].widget.attrs.update({'class' : 'select2'})
+			elif specification.widget == 'radio':
+				CHOICES = [(choice, choice) for choice in specification.choices.split(',')]
+				self.fields[key] = forms.ChoiceField(
+					label = specification.label,
+					widget = forms.RadioSelect,
+					choices = CHOICES,
+					initial= initial,			
+					required = specification.is_required
+				)
+			elif specification.widget == 'checkbox':
+				self.fields[key] = forms.BooleanField(
+					label = specification.label,	
+					initial= initial,
+					required = False					
+				)
+			else:
+				self.fields[key] = forms.CharField(
+					label = specification.label,
+					initial = 'separator',					
+					required = False
 				)			
 
 		if type is not None:			
@@ -220,11 +234,25 @@ def get_equipment_formset(**kwargs):
 			extra=len(instances)
 		)
 
+class ReplacementForm(ModelForm):
+	class Meta:
+		model = KardexReplacement
+		exclude = ('total_price','stock', 'inout',)
 
-KardexFormSet = inlineformset_factory(
-	Replacement, Kardex, fields='__all__'
-)
+	def __init__(self, *args, **kwargs):		
+		type = kwargs.pop('type', None)		
 
+		super(ReplacementForm, self).__init__(*args, **kwargs)		
+
+		self.fields['model'] = forms.ModelChoiceField(
+			queryset=Model.objects.filter(type=type, type__usage=2),
+			label='Modelo'
+		)		
+
+# KardexFormSet = inlineformset_factory(
+# 	Replacement, Kardex, fields='__all__',
+# 	extra=1
+# )
 
 class AssignmentForm(ModelForm):
 	class Meta:
@@ -293,5 +321,3 @@ class AssignmentForm(ModelForm):
 			label = 'Edificio',
 			initial = assignment.building if assignment is not None else None
 		)
-
-	

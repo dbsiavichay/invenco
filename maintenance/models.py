@@ -1,23 +1,16 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.db import models
 
-from stocktaking.models import Equipment, Replacement
+from stocktaking.models import Equipment, Model
 
 # Create your models here.
 
 class Fix(models.Model):
-	problem = models.TextField()
-	solution = models.TextField()
-	observation = models.TextField()
+	problem = models.TextField(verbose_name='problema')
+	solution = models.TextField(verbose_name='solución')
+	observation = models.TextField(verbose_name='observación')
 	date_joined = models.DateTimeField(auto_now_add=True)
-	equipment = models.ForeignKey(Equipment)
+	equipment = models.ForeignKey(Equipment, verbose_name='equipo')
 
-
-class Parts(models.Model):	
-	quantity = models.FloatField()
-	replacement = models.ForeignKey(Replacement)
-	fix = models.ForeignKey(Fix)
-
-	def __unicode__(self):
-		return str(self.part)

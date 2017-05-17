@@ -7,8 +7,7 @@
 	<div class="col-xs-12">
       	<div class="card">
         	<div class="card-header">Añadir modelo</div>
-        	<div class="card-body">   
-        		{{ form.errors }}     		        		
+        	<div class="card-body">  
         		{% load widget_tweaks %}
         		<form id="form" class="form form-horizontal" action="" method="POST" enctype="multipart/form-data" novalidate>
         			{% csrf_token %}
@@ -43,8 +42,45 @@
 				        </div>
 				    </div>				    
 
-				    {% include 'partials/equipment-single-form.html' %}					
+				    
+				    {% for field in specification_form %}	
+						{% if field.value == 'separator' %}					    		
+					    <div class="section">
+							<span class="section-title">{{ field.label }}</span>
+							{{ field|attr:"type:hidden"|attr:"value:separator" }}
+						</div>							    
+					    {% elif field.name != 'title' and field.name != 'id' %}
+						<div class="form-group {% if field.errors %} has-error {% endif %}">
+					        <label class="col-md-3 control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+					        <div class="col-md-9">							        	
+					        {% if field|widget_type == 'radioselect' %}
+					        	{% for radio in field %}
+						        <div class="radio radio-inline">
+						            {{ radio.tag }}
+						            <label for="{{ radio.id_for_label }}">
+						            	{{ radio.choice_label }}
+						            </label>
+						        </div>
+						        {% endfor %}
+					        {% elif field|widget_type == 'checkboxinput' %}
+					        	<div class="checkbox">
+								    {{ field }}
+								    <label for="{{ field.id_for_label }}"></label>
+								</div>
+					        {% else %}							        	
+					        	{{ field }}
+					        {% endif %}
+
+						    {% for error in field.errors %}
+								<span class="help-block">{{ error }}</span>
+							{% endfor %}					    
+					        </div>
+					    </div>
+					    {% endif %}							    
+					{% endfor %}
+
 				</form>
+
 				<form id="delete" action="/model/{{ model.id }}/delete/" method="POST">{% csrf_token %}</form>
 				<div class="form form-horizontal">
 					<div class="form-footer">

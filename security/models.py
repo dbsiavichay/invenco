@@ -9,3 +9,6 @@ class Profile(models.Model):
 	institution = models.CharField(max_length=128, blank=True, verbose_name='institución')
 	avatar = models.ImageField(upload_to='avatares', blank=True, null=True)
 	user = models.OneToOneField(User, verbose_name='usuario')
+
+	def __unicode__(self):
+		return self.user.get_full_name()

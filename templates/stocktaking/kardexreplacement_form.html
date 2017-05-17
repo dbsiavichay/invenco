@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Repuestos{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+      	<div class="card">
+        	<div class="card-header">Añadir repuesto</div>
+        	<div class="card-body">
+        		{% load widget_tweaks %}
+        		<form id="form" class="form form-horizontal" action="" method="POST" novalidate>
+        			{% csrf_token %}
+				    <div class="form-group {% if form.model.errors %} has-error {% endif %}">
+				        <label class="col-md-3 control-label" for="{{ form.model.id_for_label }}">{{ form.model.label }}</label>
+				        <div class="col-md-9">
+					        {{ form.model|add_class:"select2" }}
+					        {% for error in form.model.errors %}
+							<span class="help-block">{{ error }}</span>
+							{% endfor %}					    
+				        </div>
+				    </div>	
+
+				    <div class="form-group {% if form.quantity.errors %} has-error {% endif %}">
+				        <label class="col-md-3 control-label" for="{{ form.quantity.id_for_label }}">{{ form.quantity.label }}</label>
+				        <div class="col-md-9">
+					        {{ form.quantity|add_class:"form-control" }}
+					        {% for error in form.quantity.errors %}
+							<span class="help-block">{{ error }}</span>
+							{% endfor %}					    
+				        </div>
+				    </div>
+
+
+				    <div class="form-group {% if form.unit_price.errors %} has-error {% endif %}">
+				        <label class="col-md-3 control-label" for="{{ form.unit_price.id_for_label }}">{{ form.unit_price.label }}</label>
+				        <div class="col-md-9">
+					        {{ form.unit_price|add_class:"form-control" }}
+					        {% for error in form.unit_price.errors %}
+							<span class="help-block">{{ error }}</span>
+							{% endfor %}					    
+				        </div>
+				    </div>				    
+
+				    <div class="form-group {% if form.observation.errors %} has-error {% endif %}">
+				        <label class="col-md-3 control-label" for="{{ form.observation.id_for_label }}">{{ form.observation.label }}</label>
+				        <div class="col-md-9">
+					        {{ form.observation|add_class:"form-control" }}
+					        {% for error in form.observation.errors %}
+							<span class="help-block">{{ error }}</span>
+							{% endfor %}					    
+				        </div>
+				    </div>
+				</form>
+				<form id="delete" action="/replacement/{{ replacement.id }}/delete/" method="POST">{% csrf_token %}</form>
+				<div class="form form-horizontal">
+					<div class="form-footer">
+					    <div class="form-group">
+					      <div class="col-md-9">
+					        <button type="submit" form="form" class="btn btn-primary">
+					        	<span class="fa fa-floppy-o"></span>
+					        	Guardar
+					        </button>		
+					        {% if object %}
+					        <button type="submit" form="delete" class="btn btn-danger">
+					        	<span class="fa fa-trash"></span>
+					        	Eliminar
+					        </button>
+					        {% endif %}			        
+					        <a href="/replacement/" class="btn btn-default">
+					        	<span class="fa fa-reply"></span>
+					        	Regresar
+					        </a>
+					      </div>
+					    </div>
+					</div>
+				</div>
+        	</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

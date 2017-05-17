@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pure_pagination',
     'widget_tweaks',
-    'reversion',
+    #'reversion',
     'rest_framework',
     'security',
     'purchases',
@@ -96,8 +96,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'siminvenco',
         'USER': 'postgres',
-        'PASSWORD': 'omega2009a',
-        'HOST': '172.16.8.11',
+        'PASSWORD': 'alfa2010',
+        'HOST': 'localhost',
         'PORT': '5432',
     },
     'sim': {
@@ -156,3 +156,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/equipment/'

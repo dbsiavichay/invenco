@@ -125,14 +125,18 @@ class Assignment(models.Model):
 		arr = contributor.name.split()
 		return '%s %s' % (arr[2], arr[0])
 
-class Replacement(models.Model):
-	model = models.ForeignKey(Model)
-	stock = models.DecimalField(max_digits=10, decimal_places=2)
+# class Replacement(models.Model):
+# 	model = models.ForeignKey(Model)
+# 	stock = models.DecimalField(max_digits=10, decimal_places=2)
 
-class Kardex(models.Model):
-	unit_price = models.DecimalField(max_digits=10, decimal_places=2)
-	total_price = models.DecimalField(max_digits=10, decimal_places=2)
-	quantity = models.DecimalField(max_digits=10, decimal_places=2)
-	date_joined = models.DateTimeField(auto_now_add=True)
+class KardexReplacement(models.Model):
+	quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='cantidad')
+	unit_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio unitario')
+	total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio total')
+	stock = models.DecimalField(max_digits=10, decimal_places=2)
+	observation = models.TextField(blank=True, null=True, verbose_name='Observaciones')
 	inout = models.PositiveSmallIntegerField()
-	replacement = models.ForeignKey(Replacement)
+	date_joined = models.DateTimeField(auto_now_add=True)
+	model = models.ForeignKey(Model)
+
+	

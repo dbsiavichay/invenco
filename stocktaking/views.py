@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.forms import modelformset_factory, formset_factory
 from rest_framework import viewsets
-from .views import *
 from .models import *
 from .forms import *
 from .mixins import *
@@ -163,7 +162,7 @@ class ModelCreateView(AuditMixin, CreateView):
 		type = self.request.GET.get('type') or self.kwargs.get('type') or None
 
 		context['type'] = type
-		context['formset'] = self.get_specification_form(type)
+		context['specification_form'] = self.get_specification_form(type)
 
 		return context
 
@@ -343,7 +342,11 @@ class EquipmentUpdateView(AuditMixin, UpdateView):
 			for form in formset:
 				obj = form.save(commit=False)				
 				specifications = {}
-				type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
+				if obj.owner == '':
+					type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
+				else:
+					type_specifications = form.cleaned_data['model'].type.type_specifications.exclude(when='model').exclude(widget='separator')
+
 				for ts in type_specifications:
 					key = str(ts.id)
 					specifications[key] = form.cleaned_data[key]
@@ -402,13 +405,34 @@ class EquipmentUpdateView(AuditMixin, UpdateView):
 		return formset
 
 class ReplacementListView(PaginationMixin, ListView):
-	model = Replacement
+	model = KardexReplacement
 	paginate_by = 8
+	queryset = KardexReplacement.objects.order_by('model__name', '-date_joined').distinct('model__name')
 
 class ReplacementCreateView(AuditMixin, CreateView):
-	model = Replacement
-	fields = '__all__'
+	model = KardexReplacement
+	form_class = ReplacementForm
 	success_url = '/replacement/'
+
+	def form_valid(self, form):		
+		self.object = form.save(commit=False)
+		
+		last = KardexReplacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(model=self.object.model)
+
+		self.object.total_price = self.object.quantity * self.object.unit_price
+		self.object.stock = last[0].stock + self.object.quantity if len(last) else self.object.quantity
+		self.object.inout = 1
+		self.object.save()
+
+		self.save_addition(self.object)
+
+		return super(ReplacementCreateView, self).form_valid(form)
+
+	def get_form_kwargs(self):
+		kwargs = super(ReplacementCreateView, self).get_form_kwargs()
+		type_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None		
+		kwargs.update({'type': type_id})
+		return kwargs
 
 class AssignmentCreateView(AuditMixin, CreateView):
 	model = Assignment
@@ -487,8 +511,6 @@ class AssignmentCreateView(AuditMixin, CreateView):
 		else:			
 			return super(AssignmentCreateView, self).form_invalid(form)
 
-
-
 class SelectTypeListView(ListView):
 	model = Type
 	template_name = 'stocktaking/select_type.html'
@@ -498,7 +520,7 @@ class SelectTypeListView(ListView):
 
 		if 'model' in self.request.path:
 			model = 'model'
-		elif 'equipmen' in self.request.path:			
+		elif 'equipment' in self.request.path:			
 			model = 'equipment'
 			sets = Set.objects.all()
 			context['sets'] = sets
