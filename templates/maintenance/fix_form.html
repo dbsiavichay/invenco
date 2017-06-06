@@ -23,7 +23,7 @@
 				    <div class="form-group {% if form.problem.errors %} has-error {% endif %}">
 				        <label class="col-md-3 control-label" for="{{ form.problem.id_for_label }}">{{ form.problem.label }}</label>
 				        <div class="col-md-9">
-					        {{ form.problem|add_class:"form-control" }}
+					        {{ form.problem|add_class:"form-control"|attr:"rows:5" }}
 					        {% for error in form.problem.errors %}
 							<span class="help-block">{{ error }}</span>
 							{% endfor %}					    
@@ -32,7 +32,7 @@
 				    <div class="form-group {% if form.solution.errors %} has-error {% endif %}">
 				        <label class="col-md-3 control-label" for="{{ form.solution.id_for_label }}">{{ form.solution.label }}</label>
 				        <div class="col-md-9">
-					        {{ form.solution|add_class:"form-control" }}
+					        {{ form.solution|add_class:"form-control"|attr:"rows:5" }}
 					        {% for error in form.solution.errors %}
 							<span class="help-block">{{ error }}</span>
 							{% endfor %}					    
@@ -41,12 +41,50 @@
 				    <div class="form-group {% if form.observation.errors %} has-error {% endif %}">
 				        <label class="col-md-3 control-label" for="{{ form.observation.id_for_label }}">{{ form.observation.label }}</label>
 				        <div class="col-md-9">
-					        {{ form.observation|add_class:"form-control" }}
+					        {{ form.observation|add_class:"form-control"|attr:"rows:5" }}
 					        {% for error in form.observation.errors %}
 							<span class="help-block">{{ error }}</span>
 							{% endfor %}					    
 				        </div>
 				    </div>
+
+				    <div class="section">
+				    	<div class="section-title">Repuestos usados</div>				    	
+				    </div>
+
+				    {{ formset.errors }}
+
+
+				    <table class="table">
+					    <thead>
+					        <tr>				          
+					          <th>Repuesto</th>
+					          <th>Disponibilidad</th>
+					          <th>Usado</th>					          
+					        </tr>
+					    </thead>
+					    <tbody>
+					    	{{ formset.management_form }}
+					        {% for form in formset %}
+					        <tr>					        
+						        <td>
+						        	{{ form.model.label }}
+						        	{{ form.model }}
+						        	{{ form.unit_price }}
+						        	{{ form.inout }}							        							        	
+						        </td>
+						        <td>{{ form.stock.value }}</td>
+						        <td>
+						        	{{ form.quantity|add_class:"form-control" }}
+						        </td>
+					        </tr>
+					        {% empty %}
+					        <tr colspan="3"><td>"Sin registros."</td></tr>
+					        {% endfor %}
+					    </tbody>
+				    </table>
+
+
 				</form>
 
 				<form id="delete" action="/brand/{{ brand.id }}/delete/" method="POST">{% csrf_token %}</form>

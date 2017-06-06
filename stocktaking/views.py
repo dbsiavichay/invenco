@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.forms import modelformset_factory, formset_factory
-from rest_framework import viewsets
+
 from .models import *
 from .forms import *
-from .mixins import *
 from pure_pagination.mixins import PaginationMixin
 
 from .serializers import *
@@ -13,7 +12,7 @@ class SetListView(PaginationMixin, ListView):
 	model = Set
 	paginate_by = 8
 
-class SetCreateView(AuditMixin, CreateView):
+class SetCreateView(CreateView):
 	model = Set
 	fields = '__all__'
 	success_url = '/set/'
@@ -25,54 +24,26 @@ class SetCreateView(AuditMixin, CreateView):
 
 		return context
 
-	def form_valid(self, form):
-		if form.is_valid():
-			obj = form.save()
-			self.save_addition(obj)
-
-		return super(SetCreateView, self).form_valid(form)
-
-class SetUpdateView(AuditMixin, UpdateView):
+class SetUpdateView(UpdateView):
 	model = Set
 	fields = '__all__'
 	success_url = '/set/'
-
-	def form_valid(self, form):
-		if form.is_valid():
-			obj = form.save()
-			self.save_edition(obj)
-
-		return super(SetUpdateView, self).form_valid(form)	
 
 class BrandListView(PaginationMixin, ListView):
 	model = Brand
 	paginate_by = 8
 
-class BrandCreateView(AuditMixin, CreateView):
+class BrandCreateView(CreateView):
 	model = Brand
 	fields = '__all__'
 	success_url = '/brand/'
 
-	def form_valid(self, form):
-		if form.is_valid():
-			obj = form.save()
-			self.save_addition(obj)
-
-		return super(BrandCreateView, self).form_valid(form)
-
-class BrandUpdateView(AuditMixin, UpdateView):
+class BrandUpdateView(UpdateView):
 	model = Brand
 	fields = '__all__'
 	success_url = '/brand/'
 
-	def form_valid(self, form):
-		if form.is_valid():
-			obj = form.save()
-			self.save_edition(obj)
-
-		return super(BrandUpdateView, self).form_valid(form)
-
-class BrandDeleteView(AuditMixin, DeleteView):
+class BrandDeleteView(DeleteView):
 	model = Brand
 	success_url = '/brand/'
 
@@ -80,7 +51,7 @@ class TypeListView(PaginationMixin, ListView):
 	model = Type
 	paginate_by = 8
 
-class TypeCreateView(AuditMixin, CreateView):
+class TypeCreateView(CreateView):
 	model = Type
 	form_class = TypeForm
 	success_url = '/type/'
@@ -98,22 +69,19 @@ class TypeCreateView(AuditMixin, CreateView):
 	def form_valid(self, form):
 		context = self.get_context_data()
 		specification_form = context['specification_form']
+
+		if not specification_form.is_valid():
+			return self.form_invalid(form)
 		
-		if specification_form.is_valid():
-			self.object = form.save()
+		self.object = form.save()
+		
+		specification_form.instance = self.object
+		specification_form.save()
 
-			#Method of audit
-			self.save_addition(self.object)
-			#end
-			
-			specification_form.instance = self.object
-			specification_form.save()
+		return redirect(self.get_success_url())
+	
 
-			return redirect(self.get_success_url())
-		else:
-			return self.render_to_response(self.get_context_data(form=form))
-
-class TypeUpdateView(AuditMixin, UpdateView):
+class TypeUpdateView(UpdateView):
 	model = Type
 	form_class = TypeForm
 	success_url = '/type/'
@@ -131,19 +99,18 @@ class TypeUpdateView(AuditMixin, UpdateView):
 	def form_valid(self, form):		
 		context = self.get_context_data()
 		specification_form = context['specification_form']
-		
-		if specification_form.is_valid():
-			self.object = form.save()
-			specification_form.instance = self.object
-			specification_form.save()
-			#Method of audit
-			self.save_edition(self.object)
-			#end
-			return redirect(self.get_success_url())
-		else:
-			return self.render_to_response(self.get_context_data(form=form))
 
-class TypeDeleteView(AuditMixin, DeleteView):
+		if not specification_form.is_valid():
+			return self.form_invalid(form)
+		
+		self.object = form.save()
+
+		specification_form.instance = self.object
+		specification_form.save()
+
+		return redirect(self.get_success_url())
+		
+class TypeDeleteView(DeleteView):
 	model = Type
 	success_url = '/type/'
 
@@ -151,7 +118,7 @@ class ModelListView(PaginationMixin, ListView):
 	model = Model
 	paginate_by = 8
 
-class ModelCreateView(AuditMixin, CreateView):
+class ModelCreateView(CreateView):
 	model = Model
 	fields = '__all__'
 	success_url = '/model/'
@@ -171,17 +138,13 @@ class ModelCreateView(AuditMixin, CreateView):
 		specification_form = self.get_specification_form(type)
 
 		if not specification_form.is_valid():
-			return super(ModelCreateView, self).form_invalid(form)
+			return self.form_invalid(form)
 
 		self.object = form.save(commit=False)
 		self.object.specifications = specification_form.cleaned_data
 		self.object.save()
 
-		#Method of audit
-		self.save_addition(self.object)
-		#end
-
-		return super(ModelCreateView, self).form_valid(form)
+		return redirect(self.get_success_url())
 
 	def get_specification_form(self, type):
 		if self.request.method == 'POST':			
@@ -191,7 +154,7 @@ class ModelCreateView(AuditMixin, CreateView):
 
 		return form
 
-class ModelUpdateView(AuditMixin, UpdateView):
+class ModelUpdateView(UpdateView):
 	model = Model
 	fields = '__all__'
 	success_url = '/model/'
@@ -210,18 +173,13 @@ class ModelUpdateView(AuditMixin, UpdateView):
 		specification_form = self.get_specification_form(type)		
 
 		if not specification_form.is_valid():
-			return super(ModelUpdateView, self).form_invalid(form)			
+			return self.form_invalid(form)			
 
 		self.object = form.save(commit=False)
 		self.object.specifications = specification_form.cleaned_data
 		self.object.save()
 
-		#Method of audit
-		self.save_edition(self.object)
-		#end
-
-		return super(ModelUpdateView, self).form_valid(form)
-
+		return redirect(self.get_success_url())
 
 	def get_specification_form(self, type):				
 		self.object = self.get_object()		
@@ -233,7 +191,7 @@ class ModelUpdateView(AuditMixin, UpdateView):
 
 		return form
 
-class ModelDeleteView(AuditMixin, DeleteView):
+class ModelDeleteView(DeleteView):
 	model = Model
 	success_url = '/model/'
 
@@ -248,7 +206,7 @@ class EquipmentListView(PaginationMixin, ListView):
 
 		return context
 
-class EquipmentCreateView(AuditMixin, CreateView):
+class EquipmentCreateView(CreateView):
 	model = Equipment
 	fields = []
 	success_url = '/equipment/'
@@ -264,43 +222,36 @@ class EquipmentCreateView(AuditMixin, CreateView):
 
 		context = self.get_context_data()
 		formset = context['formset']
-		if formset.is_valid():
-			set_equipments = []
-			for form in formset:
-				obj = form.save(commit=False)				
-				specifications = {}
-				type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
-				for ts in type_specifications:
-					key = str(ts.id)
-					specifications[key] = form.cleaned_data[key]
 
-				obj.specifications = specifications
+		if not formset.is_valid():
+			return self.form_invalid(form)
 
-				if set_id is not None:					
-					obj.in_set = True
+		
+		set_equipments = []
+		for form in formset:
+			obj = form.save(commit=False)				
+			specifications = {}
+			type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
+			for ts in type_specifications:
+				key = str(ts.id)
+				specifications[key] = form.cleaned_data[key]
 
-				obj.save()
-				set_equipments.append(obj.id)
+			obj.specifications = specifications
 
-				#Method of audit
-				self.save_addition(obj)
-				#end
+			if set_id is not None:					
+				obj.in_set = True
 
-			if set_id is not None:
-				obj_set = Set.objects.get(pk=set_id)
-				detail = SetDetail()
-				detail.set = obj_set
-				detail.equipments = set_equipments
-				detail.save()
+			obj.save()
+			set_equipments.append(obj.id)
 
-				#Method of audit
-				self.save_addition(detail)
-				#end
+		if set_id is not None:
+			obj_set = Set.objects.get(pk=set_id)
+			detail = SetDetail()
+			detail.set = obj_set
+			detail.equipments = set_equipments
+			detail.save()
 
-
-			return super(EquipmentCreateView, self).form_valid(form)
-			
-		return super(EquipmentCreateView, self).form_invalid(form)
+		return redirect(self.get_success_url())
 
 	def get_formset(self):		
 		type = self.request.GET.get('type') or self.kwargs.get('type') or None
@@ -320,7 +271,7 @@ class EquipmentCreateView(AuditMixin, CreateView):
 
 		return formset
 
-class EquipmentUpdateView(AuditMixin, UpdateView):
+class EquipmentUpdateView(UpdateView):
 	model = Equipment
 	fields = []
 	success_url = '/equipment/'
@@ -337,44 +288,37 @@ class EquipmentUpdateView(AuditMixin, UpdateView):
 
 		context = self.get_context_data()
 		formset = self.get_formset()
-		if formset.is_valid():
-			set_equipments = []
-			for form in formset:
-				obj = form.save(commit=False)				
-				specifications = {}
-				if obj.owner == '':
-					type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
-				else:
-					type_specifications = form.cleaned_data['model'].type.type_specifications.exclude(when='model').exclude(widget='separator')
 
-				for ts in type_specifications:
-					key = str(ts.id)
-					specifications[key] = form.cleaned_data[key]
+		if not formset.is_valid():
+			return self.form_invalid(form)
+		
+		set_equipments = []
+		for form in formset:
+			obj = form.save(commit=False)				
+			specifications = {}
+			if obj.owner == '':
+				type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
+			else:
+				type_specifications = form.cleaned_data['model'].type.type_specifications.exclude(when='model').exclude(widget='separator')
 
-				obj.specifications = specifications
+			for ts in type_specifications:
+				key = str(ts.id)
+				specifications[key] = form.cleaned_data[key]
 
-				if set_id is not None and type_id is None:
-					obj.in_set = True
-
-				obj.save()
-				set_equipments.append(obj.id)
-
-				#Method of audit
-				self.save_edition(obj)
-				#end
+			obj.specifications = specifications
 
 			if set_id is not None and type_id is None:
-				detail = SetDetail.objects.get(pk=set_id)				
-				detail.equipments = set_equipments
-				detail.save()
+				obj.in_set = True
 
-				#Method of audit
-				self.save_edition(detail)
-				#end			
+			obj.save()
+			set_equipments.append(obj.id)
 
-			return super(EquipmentUpdateView, self).form_valid(form)
-			
-		return super(EquipmentUpdateView, self).form_invalid(form)
+		if set_id is not None and type_id is None:
+			detail = SetDetail.objects.get(pk=set_id)				
+			detail.equipments = set_equipments
+			detail.save()		
+
+		return redirect(self.get_success_url())
 
 	def get_formset(self):		
 		type = self.request.GET.get('type') or self.kwargs.get('type') or None
@@ -409,7 +353,7 @@ class ReplacementListView(PaginationMixin, ListView):
 	paginate_by = 8
 	queryset = KardexReplacement.objects.order_by('model__name', '-date_joined').distinct('model__name')
 
-class ReplacementCreateView(AuditMixin, CreateView):
+class ReplacementCreateView(CreateView):
 	model = KardexReplacement
 	form_class = ReplacementForm
 	success_url = '/replacement/'
@@ -424,9 +368,7 @@ class ReplacementCreateView(AuditMixin, CreateView):
 		self.object.inout = 1
 		self.object.save()
 
-		self.save_addition(self.object)
-
-		return super(ReplacementCreateView, self).form_valid(form)
+		return redirect(self.get_success_url())
 
 	def get_form_kwargs(self):
 		kwargs = super(ReplacementCreateView, self).get_form_kwargs()
@@ -434,7 +376,7 @@ class ReplacementCreateView(AuditMixin, CreateView):
 		kwargs.update({'type': type_id})
 		return kwargs
 
-class AssignmentCreateView(AuditMixin, CreateView):
+class AssignmentCreateView(CreateView):
 	model = Assignment
 	form_class = AssignmentForm
 	success_url = '/equipment/'
@@ -461,23 +403,14 @@ class AssignmentCreateView(AuditMixin, CreateView):
 
 	def form_valid(self, form):
 		equipment_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
-		
-		if form.is_valid():
-			self.object = form.save()
-			#Audit method
-			self.save_addition(self.object)			
-			#
-			equipment = Equipment.objects.get(pk=equipment_id)
-			equipment.owner = form.cleaned_data['employee']
-			equipment.save()
-			#Audit method
-			self.save_edition(equipment)	
-			#
+
+		equipment = Equipment.objects.get(pk=equipment_id)
+		equipment.owner = form.cleaned_data['employee']
+		equipment.save()
 
 		return super(AssignmentCreateView, self).form_valid(form)
 
 	def form_invalid(self, form):
-
 		set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
 
 		if set_id is not None:
@@ -495,17 +428,10 @@ class AssignmentCreateView(AuditMixin, CreateView):
 					equipment.save()
 					set.owner = frm.cleaned_data['employee']					
 
-					#Audit method
-					self.save_addition(obj)	
-					self.save_edition(equipment)		
-					#
 				else: 
 					return self.render_to_response(self.get_context_data(form=form))
 
 			set.save()
-			#Audit method			
-			self.save_edition(set)		
-			#
 
 			return redirect(self.success_url)
 		else:			
@@ -532,81 +458,3 @@ class SelectTypeListView(ListView):
 		context['model'] = model
 
 		return context
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class BrandViewSet(viewsets.ModelViewSet):
-	queryset = Brand.objects.all()
-	serializer_class = BrandSerializer
-
-class TypeListViewSet(viewsets.ModelViewSet):
-	queryset = Type.objects.all()
-	serializer_class = TypeListSerializer
-
-	def get_queryset(self):
-		queryset = self.queryset
-		usage = self.request.query_params.get('usage', None)
-		if usage is not None:
-			queryset = queryset.filter(usage=usage)
-		return queryset
-
-class TypeViewSet(viewsets.ModelViewSet):
-	queryset = Type.objects.all()
-	serializer_class = TypeSerializer
-
-class ModelListViewSet(viewsets.ReadOnlyModelViewSet):
-	queryset = Model.objects.all()
-	serializer_class = ModelListSerializer
-
-	def get_queryset(self):
-		queryset = self.queryset
-		type = self.request.query_params.get('type', None)
-		if type is not None:
-			queryset = queryset.filter(type=type)
-		return queryset
-
-class ModelViewSet(viewsets.ModelViewSet):
-	queryset = Model.objects.all()
-	serializer_class = ModelSerializer
-
-class EquipmentListViewSet(viewsets.ReadOnlyModelViewSet):
-	queryset = Equipment.objects.all()
-	serializer_class = EquipmentListSerializer
-
-	def get_queryset(self):
-		queryset = self.queryset
-		usage = self.request.query_params.get('usage', None)
-		if usage is not None:
-			queryset = queryset.filter(model__type__usage=usage)
-		return queryset
-
-class EquipmentViewSet(viewsets.ModelViewSet):
-	queryset = Equipment.objects.all()
-	serializer_class = EquipmentSerializer
-
-class AssignmentViewSet(viewsets.ModelViewSet):
-	queryset = Assignment.objects.all()
-	serializer_class = AssignmentSerializer
-
-	def get_queryset(self):
-		queryset = self.queryset
-		equipment = self.request.query_params.get('equipment', None)
-		if equipment is not None:
-			queryset = queryset.filter(equipment=equipment, is_active=True)
-		return queryset

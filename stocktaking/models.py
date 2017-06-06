@@ -7,7 +7,9 @@ from purchases.models import Provider
 from structure.models import *
 from django.contrib.auth.models import User
 
-class Brand(models.Model):
+from audit.mixins import AuditMixin
+
+class Brand(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['name',]
 
@@ -16,7 +18,8 @@ class Brand(models.Model):
 	def __unicode__(self):
 		return self.name
 
-class Type(models.Model):
+
+class Type(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['usage','name']
 
@@ -28,7 +31,7 @@ class Type(models.Model):
 	def __unicode__(self):
 		return self.name
 
-class TypeSpecification(models.Model):
+class TypeSpecification(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['-when', 'order']
 
@@ -41,9 +44,9 @@ class TypeSpecification(models.Model):
 	type = models.ForeignKey(Type, related_name='type_specifications')
 
 	def __unicode__(self):
-		return self.name
+		return self.label
 
-class Set(models.Model):
+class Set(AuditMixin, models.Model):
 	name = models.CharField(max_length=32, unique=True, verbose_name='nombre')
 	icon = models.ImageField(upload_to='sets',verbose_name='icono')
 	types = models.ManyToManyField(Type, verbose_name='tipos')
@@ -51,7 +54,7 @@ class Set(models.Model):
 	def __unicode__(self):
 		return self.name
 
-class SetDetail(models.Model):
+class SetDetail(AuditMixin, models.Model):
 	equipments = JSONField(verbose_name='equipos')
 	owner = models.CharField(max_length=16, blank=True, null=True, verbose_name='propietario')
 	set = models.ForeignKey(Set)
@@ -63,7 +66,7 @@ class SetDetail(models.Model):
 		contributor = Contributor.objects.using('sim').get(pk=self.owner)
 		return contributor.name
 
-class Model(models.Model):
+class Model(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['type', 'brand', 'name']
 
@@ -76,7 +79,7 @@ class Model(models.Model):
 	def __unicode__(self):
 		return '%(brand)s %(name)s' % {'brand': self.brand, 'name': self.name}
 
-class Equipment(models.Model):
+class Equipment(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['model',]
 
@@ -106,7 +109,7 @@ class Equipment(models.Model):
 		contributor = Contributor.objects.using('sim').get(pk=self.owner)
 		return contributor.name
 
-class Assignment(models.Model):
+class Assignment(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['department', 'section', '-date_joined']	
 
@@ -129,7 +132,7 @@ class Assignment(models.Model):
 # 	model = models.ForeignKey(Model)
 # 	stock = models.DecimalField(max_digits=10, decimal_places=2)
 
-class KardexReplacement(models.Model):
+class KardexReplacement(AuditMixin, models.Model):
 	quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='cantidad')
 	unit_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio unitario')
 	total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio total')

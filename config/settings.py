@@ -27,15 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-#REST_FRAMEWORK permissions
-REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny'
-    ]
-}
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,8 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pure_pagination',
     'widget_tweaks',
-    #'reversion',
-    'rest_framework',
+    'audit',
     'security',
     'purchases',
     'stocktaking',
@@ -64,7 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'reversion.middleware.RevisionMiddleware',
+    'audit.middleware.RequestMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'

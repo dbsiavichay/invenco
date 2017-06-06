@@ -23,17 +23,10 @@ class BuildingCreateView(AuditMixin, CreateView):
 
 		return super(BuildingCreateView, self).form_valid(form)
 
-class BuildingUpdateView(AuditMixin, UpdateView):
+class BuildingUpdateView(UpdateView):
 	model = Building
 	fields = '__all__'
 	success_url = '/building/'
-
-	def form_valid(self, form):
-		if form.is_valid():
-			obj = form.save()
-			self.save_edition(obj)
-
-		return super(BuildingUpdateView, self).form_valid(form)
 
 class BuildingDeleteView(DeleteView):
 	model = Building
