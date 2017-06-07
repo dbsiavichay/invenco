@@ -236,7 +236,7 @@ def get_equipment_formset(**kwargs):
 
 class ReplacementForm(ModelForm):
 	class Meta:
-		model = KardexReplacement
+		model = Replacement
 		exclude = ('total_price','stock', 'inout',)
 
 	def __init__(self, *args, **kwargs):		

@@ -10,34 +10,31 @@
         	<div class="card-body">
         		{% include "partials/pagination.html" %}
         		<div class="text-center">
-	        		<a href="/equipment/" class="btn btn-success btn-xs">Equipos</a>
-	        		<a href="/equipment/set/" class="btn btn-default btn-xs">Conjuntos</a>	        		
-		        </div>
-        		
+	        		<a href="/equipment/" class="btn btn-default btn-xs">Equipos</a>
+	        		<a href="/equipment/set/" class="btn btn-success btn-xs">Conjuntos</a>	        		      			
+        		</div>
 			    <table class="table">
 				    <thead>
 				        <tr>				          
 				          <th>Tipo</th>
 				          <th>Nombre</th>
-				          <th>Código</th>
-				          <th>Serie</th>
+				          <th>Código</th>				          
 				          <th>Responsable</th>
 				          <th>Acciones</th>
 				        </tr>
 				    </thead>
-				    <tbody>					    
-				    	{% for equipment in object_list %}
+				    <tbody>
+					    {% for set in object_list %}
 				        <tr>					        
-					        <td>{{ equipment.model.type }}</td>					       
-					        <td>{{ equipment.model }}</td>
-					        <td>{{ equipment.code }}</td>
-					        <td>{{ equipment.serial }}</td>
-					        <td>{{ equipment.get_responsible }}</td>
+					        <td>CONJUNTO</td>					       
+					        <td>{{ set.set.name }}</td>
+					        <td>#CJT{{ set.id }}</td>					        
+					        <td>{{ set.get_responsible }}</td>
 					        <td class="col-xs-3">
-					        	<a href="/assignment/add/equipment/{{ equipment.id }}/" class="btn btn-default btn-xs">
+					        	<a href="/assignment/add/set/{{ set.id }}/" class="btn btn-default btn-xs">
 					        		<span class="fa fa-user"></span>
 					        	</a>					        	
-					        	<a href="/equipment/{{ equipment.id }}/type/{{ equipment.model.type.id }}/edit/" class="btn btn-default btn-xs">
+					        	<a href="/equipment/set/{{ set.id }}/edit/" class="btn btn-default btn-xs">
 					        		<span class="fa fa-pencil"></span>
 					        	</a>
 					        	<button class="btn btn-default btn-xs delete" data-model="equipment" data-id="{{ equipment.id }}">

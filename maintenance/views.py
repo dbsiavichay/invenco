@@ -7,7 +7,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import *
 from .forms import *
 
-from stocktaking.models import KardexReplacement
+from stocktaking.models import Replacement
 
 from pure_pagination.mixins import PaginationMixin
 
@@ -33,30 +33,30 @@ class FixCreateView(CreateView):
 		return context
 
 	def form_valid(self, form):
-		fix = form.save()
+		self.object = form.save()
 
 		formset = self.get_formset()
 
-		if formset.is_valid():
-			for frm in formset:
-				last = KardexReplacement.objects.filter(model=frm.cleaned_data['model']).order_by('-date_joined')[0]				
+		if not formset.is_valid():
+			return self.form_invalid(form)
 
-				if frm.cleaned_data.get('quantity') > 0:					
-					rep = frm.save(commit=False)				
-					rep.total_price = rep.quantity * rep.unit_price
-					rep.stock = last.stock - rep.quantity				
+		for frm in formset:
+			last = Replacement.objects.filter(model=frm.cleaned_data['model']).order_by('-date_joined')[0]				
 
-					obs = {
-						'fix_id':  fix.id,
-						'description': 'Salida por uso en arreglo.'
-					}
+			if frm.cleaned_data.get('quantity') > 0:					
+				rep = frm.save(commit=False)				
+				rep.total_price = rep.quantity * rep.unit_price
+				rep.stock = last.stock - rep.quantity				
 
-					rep.observation = str(obs)
-					rep.save()
-		else:
-			return super(FixCreateView, self).form_invalid(form)
+				obs = {
+					'fix_id':  self.object.id,
+					'description': 'Salida por uso en arreglo.'
+				}
 
-		return redirect(self.success_url)
+				rep.observation = str(obs)
+				rep.save()
+
+		return redirect(self.get_success_url())
 
 	def get_formset(self):
 		ReplacementFormSet = get_replacement_formset()

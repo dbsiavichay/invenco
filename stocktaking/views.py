@@ -200,11 +200,10 @@ class EquipmentListView(PaginationMixin, ListView):
 	queryset = Equipment.objects.filter(in_set=False)
 	paginate_by = 8
 
-	def get_context_data(self, **kwargs):
-		context = super(EquipmentListView, self).get_context_data(**kwargs)
-		context['sets'] = SetDetail.objects.all()
-
-		return context
+class EquipmentSetListView(PaginationMixin, ListView):
+	model = SetDetail
+	paginate_by = 8
+	template_name = 'stocktaking/equipment_set_list.html'
 
 class EquipmentCreateView(CreateView):
 	model = Equipment
@@ -349,19 +348,19 @@ class EquipmentUpdateView(UpdateView):
 		return formset
 
 class ReplacementListView(PaginationMixin, ListView):
-	model = KardexReplacement
+	model = Replacement
 	paginate_by = 8
-	queryset = KardexReplacement.objects.order_by('model__name', '-date_joined').distinct('model__name')
+	queryset = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name')
 
 class ReplacementCreateView(CreateView):
-	model = KardexReplacement
+	model = Replacement
 	form_class = ReplacementForm
 	success_url = '/replacement/'
 
 	def form_valid(self, form):		
 		self.object = form.save(commit=False)
 		
-		last = KardexReplacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(model=self.object.model)
+		last = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(model=self.object.model)
 
 		self.object.total_price = self.object.quantity * self.object.unit_price
 		self.object.stock = last[0].stock + self.object.quantity if len(last) else self.object.quantity

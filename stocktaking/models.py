@@ -18,7 +18,6 @@ class Brand(AuditMixin, models.Model):
 	def __unicode__(self):
 		return self.name
 
-
 class Type(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['usage','name']
@@ -79,6 +78,17 @@ class Model(AuditMixin, models.Model):
 	def __unicode__(self):
 		return '%(brand)s %(name)s' % {'brand': self.brand, 'name': self.name}
 
+	def get_specifications(self):
+		list_specifications = []
+		specifications = self.type.type_specifications.exclude(widget='separator')
+
+		for specification in specifications:
+			key = str(specification.id)
+			list_specifications.append((specification.label, self.specifications[key]))
+
+		return list_specifications
+
+
 class Equipment(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['model',]
@@ -103,9 +113,16 @@ class Equipment(AuditMixin, models.Model):
 	in_set = models.BooleanField(default=False)
 
 	def __unicode__(self):
-		return '%s | %s' % (self.model, self.code)
+		representation =  '%s | %s' % (self.model, self.code)
+		responsible = self.get_responsible()
+		representation = '%s | %s' % (representation, responsible) if responsible else representation
+
+		return representation 
 
 	def get_responsible(self):
+		if not self.owner:
+			return ''
+
 		contributor = Contributor.objects.using('sim').get(pk=self.owner)
 		return contributor.name
 
@@ -128,11 +145,7 @@ class Assignment(AuditMixin, models.Model):
 		arr = contributor.name.split()
 		return '%s %s' % (arr[2], arr[0])
 
-# class Replacement(models.Model):
-# 	model = models.ForeignKey(Model)
-# 	stock = models.DecimalField(max_digits=10, decimal_places=2)
-
-class KardexReplacement(AuditMixin, models.Model):
+class Replacement(AuditMixin, models.Model):
 	quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='cantidad')
 	unit_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio unitario')
 	total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio total')
@@ -141,5 +154,8 @@ class KardexReplacement(AuditMixin, models.Model):
 	inout = models.PositiveSmallIntegerField()
 	date_joined = models.DateTimeField(auto_now_add=True)
 	model = models.ForeignKey(Model)
+
+	def __unicode__(self):
+		return '%s | %s' % (self.model, self.stock)
 
 	

@@ -1,12 +1,12 @@
 from django import forms
 from django.forms import formset_factory, ModelForm
-from stocktaking.models import KardexReplacement
+from stocktaking.models import Replacement
 
 from functools import partial, wraps
 
 class ReplacementForm(ModelForm):
 	class Meta:
-		model = KardexReplacement
+		model = Replacement
 		fields = ('quantity', 'unit_price', 'stock', 'inout', 'model')
 		widgets = {
             'model': forms.HiddenInput,
@@ -40,7 +40,7 @@ class ReplacementForm(ModelForm):
 		
 
 def get_replacement_formset():
-	replacements = KardexReplacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(stock__gt=0)
+	replacements = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(stock__gt=0)
 	
 	return formset_factory(			
 		wraps(ReplacementForm)(partial(ReplacementForm, replacements=list(replacements))),		

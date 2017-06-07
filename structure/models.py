@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 from django.db import models
 
 from audit.mixins import AuditMixin
-from audit.signals import audit_log
 
 class Building(AuditMixin, models.Model):
     name = models.CharField(max_length=64, verbose_name='nombre')

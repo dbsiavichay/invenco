@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^model/(?P<pk>\d+)/type/(?P<type>\d+)/edit/$', login_required(ModelUpdateView.as_view()), name='model_update'),
     url(r'^model/(?P<pk>\d+)/delete/$', login_required(ModelDeleteView.as_view()), name='model_delete'),
     url(r'^equipment/$', login_required(EquipmentListView.as_view()), name='equipment_list'),
+    url(r'^equipment/set/$', login_required(EquipmentSetListView.as_view()), name='equipment_set_list'),
     url(r'^equipment/add/select-type/$', login_required(SelectTypeListView.as_view()), name='equipment_select_type'),
     url(r'^equipment/add/type/(?P<type>\d+)/$', login_required(EquipmentCreateView.as_view()), name='equipment_create_by_type'),
     url(r'^equipment/add/set/(?P<set>\d+)/$', login_required(EquipmentCreateView.as_view()), name='equipment_create_by_set'),
