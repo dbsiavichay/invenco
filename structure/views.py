@@ -5,23 +5,14 @@ from pure_pagination.mixins import PaginationMixin
 from .models import *
 from .serializers import *
 
-from stocktaking.mixins import AuditMixin
-
 class BuildingListView(PaginationMixin, ListView):
 	model = Building
 	paginate_by = 8
 
-class BuildingCreateView(AuditMixin, CreateView):
+class BuildingCreateView(CreateView):
 	model = Building
 	fields = '__all__'
 	success_url = '/building/'
-
-	def form_valid(self, form):
-		if form.is_valid():
-			obj = form.save()
-			self.save_addition(obj)
-
-		return super(BuildingCreateView, self).form_valid(form)
 
 class BuildingUpdateView(UpdateView):
 	model = Building

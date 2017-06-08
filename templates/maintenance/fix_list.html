@@ -13,6 +13,8 @@
 				    <thead>
 				        <tr>				          
 				          <th>Equipo</th>
+				          <th>Código</th>
+				          <th>Propietario</th>
 				          <th>Problema</th>
 				          <th>Fecha</th>
 				          <th>Acciones</th>
@@ -21,7 +23,9 @@
 				    <tbody>
 				    	{% for fix in object_list %}
 				        <tr>					        
-					        <td>{{ fix.equipment }}</td>
+					        <td>{{ fix.equipment.model }}</td>
+					        <td>{{ fix.equipment.code }}</td>
+					        <td>{{ fix.equipment.get_responsible }}</td>
 					        <td>{{ fix.problem }}</td>
 					        <td>{{ fix.date_joined }}</td>
 					        <td class="col-xs-3">					        	

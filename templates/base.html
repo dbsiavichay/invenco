@@ -23,19 +23,11 @@
       <div class="sidebar-menu">
         <ul class="sidebar-nav">
           <li>
-            <a href="#">
+            <a href="/">
               <div class="icon">
                 <i class="fa fa-home" aria-hidden="true"></i>
               </div>
               <div class="title">Home</div>
-            </a>
-          </li>
-          <li class="@@menu.messaging">
-            <a href="./messaging.html">
-              <div class="icon">
-                <i class="fa fa-comments" aria-hidden="true"></i>
-              </div>
-              <div class="title">Messaging</div>
             </a>
           </li>
           <li class="dropdown active">
@@ -63,9 +55,48 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <div class="icon">
-                <i class="fa fa-laptop" aria-hidden="true"></i>
+                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+              </div>
+              <div class="title">Compras</div>
+            </a>
+            <div class="dropdown-menu">
+              <ul>
+                <li class="section"><i class="fa fa-laptop" aria-hidden="true"></i> Inventario</li>
+                <li><a href="/equipment/">Equipos</a></li>                
+                <li><a href="/replacement/">Repuestos</a></li>
+                <li class="section"><i class="fa fa-gear" aria-hidden="true"></i> Configuracion</li>
+                <li><a href="/building/">Edificios</a></li>
+                <li><a href="/brand/">Marcas</a></li>
+                <li><a href="/type/">Tipos</a></li>
+                <li><a href="/model/">Modelos</a></li>
+                <li><a href="/set/">Conjuntos</a></li>
+              </ul>
+            </div>
+          </li>
+
+          
+
+
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <div class="icon">
+                <i class="fa fa-bug" aria-hidden="true"></i>
               </div>
               <div class="title">Mantenimiento</div>
+            </a>
+            <div class="dropdown-menu">
+              <ul>
+                <li class="section"><i class="fa fa-laptop" aria-hidden="true"></i> Mantenimiento</li>
+                <li><a href="/fix/">Arreglos</a></li>                
+              </ul>
+            </div>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <div class="icon">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+              </div>
+              <div class="title">Reportes</div>
             </a>
             <div class="dropdown-menu">
               <ul>
@@ -223,7 +254,11 @@
               </li>
               <li class="dropdown profile">
                 <a href="/html/pages/profile.html" class="dropdown-toggle"  data-toggle="dropdown">
-                  <img class="profile-img" src="{% static 'images/profile.png' %}">
+                  {% if user.profile.avatar %}
+                  <img class="profile-img" src="{{ user.profile.avatar.url }}">
+                  {% else %}
+                  <img class="profile-img" src="{% static 'images/user.png' %}">
+                  {% endif %}
                   <div class="title">Profile</div>
                 </a>
                 <div class="dropdown-menu">

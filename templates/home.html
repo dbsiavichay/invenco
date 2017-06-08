@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Home{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+      <a class="card card-banner card-green-light">
+  <div class="card-body">
+    <i class="icon fa fa-shopping-basket fa-4x"></i>
+    <div class="content">
+      <div class="title">Sale Today</div>
+      <div class="value"><span class="sign">$</span>420</div>
+    </div>
+  </div>
+</a>
+
+  </div>
+  <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+      <a class="card card-banner card-blue-light">
+  <div class="card-body">
+    <i class="icon fa fa-thumbs-o-up fa-4x"></i>
+    <div class="content">
+      <div class="title">Page Likes</div>
+      <div class="value"><span class="sign"></span>2453</div>
+    </div>
+  </div>
+</a>
+
+  </div>
+  <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+      <a class="card card-banner card-yellow-light">
+  <div class="card-body">
+    <i class="icon fa fa-user-plus fa-4x"></i>
+    <div class="content">
+      <div class="title">New Registration</div>
+      <div class="value"><span class="sign"></span>50</div>
+    </div>
+  </div>
+</a>
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="row">
+  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+    <div class="card card-mini">
+      <div class="card-header">
+        <div class="card-title">Last Statuses</div>
+        <ul class="card-action">
+          <li>
+            <a href="/">
+              <i class="fa fa-refresh"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body no-padding table-responsive">
+        <table class="table card-table">
+          <thead>
+            <tr>
+              <th>Products</th>
+              <th class="right">Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>MicroSD 64Gb</td>
+              <td class="right">12</td>
+              <td><span class="badge badge-success badge-icon"><i class="fa fa-check" aria-hidden="true"></i><span>Complete</span></span></td>
+            </tr>
+            <tr>
+              <td>MiniPC i5</td>
+              <td class="right">5</td>
+              <td><span class="badge badge-warning badge-icon"><i class="fa fa-clock-o" aria-hidden="true"></i><span>Pending</span></span></td>
+            </tr>
+            <tr>
+              <td>Mountain Bike</td>
+              <td class="right">1</td>
+              <td><span class="badge badge-info badge-icon"><i class="fa fa-credit-card" aria-hidden="true"></i><span>Confirm Payment</span></span></td>
+            </tr>
+            <tr>
+              <td>Notebook</td>
+              <td class="right">10</td>
+              <td><span class="badge badge-danger badge-icon"><i class="fa fa-times" aria-hidden="true"></i><span>Cancelled</span></span></td>
+            </tr>
+            <tr>
+              <td>Raspberry Pi2</td>
+              <td class="right">6</td>
+              <td><span class="badge badge-primary badge-icon"><i class="fa fa-truck" aria-hidden="true"></i><span>Shipped</span></span></td>
+            </tr>
+            <tr>
+              <td>Flashdrive 128Mb</td>
+              <td class="right">40</td>
+              <td><span class="badge badge-info badge-icon"><i class="fa fa-credit-card" aria-hidden="true"></i><span>Confirm Payment</span></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+    <div class="card card-tab card-mini">
+      <div class="card-header">
+        <ul class="nav nav-tabs tab-stats">
+          <li role="tab1" class="active">
+            <a href="#tab1" aria-controls="tab1" role="tab" data-toggle="tab">Browsers</a>
+          </li>
+          <li role="tab2">
+            <a href="#tab2" aria-controls="tab2" role="tab" data-toggle="tab">OS</a>
+          </li>
+          <li role="tab2">
+            <a href="#tab3" aria-controls="tab3" role="tab" data-toggle="tab">More</a>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body tab-content">
+        <div role="tabpanel" class="tab-pane active" id="tab1">
+          <div class="row">
+            <div class="col-sm-8">
+              <div class="chart ct-chart-browser ct-perfect-fourth"><svg xmlns:ct="http://gionkunz.github.com/chartist-js/ct" width="100%" height="100%" class="ct-chart-pie" style="width: 100%; height: 100%;"><g class="ct-series ct-series-e"><path d="M41.711,110.117A105.117,105.117,0,0,0,42.707,124.551L146.828,110.117Z" class="ct-slice-pie" value="50"></path></g><g class="ct-series ct-series-d"><path d="M42.657,124.187A105.117,105.117,0,0,0,50.833,152.95L146.828,110.117Z" class="ct-slice-pie" value="105"></path></g><g class="ct-series ct-series-c"><path d="M50.684,152.614A105.117,105.117,0,0,0,217.855,187.608L146.828,110.117Z" class="ct-slice-pie" value="705"></path></g><g class="ct-series ct-series-b"><path d="M217.584,187.856A105.117,105.117,0,0,0,241.02,63.454L146.828,110.117Z" class="ct-slice-pie" value="480"></path></g><g class="ct-series ct-series-a"><path d="M241.183,63.783A105.117,105.117,0,0,0,41.711,110.117L146.828,110.117Z" class="ct-slice-pie" value="1000"></path></g><g><text dx="134.93627000901597" dy="58.921586499025835" text-anchor="middle" class="ct-label">43%</text><text dx="198.46104299581162" dy="119.93795917107212" text-anchor="middle" class="ct-label">21%</text><text dx="135.9696098768374" dy="161.54187443436635" text-anchor="middle" class="ct-label">30%</text><text dx="96.24762249491408" dy="124.40069348804562" text-anchor="middle" class="ct-label">4%</text><text dx="94.38790589520416" dy="113.64269416125363" text-anchor="middle" class="ct-label">2%</text></g></svg></div>
+            </div>
+            <div class="col-sm-4">
+              <ul class="chart-label">
+                <li class="ct-label ct-series-a">Google Chrome</li>
+                <li class="ct-label ct-series-b">Firefox</li>
+                <li class="ct-label ct-series-c">Safari</li>
+                <li class="ct-label ct-series-d">IE</li>
+                <li class="ct-label ct-series-e">Opera</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="tab2">
+          <div class="row">
+            <div class="col-sm-8">
+              <div class="chart ct-chart-os ct-perfect-fourth"><svg xmlns:ct="http://gionkunz.github.com/chartist-js/ct" width="100%" height="100%" class="ct-chart-donut" style="width: 100%; height: 100%;"><g class="ct-series ct-series-e"><path d="M15,5.5A-9.5,-9.5,0,0,0,14.67,3.019" class="ct-slice-donut" value="100" style="stroke-width: 20px"></path></g><g class="ct-series ct-series-d"><path d="M14.679,3.051A-9.5,-9.5,0,0,0,12.128,-1.306" class="ct-slice-donut" value="205" style="stroke-width: 20px"></path></g><g class="ct-series ct-series-c"><path d="M12.152,-1.283A-9.5,-9.5,0,0,0,-1.349,-1.083" class="ct-slice-donut" value="605" style="stroke-width: 20px"></path></g><g class="ct-series ct-series-b"><path d="M-1.326,-1.107A-9.5,-9.5,0,0,0,-3.718,3.203" class="ct-slice-donut" value="200" style="stroke-width: 20px"></path></g><g class="ct-series ct-series-a"><path d="M-3.71,3.171A-9.5,-9.5,0,1,0,15,5.5" class="ct-slice-donut" value="1300" style="stroke-width: 20px"></path></g><g><text dx="0.6208642175132564" dy="44.697500354181486" text-anchor="middle" class="ct-label">54%</text><text dx="-29.004399139069548" dy="-13.727491777446602" text-anchor="middle" class="ct-label">8%</text><text dx="4.985106243302064" dy="-33.99664396400425" text-anchor="middle" class="ct-label">25%</text><text dx="39.621862724178435" dy="-14.398454317668044" text-anchor="middle" class="ct-label">9%</text><text dx="44.664866623478204" dy="0.3654871345800448" text-anchor="middle" class="ct-label">4%</text></g></svg></div>
+            </div>
+            <div class="col-sm-4">
+              <ul class="chart-label">
+                <li class="ct-label ct-series-a">iOS</li>
+                <li class="ct-label ct-series-b">Android</li>
+                <li class="ct-label ct-series-c">Windows</li>
+                <li class="ct-label ct-series-d">OSX</li>
+                <li class="ct-label ct-series-e">Linux</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="tab3">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block customjs %}
+{% endblock %}

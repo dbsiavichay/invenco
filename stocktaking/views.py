@@ -200,6 +200,16 @@ class EquipmentListView(PaginationMixin, ListView):
 	queryset = Equipment.objects.filter(in_set=False)
 	paginate_by = 8
 
+	def get_context_data(self, **kwargs):
+		context = super(EquipmentListView, self).get_context_data(**kwargs)
+
+		types = Type.objects.all()
+		context.update({
+			'types': types
+		})
+
+		return context
+
 class EquipmentSetListView(PaginationMixin, ListView):
 	model = SetDetail
 	paginate_by = 8
@@ -228,20 +238,20 @@ class EquipmentCreateView(CreateView):
 		
 		set_equipments = []
 		for form in formset:
-			obj = form.save(commit=False)				
+			self.object = form.save(commit=False)				
 			specifications = {}
 			type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
 			for ts in type_specifications:
 				key = str(ts.id)
 				specifications[key] = form.cleaned_data[key]
 
-			obj.specifications = specifications
+			self.object.specifications = specifications
 
 			if set_id is not None:					
-				obj.in_set = True
+				self.object.in_set = True
 
-			obj.save()
-			set_equipments.append(obj.id)
+			self.object.save()
+			set_equipments.append(self.object.id)
 
 		if set_id is not None:
 			obj_set = Set.objects.get(pk=set_id)
