@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block page_title %}Repuestos{% endblock %}
+{% block page_title %}Despachos{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -8,19 +8,15 @@
       	<div class="card">
         	<div class="card-header">Listado</div>
         	<div class="card-body">
-        		{% include "partials/pagination.html" %}
-        		<div class="text-center">
-        			<a href="/replacement/" class="btn {% if not filter %} btn-success {% else %} btn-default {% endif %} btn-xs">Todo</a>
-	        		<a href="?filter=2" class="btn {% if filter == '2' %} btn-success {% else %} btn-default {% endif %}t btn-xs">Repuestos</a>
-	        		<a href="?filter=4" class="btn {% if filter == '4' %} btn-success {% else %} btn-default {% endif %} btn-xs">Consumibles</a>
-		        </div>
+        		{% include "partials/pagination.html" %}        		
 			    <table class="table">
 				    <thead>
 				        <tr>
 				        	<th>Tipo</th>				          
 					        <th>Modelo</th>
-					        <th>Stock</th>
 					        <th>Caracteristicas</th>
+					        <th>Usuario</th>
+					        <th>Responsable</th>
 					        <th>Acciones</th>
 				        </tr>
 				    </thead>
@@ -47,7 +43,7 @@
 					        </td>
 				        </tr>
 				        {% empty %}
-				        <tr colspan="4"><td>"Sin registros."</td></tr>
+				        <tr colspan="6"><td>"Sin registros."</td></tr>
 				        {% endfor %}
 				    </tbody>
 			    </table>
@@ -60,7 +56,7 @@
 
 <div class="btn-floating" id="help-actions">
 	<div class="btn-bg"></div>
-	<a href="/replacement/add/select-type/" class="btn btn-default btn-toggle">
+	<a href="/dispatch/add/" class="btn btn-default btn-toggle">
 		<i class="icon fa fa-plus"></i>
 	</a>        
 </div>

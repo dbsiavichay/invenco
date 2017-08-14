@@ -31,4 +31,6 @@ urlpatterns = [
     url(r'^replacement/add/type/(?P<pk>\d+)/$', login_required(ReplacementCreateView.as_view()), name='replacement_create'),
     url(r'^assignment/add/equipment/(?P<pk>\d+)/$', login_required(AssignmentCreateView.as_view()), name='assignment_create_by_equipment'),
     url(r'^assignment/add/set/(?P<set>\d+)/$', login_required(AssignmentCreateView.as_view()), name='assignment_create_by_equipment'),
+    url(r'^dispatches/$', login_required(DispatchListView.as_view()), name='dispatch_list'),
+    url(r'^dispatch/add/$', login_required(DispatchCreateView.as_view()), name='dispatch_create'),
 ]

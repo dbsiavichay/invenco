@@ -42,6 +42,7 @@
                 <li class="section"><i class="fa fa-laptop" aria-hidden="true"></i> Inventario</li>
                 <li><a href="/equipment/">Equipos</a></li>                
                 <li><a href="/replacement/">Repuestos</a></li>
+                <li><a href="/dispatches/">Ordenes de despacho</a></li>
                 <li class="section"><i class="fa fa-gear" aria-hidden="true"></i> Configuracion</li>
                 <li><a href="/building/">Edificios</a></li>
                 <li><a href="/brand/">Marcas</a></li>
@@ -85,20 +86,14 @@
               </ul>
             </div>
           </li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <li>
+            <a href="/reports/">
               <div class="icon">
                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
               </div>
               <div class="title">Reportes</div>
             </a>
-            <div class="dropdown-menu">
-              <ul>
-                <li class="section"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Reportes</li>
-                <li><a href="/fix/">Arreglos</a></li>                
-              </ul>
-            </div>
-          </li>
+          </li>          
         </ul>
       </div>
       <div class="sidebar-footer">
@@ -125,7 +120,7 @@
                 </button>
               </li>
               <li class="logo">
-                <a class="navbar-brand" href="#"><span class="highlight">Flat v3</span> Admin</a>
+                <a class="navbar-brand" href="#"><span class="highlight">Sim</span> Invenco</a>
               </li>
               <li>
                 <button type="button" class="navbar-toggle">
@@ -307,6 +302,7 @@
   
   <script type="text/javascript" src="{% static 'js/vendor.js' %}"></script>
   <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
+  <script src="https://unpkg.com/vue"></script>
   {% block customjs %}{% endblock %}
 
 </body>

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_title %}Reportes{% endblock %}
+
+{% block content %}
+<div id="app" class="row">
+<div class="col-xs-12">
+<div class="card">
+
+	<div class="card-header">Elegir</div>
+	<div class="card-body">
+		<a href="/reports/equipments/" class="btn btn-primary">
+			Reporte de equipos
+    		<span class="fa fa-download"></span>
+		</a>		
+	</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block customjs %}
+{% endblock %}

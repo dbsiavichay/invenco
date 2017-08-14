@@ -16624,8 +16624,9 @@ S2.define('select2/dropdown/attachBody',[
     $dropdown.addClass('select2-container--open');
 
     $dropdown.css({
-      position: 'absolute',
-      top: -999999
+      'position': 'absolute',
+      'top': -999999,
+      'z-index': 999999,
     });
 
     this.$container = $container;
@@ -17591,9 +17592,11 @@ S2.define('select2/core',[
 
     var width = this._resolveWidth(this.$element, this.options.get('width'));
 
-    if (width != null) {
-      $container.css('width', width);
-    }
+
+    // Denis update
+    // if (width != null) {
+    //   $container.css('width', width);
+    // }
   };
 
   Select2.prototype._resolveWidth = function ($element, method) {

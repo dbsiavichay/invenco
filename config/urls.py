@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'', include('stocktaking.urls')), 
     url(r'', include('structure.urls')),
     url(r'', include('maintenance.urls')),
+    url(r'', include('reporting.urls')),
     #url(r'^api/', include(stocktaking_router.urls)),
     #url(r'^api/', include(structure_router.urls)),
     url(r'^$', TemplateView.as_view(template_name='home.html')),

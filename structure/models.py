@@ -50,10 +50,11 @@ class Contributor(models.Model):
         return str(self.charter)
 
 class Employee(models.Model):
-    contributor = models.ForeignKey('Contributor', db_column='bicodcon')
-    code = models.CharField(primary_key=True, max_length=2, db_column='biprvcodigo')
+    #Id provicional debido a que la tabla no tiene id propia
+    code = models.CharField(primary_key=True, max_length=15, db_column='biprvcodigo')
     department = models.FloatField(blank=True, null=True, db_column='bicoddep')
     section = models.FloatField(blank=True, null=True, db_column='bicodsec')
+    contributor = models.ForeignKey('Contributor', db_column='bicodcon')
 
     class Meta:
         managed = False

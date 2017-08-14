@@ -34,4 +34,14 @@ $(function () {
 		$('input[name=department]').val(codes[0]);
 		$('input[name=section]').val(codes[1]);
 	});
+
+
+	//Code for close sets
+	$('.close-formset').on('click', function () {
+		var $panel = $(this).parents('.panel');
+		$panel.fadeOut(500, function() {
+			$panel.remove();
+		});
+
+	});
 });

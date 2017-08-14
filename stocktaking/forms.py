@@ -9,21 +9,12 @@ from structure.models import *
 from functools import partial, wraps
 
 class TypeForm(ModelForm):
-	USAGE_CHOICES = (
-		(1, 'Equipo'),
-		(2, 'Repuesto'),
-		(3, 'Accesorio'),		
-	)
-
-	usage = forms.ChoiceField(		
-		widget = forms.RadioSelect,
-		choices = USAGE_CHOICES,
-		label = 'Uso'
-	)
-
 	class Meta:
 		model = Type
 		fields = '__all__'
+		widgets = {
+            'usage': forms.RadioSelect,            
+        }
 
 class TypeSpecificationInline(ModelForm):
 	WHEN_CHOICES = (

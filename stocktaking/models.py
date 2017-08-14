@@ -22,9 +22,16 @@ class Type(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['usage','name']
 
+	USAGE_CHOICES = (
+		(1, 'Equipo'),
+		(2, 'Repuesto'),
+		(3, 'Accesorio'),
+		(4, 'Consumible'),
+	)
+
 	name = models.CharField(max_length=32, unique=True, verbose_name='nombre')
 	code = models.CharField(max_length=16, unique=True, verbose_name='código')
-	usage = models.PositiveSmallIntegerField(default=1, verbose_name='uso')
+	usage = models.PositiveSmallIntegerField(default=1, verbose_name='uso', choices=USAGE_CHOICES)
 	image = models.ImageField(upload_to='types', blank=True, null=True, verbose_name='icono')		
 
 	def __unicode__(self):
@@ -88,6 +95,18 @@ class Model(AuditMixin, models.Model):
 
 		return list_specifications
 
+	def get_list_specifications(self):
+		list_specifications = []
+		specifications = self.type.type_specifications.exclude(widget='separator')
+
+		for specification in specifications:
+			key = str(specification.id)
+			list_specifications.append(
+				'%s: %s' % (specification.label, self.specifications[key])				
+			)
+
+		return list_specifications
+
 
 class Equipment(AuditMixin, models.Model):
 	class Meta:
@@ -126,6 +145,27 @@ class Equipment(AuditMixin, models.Model):
 		contributor = Contributor.objects.using('sim').get(pk=self.owner)
 		return contributor.name
 
+	def get_location(self):
+		if not self.owner:
+			return ''
+
+		assignments = Assignment.objects.filter(employee=self.owner).order_by('-date_joined')
+		ass = assignments[0].building.name
+
+
+	def get_list_specifications(self):
+		list_specifications = []
+		specifications = self.model.type.type_specifications.exclude(widget='separator')
+
+		for specification in specifications:
+			key = str(specification.id)
+			if key in self.specifications.keys():				
+				list_specifications.append(
+					'%s: %s' % (specification.label, self.specifications[key])				
+				)
+
+		return list_specifications
+
 class Assignment(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['department', 'section', '-date_joined']	
@@ -146,12 +186,24 @@ class Assignment(AuditMixin, models.Model):
 		return '%s %s' % (arr[2], arr[0])
 
 class Replacement(AuditMixin, models.Model):
+	IN_BY_INITIAL = 1
+	IN_BY_PURCHASE = 2
+	OUT_BY_FIX = 5
+	OUT_BY_DISPATCH = 6
+
+	MOVEMENT_CHOICES = (
+		(IN_BY_INITIAL, 'Entrada por levantamiento inicial'),
+		(IN_BY_PURCHASE, 'Entrada por compra'),
+		(OUT_BY_FIX, 'Salida por reparación'),
+		(OUT_BY_DISPATCH, 'Salida por despacho'),
+	)
+
 	quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='cantidad')
 	unit_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio unitario')
 	total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio total')
 	stock = models.DecimalField(max_digits=10, decimal_places=2)
 	observation = models.TextField(blank=True, null=True, verbose_name='Observaciones')
-	inout = models.PositiveSmallIntegerField()
+	movement = models.PositiveSmallIntegerField(choices=MOVEMENT_CHOICES)
 	date_joined = models.DateTimeField(auto_now_add=True)
 	model = models.ForeignKey(Model)
 

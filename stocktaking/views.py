@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.forms import modelformset_factory, formset_factory
+from django.db.models import Q
 
 from .models import *
 from .forms import *
@@ -362,6 +364,22 @@ class ReplacementListView(PaginationMixin, ListView):
 	paginate_by = 8
 	queryset = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name')
 
+	def get_context_data(self, **kwargs):
+		context = super(ReplacementListView, self).get_context_data(**kwargs)
+
+		slug = self.request.GET.get('filter') or self.kwargs.get('filter') or None
+
+		if slug is not None:
+			self.queryset = self.queryset.filter(model__type__usage=slug)
+
+		context.update({
+			'replacement_list': self.queryset,
+			'object_list': self.queryset,
+			'filter':slug
+		})
+
+		return context
+
 class ReplacementCreateView(CreateView):
 	model = Replacement
 	form_class = ReplacementForm
@@ -446,6 +464,70 @@ class AssignmentCreateView(CreateView):
 		else:			
 			return super(AssignmentCreateView, self).form_invalid(form)
 
+
+class DispatchListView(PaginationMixin, ListView):
+	model = Replacement
+	paginate_by = 8
+	template_name = 'stocktaking/dispatch_list.html'
+	queryset = Replacement.objects.order_by('model__name', '-date_joined').\
+				distinct('model__name').filter(movement=Replacement.OUT_BY_DISPATCH)
+
+class DispatchCreateView(CreateView):
+	model = Replacement
+	#form_class = ReplacementForm
+	fields = '__all__'
+	template_name = 'stocktaking/dispatch_form.html'
+	success_url = '/dispatches/'
+
+	def get_context_data(self, **kwargs):
+		context = super(DispatchCreateView, self).get_context_data(**kwargs)
+
+		context['types'] = Type.objects.filter(Q(usage=2) | Q(usage=4))
+
+		return context
+
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+			type_id = request.GET.get('type') or kwargs.get('type') or None			
+			type = Type.objects.get(pk=type_id)
+
+			inventory = Replacement.objects.order_by('model__name', '-date_joined').\
+				distinct('model__name').filter(model__type=type)			
+
+			objects = []
+
+			for replacement in inventory:
+				objects.append({
+					'id': replacement.model.id,
+					'type': replacement.model.type.name,
+					'model': str(replacement.model),
+					'stock': replacement.stock,
+					'properties': replacement.model.get_list_specifications()
+				})
+
+			return JsonResponse({'data':objects})
+		else:
+			return super(DispatchCreateView, self).get(request, *args, **kwargs)
+
+	# def form_valid(self, form):		
+	# 	self.object = form.save(commit=False)
+		
+	# 	last = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(model=self.object.model)
+
+	# 	self.object.total_price = self.object.quantity * self.object.unit_price
+	# 	self.object.stock = last[0].stock + self.object.quantity if len(last) else self.object.quantity
+	# 	self.object.inout = 1
+	# 	self.object.save()
+
+	# 	return redirect(self.get_success_url())
+
+	# def get_form_kwargs(self):
+	# 	kwargs = super(ReplacementCreateView, self).get_form_kwargs()
+	# 	type_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None		
+	# 	kwargs.update({'type': type_id})
+	# 	return kwargs
+
+
 class SelectTypeListView(ListView):
 	model = Type
 	template_name = 'stocktaking/select_type.html'
@@ -462,7 +544,7 @@ class SelectTypeListView(ListView):
 			context['object_list'] = self.model.objects.exclude(usage=2)
 		elif 'replacement' in self.request.path:
 			model = 'replacement'
-			context['object_list'] = self.model.objects.filter(usage=2)
+			context['object_list'] = self.model.objects.filter(Q(usage=2) | Q(usage=4))
 
 		context['model'] = model
 

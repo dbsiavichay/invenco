@@ -7,12 +7,12 @@ from functools import partial, wraps
 class ReplacementForm(ModelForm):
 	class Meta:
 		model = Replacement
-		fields = ('quantity', 'unit_price', 'stock', 'inout', 'model')
+		fields = ('quantity', 'unit_price', 'stock', 'movement', 'model')
 		widgets = {
             'model': forms.HiddenInput,
             'unit_price': forms.HiddenInput,
             'stock': forms.HiddenInput,
-            'inout': forms.HiddenInput,
+            'movement': forms.HiddenInput,
         }
         	
 
@@ -26,7 +26,7 @@ class ReplacementForm(ModelForm):
 			'quantity': 0,
 			'unit_price': replacement.unit_price,
 			'stock': replacement.stock,
-			'inout': 2,
+			'movement': Replacement.OUT_BY_FIX,
 			'model': replacement.model.id
 		})
 
