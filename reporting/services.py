@@ -40,8 +40,7 @@ def get_letterhead_page(canvas, doc):
 		base_path = join(settings.BASE_DIR, 'static/images/reports/')
 
 		escudo = Image(base_path + 'escudo_morona.png', width=6*cm,height=2*cm)
-		logo = Image(base_path + 'logo_morona.jpg', width=2*cm,height=2*cm)
-		aside = Image(base_path + 'aside.png', width=1*cm,height=10*cm)
+		logo = Image(base_path + 'logo_morona.jpg', width=2*cm,height=2*cm)		
 		footer_caption = Image(base_path + 'footer-caption.png', width=6.5*cm,height=1.5*cm)
 		footer_image = Image(base_path + 'footer-image.png', width=3*cm,height=1.5*cm)
 
@@ -49,16 +48,13 @@ def get_letterhead_page(canvas, doc):
 		escudo.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - 20)
 
 		w, h = logo.wrap(doc.width, doc.topMargin)
-		logo.drawOn(canvas, doc.leftMargin + 480, doc.height + doc.topMargin - 20)
-
-		w, h = aside.wrap(doc.width, doc.topMargin)
-		aside.drawOn(canvas, doc.leftMargin + 510, doc.height + doc.topMargin - 375)
+		logo.drawOn(canvas, doc.leftMargin + 700, doc.height + doc.topMargin - 20)
 		
 		w, h = footer_caption.wrap(doc.width, doc.topMargin)
-		footer_caption.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - 770)
+		footer_caption.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - 530)
 
 		w, h = footer_image.wrap(doc.width, doc.topMargin)
-		footer_image.drawOn(canvas, doc.leftMargin + 430, doc.height + doc.topMargin - 770)
+		footer_image.drawOn(canvas, doc.leftMargin + 700, doc.height + doc.topMargin - 530)
 
         # Release the canvas
 		canvas.restoreState()
@@ -130,9 +126,9 @@ def get_attribute(instance, field):
 		attr = getattr(instance, name)
 		
 		if callable(attr):
-			return  get_paragraph(attr(), 8)
+			return  get_paragraph(attr(), 6)
 		
-		return get_paragraph(str(attr), 8)
+		return get_paragraph(str(attr), 6)
  
 	return get_attribute(getattr(instance, name), '.'.join(names))
 
@@ -152,7 +148,7 @@ def get_table_equipments(type):
 
 	table_title = get_table_title(type.name)
 	headers = ['Marca', 'Equipo', 'Serie', 'Código','Responsable']
-	columns_width = [1.3*cm, 3*cm,2.5*cm,1.5*cm,4*cm, 3*cm]
+	columns_width = [1.5*cm, 3*cm,2.3*cm,1.5*cm,4*cm, 3*cm]
 	fields = ('model.brand', 'model.name', 'serial', 'code', 'get_responsible')
 
 	#headers = ['Equipo',]
@@ -205,6 +201,6 @@ def get_table_equipments(type):
 			data[i].append(get_list_component(values))
 
 	data = get_styled_data([headers,] + data)	
-	table = Table(data, columns_width, style=get_table_style())
+	table = Table(data, columns_width, style=get_table_style(), hAlign='LEFT')
 
 	return [table_title, table]

@@ -28,16 +28,12 @@ def pdf_equipments():
 	styles = getSampleStyleSheet()
 	report = [
 		Paragraph(PDF_TITLE, styles['Title']),
-		#Paragraph("REGISTRO DE FAUNA URBANA", styles['Title']),
 	]
 
 	for type in types:
 		table = get_table_equipments(type)
 		if table is not None:
 			report+=table
-
-	
-
 
 	doc.build(report, onFirstPage=get_letterhead_page,onLaterPages=get_letterhead_page)
 	return buff.getvalue()
