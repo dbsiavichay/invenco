@@ -19,4 +19,5 @@ class Fix(AuditMixin, models.Model):
 	equipment = models.ForeignKey(Equipment, verbose_name='equipo')
 
 	def __unicode__(self):		
-		return upper('%s > %s' % (self.equipment, self.problem))
+		r = '%s > %s' % (self.equipment, self.problem)
+		return r.upper()

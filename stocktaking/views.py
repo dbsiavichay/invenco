@@ -236,24 +236,24 @@ class EquipmentCreateView(CreateView):
 
 		if not formset.is_valid():
 			return self.form_invalid(form)
-
 		
 		set_equipments = []
-		for form in formset:
-			self.object = form.save(commit=False)				
-			specifications = {}
-			type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
-			for ts in type_specifications:
-				key = str(ts.id)
-				specifications[key] = form.cleaned_data[key]
+		for form in formset:			
+			if form.has_changed():
+				self.object = form.save(commit=False)				
+				specifications = {}
+				type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
+				for ts in type_specifications:
+					key = str(ts.id)
+					specifications[key] = form.cleaned_data[key]
 
-			self.object.specifications = specifications
+				self.object.specifications = specifications
 
-			if set_id is not None:					
-				self.object.in_set = True
+				if set_id is not None:					
+					self.object.in_set = True
 
-			self.object.save()
-			set_equipments.append(self.object.id)
+				self.object.save()
+				set_equipments.append(self.object.id)
 
 		if set_id is not None:
 			obj_set = Set.objects.get(pk=set_id)
@@ -298,38 +298,33 @@ class EquipmentUpdateView(UpdateView):
 		type_id = self.request.GET.get('type') or self.kwargs.get('type') or None
 
 		context = self.get_context_data()
-		formset = self.get_formset()
+		formset = context['formset']
 
 		if not formset.is_valid():
 			return self.form_invalid(form)
 		
-		set_equipments = []
 		for form in formset:
-			obj = form.save(commit=False)				
-			specifications = {}
-			if obj.owner == '':
-				type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
-			else:
-				type_specifications = form.cleaned_data['model'].type.type_specifications.exclude(when='model').exclude(widget='separator')
+			if form.has_changed():
+				obj = form.save(commit=False)				
+				specifications = {}
+				print form.cleaned_data
+				if obj.owner == '':
+					type_specifications = obj.model.type.type_specifications.filter(when='device').exclude(widget='separator')
+				else:
+					type_specifications = obj.model.type.type_specifications.exclude(when='model').exclude(widget='separator')
 
-			for ts in type_specifications:
-				key = str(ts.id)
-				specifications[key] = form.cleaned_data[key]
+				for ts in type_specifications:
+					key = str(ts.id)
+					specifications[key] = form.cleaned_data[key]
 
-			obj.specifications = specifications
+				obj.specifications = specifications
 
-			if set_id is not None and type_id is None:
-				obj.in_set = True
+				if set_id is not None and type_id is None:
+					obj.in_set = True
 
-			obj.save()
-			set_equipments.append(obj.id)
+				obj.save()		
 
-		if set_id is not None and type_id is None:
-			detail = SetDetail.objects.get(pk=set_id)				
-			detail.equipments = set_equipments
-			detail.save()		
-
-		return redirect(self.get_success_url())
+		return redirect(self.get_success_url())	
 
 	def get_formset(self):		
 		type = self.request.GET.get('type') or self.kwargs.get('type') or None

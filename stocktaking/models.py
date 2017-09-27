@@ -61,8 +61,12 @@ class Set(AuditMixin, models.Model):
 		return self.name
 
 class SetDetail(AuditMixin, models.Model):
+	class Meta:
+		ordering = ['-date']
+
 	equipments = JSONField(verbose_name='equipos')
 	owner = models.CharField(max_length=16, blank=True, null=True, verbose_name='propietario')
+	date = models.DateTimeField(auto_now_add=True)
 	set = models.ForeignKey(Set)
 
 	def __unicode__(self):
@@ -127,6 +131,7 @@ class Equipment(AuditMixin, models.Model):
 	invoice = models.CharField(max_length=16, blank=True, null=True)
 	date_purchase = models.DateField(blank=True, null=True)
 	date_warranty = models.DateField(blank=True, null=True)
+	date = models.DateTimeField(auto_now_add=True)
 	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')
 	owner = models.CharField(max_length=16, blank=True, verbose_name='propietario')
 	in_set = models.BooleanField(default=False)

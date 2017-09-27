@@ -99,22 +99,6 @@ DATABASES = {
         'HOST': '172.16.8.11',
         'PORT': '5432',
     },
-    'temp': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'temp',
-        'USER': 'postgres',
-        'PASSWORD': 'omega2009a',
-        'HOST': '172.16.8.11',
-        'PORT': '5432',
-    },
-    'quipux': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'quipux',
-        'USER': 'postgres',
-        'PASSWORD': 'omega2009a',
-        'HOST': '172.16.8.11',
-        'PORT': '5432',
-    },
 }
 
 

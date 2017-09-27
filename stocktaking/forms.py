@@ -134,7 +134,7 @@ class EquipmentForm(ModelForm):
 			kwargs.update({'instance': instance})
 
 		super(EquipmentForm, self).__init__(*args, **kwargs)
-		self.empty_permitted = False		
+		#self.empty_permitted = False		
 
 		self.fields['model'] = forms.ModelChoiceField(
 			queryset=Model.objects.filter(type=type),
@@ -200,8 +200,9 @@ class EquipmentForm(ModelForm):
 			t = Type.objects.get(pk=type)
 
 			self.fields['title'] = forms.CharField(
-				widget= forms.HiddenInput,										
-				label= 'Datos de %s' % (t.name.lower(),),					
+				widget= forms.HiddenInput,
+				label= t.name.lower(),
+				#label= 'Datos de %s' % (t.name.lower(),),					
 				required = False
 			)
 
