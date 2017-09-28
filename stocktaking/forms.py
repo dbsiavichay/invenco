@@ -64,36 +64,12 @@ class SetTypeForm(ModelForm):
 		model = SetType
 		exclude = ('set',)
 
-	# def __init__(self, *args, **kwargs):				
-	# 	instances = kwargs.pop('instances', None)		
-
-	# 	if instances is not None and len(instances) > 0:
-	# 		kwargs.update({'instance': instances.pop(0)})
-
-	# 	super(SetTypeForm, self).__init__(*args, **kwargs)
-
 SetTypeFormset = modelformset_factory(
 	SetType,
     form=SetTypeForm,  
     extra = 1,
     can_delete=True    
 )
-
-# def get_settype_formset(**kwargs):	
-# 	queryset = kwargs.get('queryset', None)	
-
-# 	if queryset is not None:
-# 		instances = list(queryset)
-# 		return modelformset_factory(			
-# 			wraps(SetTypeForm)(partial(SetTypeForm, instances=instances)),		
-# 			extra=len(instances) + 1,
-# 			can_delete=True
-# 		)
-# 	else:	
-# 		return modelformset_factory(
-# 		    SetTypeForm,  
-# 		    extra = 3,    
-# 		)
 
 class ModelSpecificationForm(forms.Form):
 
@@ -239,11 +215,9 @@ class EquipmentForm(ModelForm):
 				)			
 
 		if type is not None:			
-			t = Type.objects.get(pk=type)
-
 			self.fields['title'] = forms.CharField(
 				widget= forms.HiddenInput,
-				label= t.name.lower(),
+				label= type.name.lower(),
 				#label= 'Datos de %s' % (t.name.lower(),),					
 				required = False
 			)

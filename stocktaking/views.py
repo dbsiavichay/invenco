@@ -330,11 +330,12 @@ class EquipmentCreateView(CreateView):
 
 		post_data = self.request.POST if self.request.method == 'POST' else None
 
-		if set is not None:
-			set = Set.objects.get(pk=set)
-			types = [type.id for type in set.types.all()]						
+		if set is not None:			
+			set = Set.objects.get(pk=set)			
+			types = [type for type in set.types.all().order_by('settype__order')]						
 		elif type is not None:
-			types = [int(type)]
+			type = Type.objects.get(pk=type)
+			types = [type]
 
 		EquipmentFormSet = get_equipment_formset(types = types)			
 
@@ -392,22 +393,23 @@ class EquipmentUpdateView(UpdateView):
 
 		post_data = self.request.POST if self.request.method == 'POST' else None
 		
-		if set is not None and type is not None:			
+		if set is not None and type is not None:
+			type = Type.objects.get(pk=type)			
 			equipment = Equipment.objects.get(pk=set)			
 			instances = [(type, equipment),]
-		elif set is not None:
-			instances = []
+		elif set is not None:			
 			set = SetDetail.objects.get(pk=set)
-			equipments = set.equipments
-			for type in set.set.types.all():
-				if len(equipments)>0:
-					for pk in equipments:
-						equipment = Equipment.objects.get(pk=pk)
-						if equipment.model.type == type:
-							instances.append((type.id, equipment))
-							equipments.remove(pk)
-				else:
-					instances.append((type.id, None))	
+			
+			types_of_set = set.set.types.all().order_by('settype__order')
+			equipments = Equipment.objects.filter(pk__in=set.equipments)
+			instances = [[type, None] for type in types_of_set]
+
+			for _list in instances:
+				type, instance = _list
+				for equipment in equipments:
+					if type == equipment.model.type:
+						_list[1] = equipment
+						break
 
 		EquipmentFormSet = get_equipment_formset(instances = instances)
 		formset = EquipmentFormSet(post_data)	
