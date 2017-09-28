@@ -54,11 +54,21 @@ class TypeSpecification(AuditMixin, models.Model):
 
 class Set(AuditMixin, models.Model):
 	name = models.CharField(max_length=32, unique=True, verbose_name='nombre')
-	icon = models.ImageField(upload_to='sets',verbose_name='icono')
-	types = models.ManyToManyField(Type, verbose_name='tipos')
+	icon = models.ImageField(upload_to='sets',verbose_name='icono')	
+	types = models.ManyToManyField(Type, through='SetType', verbose_name='tipos')
+
 
 	def __unicode__(self):
 		return self.name
+
+class SetType(AuditMixin, models.Model):
+	class Meta:
+		ordering = ('order',)
+
+	is_primary = models.BooleanField(default=False)
+	order = models.PositiveSmallIntegerField()
+	set = models.ForeignKey(Set)
+	type = models.ForeignKey(Type)
 
 class SetDetail(AuditMixin, models.Model):
 	class Meta:

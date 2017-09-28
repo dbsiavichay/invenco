@@ -17487,9 +17487,9 @@ S2.define('select2/core',[
   './keys'
 ], function ($, Options, Utils, KEYS) {
   var Select2 = function ($element, options) {
-    if ($element.data('select2') != null) {
-      $element.data('select2').destroy();
-    }
+    // if ($element.data('select2') != null) {
+    //   $element.data('select2').destroy();
+    // }
 
     this.$element = $element;
 
@@ -18033,7 +18033,7 @@ S2.define('select2/core',[
     this.$element.val(newVal).trigger('change');
   };
 
-  Select2.prototype.destroy = function () {
+/*  Select2.prototype.destroy = function () {
     this.$container.remove();
 
     if (this.$element[0].detachEvent) {
@@ -18071,7 +18071,7 @@ S2.define('select2/core',[
     this.selection = null;
     this.dropdown = null;
     this.results = null;
-  };
+  };*/
 
   Select2.prototype.render = function () {
     var $container = $(

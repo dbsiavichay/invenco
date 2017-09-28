@@ -53,6 +53,48 @@ TypeSpecificationInlineFormSet = inlineformset_factory(Type,
     extra = 1,    
 )
 
+
+class SetForm(ModelForm):
+	class Meta:
+		model = Set
+		exclude = ('types',)
+		
+class SetTypeForm(ModelForm):
+	class Meta:
+		model = SetType
+		exclude = ('set',)
+
+	# def __init__(self, *args, **kwargs):				
+	# 	instances = kwargs.pop('instances', None)		
+
+	# 	if instances is not None and len(instances) > 0:
+	# 		kwargs.update({'instance': instances.pop(0)})
+
+	# 	super(SetTypeForm, self).__init__(*args, **kwargs)
+
+SetTypeFormset = modelformset_factory(
+	SetType,
+    form=SetTypeForm,  
+    extra = 1,
+    can_delete=True    
+)
+
+# def get_settype_formset(**kwargs):	
+# 	queryset = kwargs.get('queryset', None)	
+
+# 	if queryset is not None:
+# 		instances = list(queryset)
+# 		return modelformset_factory(			
+# 			wraps(SetTypeForm)(partial(SetTypeForm, instances=instances)),		
+# 			extra=len(instances) + 1,
+# 			can_delete=True
+# 		)
+# 	else:	
+# 		return modelformset_factory(
+# 		    SetTypeForm,  
+# 		    extra = 3,    
+# 		)
+
 class ModelSpecificationForm(forms.Form):
 
 	def __init__(self, *args, **kwargs):

@@ -16,20 +16,80 @@ class SetListView(PaginationMixin, ListView):
 
 class SetCreateView(CreateView):
 	model = Set
-	fields = '__all__'
+	form_class = SetForm
 	success_url = '/set/'
 
 	def get_context_data(self, **kwargs):
 		context = super(SetCreateView, self).get_context_data(**kwargs)
-		types = Type.objects.all()
-		context['types'] = types
+		context.update({
+			'formset': self.get_formset()
+		})			
 
 		return context
 
+	def form_valid(self, form):
+		formset = self.get_formset()
+
+		if not formset.is_valid():
+			return self.form_invalid(form)
+		
+		self.object = form.save()
+		
+		for form in formset:
+			if form.has_changed():
+				settype = form.save(commit=False)
+				settype.set = self.object
+				settype.save()
+
+		return redirect(self.success_url)
+
+	def get_formset(self):
+		queryset = SetType.objects.none()		
+		post = None
+		if self.request.method == 'POST':
+			post = self.request.POST
+
+		form = SetTypeFormset(post, queryset=queryset)
+		return form
+
 class SetUpdateView(UpdateView):
 	model = Set
-	fields = '__all__'
+	form_class=SetForm
 	success_url = '/set/'
+
+	def get_context_data(self, **kwargs):
+		context = super(SetUpdateView, self).get_context_data(**kwargs)
+		context.update({
+			'formset': self.get_formset()
+		})			
+
+		return context
+
+	def form_valid(self, form):
+		formset = self.get_formset()
+
+		if not formset.is_valid():
+			return self.form_invalid(form)
+		
+		self.object = form.save()
+		for form in formset:
+			if form.has_changed():
+				settype = form.save(commit=False)
+				settype.set = self.object
+				settype.save()	
+
+		return redirect(self.success_url)
+
+	def get_formset(self):
+		self.object = self.get_object()
+		queryset = SetType.objects.filter(set=self.object)
+		post = None
+		if self.request.method == 'POST':
+			post = self.request.POST			
+
+		form = SetTypeFormset(post, queryset=queryset)
+		return form
+
 
 class BrandListView(PaginationMixin, ListView):
 	model = Brand
