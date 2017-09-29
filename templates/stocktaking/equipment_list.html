@@ -13,7 +13,7 @@
         		{% include "partials/pagination.html" %}
         		<div class="text-center">
 	        		<a href="/equipment/" class="btn btn-success btn-xs">Equipos</a>
-	        		<a href="/equipment/set/" class="btn btn-default btn-xs">Conjuntos</a>	        		
+	        		<a href="/equipment/set/" class="btn btn-default btn-xs">Conjuntos</a>	        			        		
 		        </div>
         		
 			    <table class="table">
@@ -52,6 +52,7 @@
 				        {% endfor %}
 				    </tbody>
 			    </table>
+			    {% include "partials/pagination.html" %}
         	</div>
         </div>
     </div>

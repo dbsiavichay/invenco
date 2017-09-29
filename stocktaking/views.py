@@ -10,6 +10,8 @@ from pure_pagination.mixins import PaginationMixin
 
 from .serializers import *
 
+from structure.models import Employee
+
 class SetListView(PaginationMixin, ListView):
 	model = Set
 	paginate_by = 8
@@ -259,22 +261,44 @@ class ModelDeleteView(DeleteView):
 
 class EquipmentListView(PaginationMixin, ListView):
 	model = Equipment
-	queryset = Equipment.objects.filter(in_set=False)
-	paginate_by = 8
+	#queryset = Equipment.objects.filter(in_set=False)
+	queryset = Equipment.objects.all()
+	paginate_by = 10
 
 	def get_context_data(self, **kwargs):
 		context = super(EquipmentListView, self).get_context_data(**kwargs)
+		type = self.request.GET.get('type') or self.kwargs.get('type') or None
 
-		types = Type.objects.all()
+		types = Type.objects.exclude(usage=2)
 		context.update({
+			#'type_id': int(type),
 			'types': types
 		})
 
 		return context
 
+	def get_queryset(self):
+		import operator
+		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
+		queryset = super(EquipmentListView, self).get_queryset()
+
+		if search is None: return queryset
+
+		fields = ['model__type__name', 'model__brand__name', 'model__part_number', 'code', 'serial', 'specifications']
+	
+		args = [Q(**{field+'__icontains': search}) for field in fields]
+		charters = Employee.objects.using('sim').filter(
+			Q(contributor__charter=search) | Q(contributor__name__icontains=search)
+		).values_list('contributor__charter', flat=True)
+		if len(charters) > 0: args.append(Q(owner__in=list(charters)))
+
+		queryset = self.model.objects.filter(reduce(operator.__or__, args))		
+
+		return queryset
+
 class EquipmentSetListView(PaginationMixin, ListView):
 	model = SetDetail
-	paginate_by = 8
+	paginate_by = 10
 	template_name = 'stocktaking/equipment_set_list.html'
 
 class EquipmentCreateView(CreateView):
