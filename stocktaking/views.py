@@ -387,12 +387,16 @@ class EquipmentUpdateView(UpdateView):
 
 		if not formset.is_valid():
 			return self.form_invalid(form)
-		
+
+		set = None
+		if set_id is not None and type_id is None:
+			set = SetDetail.objects.get(pk=set_id)
+
 		for form in formset:
 			if form.has_changed():
 				obj = form.save(commit=False)				
 				specifications = {}
-				print form.cleaned_data
+				
 				if obj.owner == '':
 					type_specifications = obj.model.type.type_specifications.filter(when='device').exclude(widget='separator')
 				else:
@@ -407,7 +411,12 @@ class EquipmentUpdateView(UpdateView):
 				if set_id is not None and type_id is None:
 					obj.in_set = True
 
-				obj.save()		
+				obj.save()
+
+				if set is not None:
+					if obj.id not in set.equipments:
+						set.equipments.append(obj.id)
+						set.save()
 
 		return redirect(self.get_success_url())	
 
@@ -422,8 +431,7 @@ class EquipmentUpdateView(UpdateView):
 			equipment = Equipment.objects.get(pk=set)			
 			instances = [(type, equipment),]
 		elif set is not None:			
-			set = SetDetail.objects.get(pk=set)
-			
+			set = SetDetail.objects.get(pk=set)			
 			types_of_set = set.set.types.all().order_by('settype__order')
 			equipments = Equipment.objects.filter(pk__in=set.equipments)
 			instances = [[type, None] for type in types_of_set]

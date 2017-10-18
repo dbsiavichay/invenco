@@ -128,8 +128,9 @@ class Equipment(AuditMixin, models.Model):
 
 	STATE_CHOICES = (
 		(1, 'Bueno'),
-		(2, 'En reparación'),
-		(3, 'Dañado'),
+		(2, 'Regular'),
+		(3, 'En reparación'),
+		(10, 'Dañado'),
 	)
 
 	model = models.ForeignKey(Model, verbose_name='modelo')
