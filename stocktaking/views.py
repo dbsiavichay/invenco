@@ -284,7 +284,7 @@ class EquipmentListView(PaginationMixin, ListView):
 
 		if search is None: return queryset
 
-		fields = ['model__type__name', 'model__brand__name', 'model__part_number', 'code', 'serial', 'specifications']
+		fields = ['model__name','model__type__name', 'model__brand__name', 'model__part_number', 'code', 'serial', 'specifications']
 	
 		args = [Q(**{field+'__icontains': search}) for field in fields]
 		charters = Employee.objects.using('sim').filter(

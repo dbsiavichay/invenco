@@ -10,8 +10,8 @@
         	<div class="card-body">
         		{% include "partials/pagination.html" %}
         		<div class="text-center">
-	        		<a href="/equipment/" class="btn btn-default btn-xs">Equipos</a>
-	        		<a href="/equipment/set/" class="btn btn-success btn-xs">Conjuntos</a>	        		      			
+					<a href="{% url 'equipment_list' %}" class="btn btn-success btn-xs">Equipos</a>
+	        		<a href="{% url 'equipment_set_list' %}" class="btn btn-default btn-xs">Conjuntos</a>	        		      			
         		</div>
 			    <table class="table">
 				    <thead>

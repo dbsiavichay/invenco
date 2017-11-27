@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Facturas{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12">
+      	<div class="card">
+        	<div class="card-header">Listado</div>
+        	<div class="card-body">
+        		{% include "partials/pagination.html" %}
+			    <table class="table">
+				    <thead>
+				        <tr>				          
+				          <th>Proveedor</th>
+				          <th>Número</th>
+				          <th>Fecha</th>
+				          <th>Base imponible</th>
+				          <th>Impuestos</th>
+				          <th>Total</th>
+				          <th>Acciones</th>
+				        </tr>
+				    </thead>
+				    <tbody>
+				    	{% for invoice in object_list %}
+				        <tr>					        
+					        <td>{{ invoice.provider }}</td>
+					        <td>{{ invoice.number }}</td>
+					        <td>{{ invoice.date }}</td>
+					        <td>{{ invoice.untaxed_amount }}</td>
+					        <td>{{ invoice.tax_amount }}</td>
+					        <td>{{ invoice.total_amount }}</td>
+					        <td class="col-xs-3">					        	
+					        	<a href="{% url 'invoice_update' invoice.id %}" class="btn btn-default btn-xs">
+					        		<span class="fa fa-pencil"></span>
+					        	</a>
+					        	<a href="{% url 'invoice_equipments' invoice.id %}" class="btn btn-default btn-xs">
+					        		<span class="fa fa-tasks"></span>
+					        	</a>
+					        	<button class="btn btn-default btn-xs delete" data-model="brand" data-id="{{ brand.id }}">
+					        		<span class="fa fa-trash"></span>
+					        	</button>
+					        </td>
+				        </tr>
+				        {% empty %}
+				        <tr colspan="2"><td>"Sin registros."</td></tr>
+				        {% endfor %}
+				    </tbody>
+			    </table>
+        	</div>
+        </div>
+    </div>
+</div>
+
+{% include "partials/delete-modal.html" %}
+
+<div class="btn-floating" id="help-actions">
+	<div class="btn-bg"></div>
+	<a href="{% url 'invoice_create' %}" class="btn btn-default btn-toggle">
+		<i class="icon fa fa-plus"></i>
+	</a>        
+</div>
+{% endblock %}
+
+{% block customjs %}
+{% load staticfiles %}
+<script src="{% static 'stocktaking/custom.js' %}"></script>
+{% endblock %}

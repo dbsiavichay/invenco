@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" type="text/css" href="{% static 'css/vendor.css' %}">
-  <link rel="stylesheet" type="text/css" href="{% static 'css/flat-admin.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/flat-admin.css' %}">  
   {% block customcss %}{% endblock %}
 </head>
 <body>
@@ -40,15 +40,15 @@
             <div class="dropdown-menu">
               <ul>
                 <li class="section"><i class="fa fa-laptop" aria-hidden="true"></i> Inventario</li>
-                <li><a href="/equipment/">Equipos</a></li>                
-                <li><a href="/replacement/">Repuestos</a></li>
-                <li><a href="/dispatches/">Ordenes de despacho</a></li>
+                <li><a href="{% url 'equipment_list' %}">Equipos</a></li>                
+                <li><a href="{% url 'replacement_list' %}">Repuestos</a></li>
+                <li><a href="{% url 'dispatch_list' %}">Ordenes de despacho</a></li>
                 <li class="section"><i class="fa fa-gear" aria-hidden="true"></i> Configuracion</li>
                 <li><a href="/building/">Edificios</a></li>
-                <li><a href="/brand/">Marcas</a></li>
-                <li><a href="/type/">Tipos</a></li>
-                <li><a href="/model/">Modelos</a></li>
-                <li><a href="/set/">Conjuntos</a></li>
+                <li><a href="{% url 'brand_list' %}">Marcas</a></li>
+                <li><a href="{% url 'type_list' %}">Tipos</a></li>
+                <li><a href="{% url 'model_list' %}">Modelos</a></li>
+                <li><a href="{% url 'set_list' %}">Conjuntos</a></li>
               </ul>
             </div>
           </li>
@@ -63,8 +63,8 @@
             <div class="dropdown-menu">
               <ul>
                 <li class="section"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Compras</li>
-                <li><a href="/equipment/">Facturas</a></li>                
-                <li><a href="/replacement/">Proveedores</a></li>                
+                <li><a href="{% url 'invoice_list' %}">Facturas</a></li>                
+                <li><a href="{% url 'provider_list' %}">Proveedores</a></li>                
               </ul>
             </div>
           </li>
@@ -301,8 +301,7 @@
   </div>
   
   <script type="text/javascript" src="{% static 'js/vendor.js' %}"></script>
-  <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
-  <script src="https://unpkg.com/vue"></script>
+  <script type="text/javascript" src="{% static 'js/app.js' %}"></script>  
   {% block customjs %}{% endblock %}
 
 </body>

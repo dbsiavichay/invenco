@@ -146,6 +146,7 @@ class Equipment(AuditMixin, models.Model):
 	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')
 	owner = models.CharField(max_length=16, blank=True, verbose_name='propietario')
 	in_set = models.BooleanField(default=False)
+	invoice_line = models.ForeignKey('purchases.InvoiceLine', blank=True, null=True)
 
 	def __unicode__(self):
 		representation =  '%s | %s' % (self.model, self.code)
