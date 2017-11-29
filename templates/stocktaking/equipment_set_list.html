@@ -10,8 +10,8 @@
         	<div class="card-body">
         		{% include "partials/pagination.html" %}
         		<div class="text-center">
-					<a href="{% url 'equipment_list' %}" class="btn btn-success btn-xs">Equipos</a>
-	        		<a href="{% url 'equipment_set_list' %}" class="btn btn-default btn-xs">Conjuntos</a>	        		      			
+					<a href="{% url 'equipment_list' %}" class="btn btn-default btn-xs">Equipos</a>
+	        		<a href="{% url 'equipment_set_list' %}" class="btn btn-success btn-xs">Conjuntos</a>	        		      			
         		</div>
 			    <table class="table">
 				    <thead>
@@ -31,7 +31,7 @@
 					        <td>#CJT{{ set.id }}</td>					        
 					        <td>{{ set.get_responsible }}</td>
 					        <td class="col-xs-3">
-					        	<a href="/assignment/add/set/{{ set.id }}/" class="btn btn-default btn-xs">
+					        	<a href="{% url 'assignment_create_by_set' set.id %}" class="btn btn-default btn-xs">
 					        		<span class="fa fa-user"></span>
 					        	</a>					        	
 					        	<a href="/equipment/set/{{ set.id }}/edit/" class="btn btn-default btn-xs">

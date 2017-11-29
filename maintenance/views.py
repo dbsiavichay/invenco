@@ -16,9 +16,14 @@ class FixListView(PaginationMixin, ListView):
 	model = Fix
 	paginate_by = 8
 
+	def get_queryset(self):		
+		queryset = super(FixListView, self).get_queryset()	
+		queryset = queryset.filter(user=self.request.user)
+		return queryset
+
 class FixCreateView(CreateView):
 	model = Fix
-	fields = '__all__'
+	fields = ('problem', 'solution', 'observation', 'equipment')
 	success_url = '/fix/'
 
 	def get_context_data(self, **kwargs):
@@ -33,7 +38,9 @@ class FixCreateView(CreateView):
 		return context
 
 	def form_valid(self, form):
-		self.object = form.save()
+		self.object = form.save(commit=False)
+		self.object.user = self.request.user
+		self.object.save()
 
 		formset = self.get_formset()
 

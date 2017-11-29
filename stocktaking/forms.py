@@ -138,7 +138,7 @@ class EquipmentForm(ModelForm):
 
 	class Meta:
 		model = Equipment
-		exclude = ['specifications', 'provider', 'invoice', 'date_purchase', 'date_warranty', 'owner', 'in_set']
+		exclude = ['specifications', 'invoice_line', 'owner', 'in_set']
 
 	def __init__(self, *args, **kwargs):		
 		types = kwargs.pop('types', None)

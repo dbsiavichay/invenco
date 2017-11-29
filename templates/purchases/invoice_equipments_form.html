@@ -7,7 +7,7 @@
 <div class="row">
 	<div class="col-xs-12">
       	<div class="card">
-        	<div class="card-header">Resumen de factura</div>
+        	<div class="card-header">Vinculación de equipos a factura</div>
         	<div class="card-body">
         		{% include "partials/pagination.html" %}
         		<p><strong>Factura:</strong> #{{ invoice.number }}</p>
@@ -47,6 +47,7 @@
 					    <tbody>						    					    
 					        <tr>							        
 						        <td><strong>Base imponible:</strong> ${{ invoice.untaxed_amount }}</td>
+						        <td><strong>Total descuento:</strong> ${{ object.total_discount }}</td>
 						        <td><strong>Impuestos:</strong> ${{ invoice.tax_amount }}</td>
 						        <td><strong>Monto total:</strong> ${{ invoice.total_amount }}</td>
 					        </tr>						    

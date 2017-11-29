@@ -24,7 +24,7 @@
 				    <tbody>
 				    	{% for invoice in object_list %}
 				        <tr>					        
-					        <td>{{ invoice.provider }}</td>
+					        <td>{{ invoice.provider.name }}</td>
 					        <td>{{ invoice.number }}</td>
 					        <td>{{ invoice.date }}</td>
 					        <td>{{ invoice.untaxed_amount }}</td>
@@ -35,7 +35,7 @@
 					        		<span class="fa fa-pencil"></span>
 					        	</a>
 					        	<a href="{% url 'invoice_equipments' invoice.id %}" class="btn btn-default btn-xs">
-					        		<span class="fa fa-tasks"></span>
+					        		<span class="fa fa-laptop"></span>
 					        	</a>
 					        	<button class="btn btn-default btn-xs delete" data-model="brand" data-id="{{ brand.id }}">
 					        		<span class="fa fa-trash"></span>

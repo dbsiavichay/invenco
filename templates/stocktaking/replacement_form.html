@@ -9,6 +9,7 @@
         	<div class="card-header">Añadir repuesto</div>
         	<div class="card-body">
         		{% load widget_tweaks %}
+        		{{ form.errors }}
         		<form id="form" class="form form-horizontal" action="" method="POST" novalidate>
         			{% csrf_token %}
 				    <div class="form-group {% if form.model.errors %} has-error {% endif %}">

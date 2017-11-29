@@ -54,6 +54,7 @@
 						          <th>Modelo</th>
 						          <th>Cantidad</th>
 						          <th>Precio Unitario</th>
+						          <th>Descuento</th>
 						          <th>Iva</th>
 						          <th>Subtotal</th>					          
 						          <th>Eliminar?</th>
@@ -67,6 +68,7 @@
 							        <td class="col-xs-3">{{ form.model|add_class:"select2" }}{{ form.model.errors }}</td>
 							        <td>{{ form.quantity|add_class:"form-control" }}{{ form.quantity.errors }}</td>
 							        <td>{{ form.unit_price|add_class:"form-control" }}{{ form.unit_price.errors }}</td>
+							        <td>{{ form.discount|add_class:"form-control" }}{{ form.discount.errors }}</td>
 							        <td >{{ form.iva_percent|add_class:"form-control" }}{{ form.iva_percent.errors }}</td>
 							        <td>{{ form.total_price|add_class:"form-control"|attr:"readOnly" }}{{ form.total_price.errors }}</td>
 							        <td class="col-xs-1">{{ form.DELETE }}</td>
@@ -82,6 +84,7 @@
 						    <tbody>						    
 						        <tr>							        
 							        <td><strong>Base imponible:</strong> ${{ object.untaxed_amount }}</td>
+							        <td><strong>Total descuento:</strong> ${{ object.total_discount }}</td>
 							        <td><strong>Impuestos:</strong> ${{ object.tax_amount }}</td>
 							        <td><strong>Monto total:</strong> ${{ object.total_amount }}</td>
 						        </tr>						    
@@ -127,7 +130,7 @@
 
 <script type="text/javascript">    
 	var asFloat = function (value) {
-		var val = parseFloat(value);
+		var val = parseFloat(value).toFixed(2);
 		if (val == NaN) return undefined;
 		return val;
 	}
@@ -135,12 +138,14 @@
 	var getRowValues = function (row) {
 		var quantity = $(row).find('input[name*=quantity]').val();
 		var unit_price = $(row).find('input[name*=unit_price]').val();
+		var discount = $(row).find('input[name*=discount]').val();
 		var iva_percent = $(row).find('input[name*=iva_percent]').val();
 		var total_price = $(row).find('input[name*=total_price]').val();
 
 		return {
 			quantity: asFloat(quantity),
 			unit_price: asFloat(unit_price),
+			discount: asFloat(discount),
 			iva_percent: asFloat(iva_percent),
 			total_price: asFloat(total_price),
 		}
@@ -149,8 +154,9 @@
 	var calculateSubtotal = function (row) {    		
 		var values = getRowValues(row);
 		var subtotal = 0.0;
-		if (values.quantity && values.unit_price) subtotal=values.quantity * values.unit_price;
-		$(row).find('input[name*=total_price]').val(subtotal);    		
+		if (values.quantity && values.unit_price) subtotal=values.quantity * values.unit_price
+		if (values.discount) subtotal-=values.discount
+		$(row).find('input[name*=total_price]').val(subtotal.toFixed(2));    		
 	}
 
 	var addRowListener = function (row) {
@@ -159,6 +165,10 @@
 		});
 
 		$(row).find('input[name*=unit_price]').on('keyup', function () {
+			calculateSubtotal(row);
+		});
+
+		$(row).find('input[name*=discount]').on('keyup', function () {
 			calculateSubtotal(row);
 		});
 	} 

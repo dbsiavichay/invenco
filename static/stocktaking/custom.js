@@ -29,12 +29,21 @@ $(function () {
 	});
 
 	//Code for assignments
+	var splitArea = function () {
+		var strcodes = $('#id_area').val();
+
+		if (strcodes) {
+			var codes = strcodes.split(':');
+			$('input[name=department]').val(codes[0]);
+			$('input[name=section]').val(codes[1]);	
+		}		
+	}
+
 	$('#id_area').on('change', function () {
-		var codes = $('#id_area').val().split(':');
-		$('input[name=department]').val(codes[0]);
-		$('input[name=section]').val(codes[1]);
+		splitArea();
 	});
 
+	splitArea();
 
 	//Code for close sets
 	$('.close-formset').on('click', function () {

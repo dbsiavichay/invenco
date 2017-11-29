@@ -182,6 +182,19 @@ class ModelListView(PaginationMixin, ListView):
 	model = Model
 	paginate_by = 8
 
+	def get_queryset(self):
+		import operator
+		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
+		queryset = super(ModelListView, self).get_queryset()
+
+		if search is None: return queryset
+
+		fields = ['name','type__name', 'brand__name', 'part_number', 'specifications']	
+		args = [Q(**{field+'__icontains': search}) for field in fields]
+		queryset = self.model.objects.filter(reduce(operator.__or__, args))		
+
+		return queryset
+
 class ModelCreateView(CreateView):
 	model = Model
 	fields = '__all__'
@@ -300,6 +313,25 @@ class EquipmentSetListView(PaginationMixin, ListView):
 	model = SetDetail
 	paginate_by = 10
 	template_name = 'stocktaking/equipment_set_list.html'
+
+	def get_queryset(self):
+		import operator
+		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
+		queryset = super(EquipmentSetListView, self).get_queryset()
+
+		if search is None: return queryset
+
+		fields = ['set__name',]
+	
+		args = [Q(**{field+'__icontains': search}) for field in fields]
+		charters = Employee.objects.using('sim').filter(
+			Q(contributor__charter=search) | Q(contributor__name__icontains=search)
+		).values_list('contributor__charter', flat=True)
+		if len(charters) > 0: args.append(Q(owner__in=list(charters)))
+
+		queryset = self.model.objects.filter(reduce(operator.__or__, args))		
+
+		return queryset
 
 class EquipmentCreateView(CreateView):
 	model = Equipment
@@ -527,6 +559,7 @@ class AssignmentCreateView(CreateView):
 		return super(AssignmentCreateView, self).form_valid(form)
 
 	def form_invalid(self, form):
+		## Cuando es set no hay equipo y entra por formulario invalido
 		set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
 
 		if set_id is not None:
@@ -534,20 +567,19 @@ class AssignmentCreateView(CreateView):
 			for pk in set.equipments:
 				equipment = Equipment.objects.get(pk=pk)
 
-				form.data['equipment'] = pk				
+				frmdata = form.data.copy()
+				frmdata['equipment'] = pk				
+				frm = AssignmentForm(frmdata)
 
-				frm = AssignmentForm(form.data)
 				if frm.is_valid():					
 					obj = frm.save()
 					
 					equipment.owner = frm.cleaned_data['employee']
 					equipment.save()
 					set.owner = frm.cleaned_data['employee']					
-
+					set.save()
 				else: 
 					return self.render_to_response(self.get_context_data(form=form))
-
-			set.save()
 
 			return redirect(self.success_url)
 		else:			

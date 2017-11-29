@@ -49,13 +49,15 @@ class InvoiceCreateView(CreateView):
 		self.object = form.save(commit=False)		
 		instances = formset.save(commit=False)
 
-		untaxed_amount = tax_amount = total_amount = Decimal(0.0)
+		total_discount = untaxed_amount = tax_amount = total_amount = Decimal(0.0)
 		for line in instances:
 			tax = (line.total_price * line.iva_percent) / Decimal(100.00)
+			total_discount += line.discount
 			tax_amount = tax_amount + tax			
 			untaxed_amount = untaxed_amount + line.total_price
 			total_amount = total_amount + (tax + line.total_price)			
 
+		self.object.total_discount = total_discount
 		self.object.untaxed_amount = untaxed_amount
 		self.object.tax_amount = tax_amount
 		self.object.total_amount = total_amount

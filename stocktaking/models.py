@@ -133,15 +133,11 @@ class Equipment(AuditMixin, models.Model):
 		(10, 'Dañado'),
 	)
 
-	model = models.ForeignKey(Model, verbose_name='modelo')
-	provider = models.ForeignKey(Provider, blank=True, null=True)
+	model = models.ForeignKey(Model, verbose_name='modelo')	
 	code = models.CharField(max_length=16, verbose_name='código')
 	serial = models.CharField(max_length=34, verbose_name='número de serie')	
 	specifications = JSONField(blank=True, null=True)
-	state = models.PositiveSmallIntegerField(blank=True, null=True, choices=STATE_CHOICES, verbose_name='estado')
-	invoice = models.CharField(max_length=16, blank=True, null=True)
-	date_purchase = models.DateField(blank=True, null=True)
-	date_warranty = models.DateField(blank=True, null=True)
+	state = models.PositiveSmallIntegerField(blank=True, null=True, choices=STATE_CHOICES, verbose_name='estado')	
 	date = models.DateTimeField(auto_now_add=True)
 	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')
 	owner = models.CharField(max_length=16, blank=True, verbose_name='propietario')
@@ -149,7 +145,7 @@ class Equipment(AuditMixin, models.Model):
 	invoice_line = models.ForeignKey('purchases.InvoiceLine', blank=True, null=True)
 
 	def __unicode__(self):
-		representation =  '%s | %s' % (self.model, self.code)
+		representation =  '%s | %s | %s' % (self.model, self.code, self.serial)
 		responsible = self.get_responsible()
 		representation = '%s | %s' % (representation, responsible) if responsible else representation
 

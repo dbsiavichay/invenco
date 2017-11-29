@@ -16,12 +16,13 @@ class Provider(AuditMixin, models.Model):
 	webpage = models.CharField(max_length=64, blank=True, null=True, verbose_name='página web')
 
 	def __unicode__(self):
-		return self.name
+		return '%s | %s' % (self.ruc, self.name)
 
 class Invoice(AuditMixin, models.Model):
 	provider = models.ForeignKey(Provider, verbose_name='proveedor')
 	number = models.CharField(max_length=64, verbose_name='número de factura')
-	date = models.DateField(verbose_name='fecha de factura')
+	date = models.DateField(verbose_name='fecha de factura')	
+	total_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 	untaxed_amount = models.DecimalField(max_digits=10, decimal_places=2)
 	tax_amount = models.DecimalField(max_digits=10, decimal_places=2)
 	total_amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -32,8 +33,11 @@ class Invoice(AuditMixin, models.Model):
 class InvoiceLine(AuditMixin, models.Model):
 	quantity = models.FloatField()
 	unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+	discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)	
 	total_price = models.DecimalField(max_digits=10, decimal_places=2)
 	iva_percent = models.DecimalField(max_digits=5, decimal_places=2, default=12)
 	model = models.ForeignKey('stocktaking.Model')
 	invoice = models.ForeignKey(Invoice)
-	#equipments = models.ManyToManyField('stocktaking.Equipment', blank=True)
+	
+	def __unicode__(self):
+		return '%s | $%s' % (self.model.name, self.unit_price)
