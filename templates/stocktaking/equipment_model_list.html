@@ -13,8 +13,8 @@
         	<div class="card-body">
         		{% include "partials/pagination.html" %}
         		<div class="text-center">
-	        		<a href="{% url 'equipment_list' %}" class="btn btn-success btn-xs">Equipos</a>
-	        		<a href="{% url 'equipment_model_list' %}" class="btn btn-default btn-xs">Modelos</a>
+	        		<a href="{% url 'equipment_list' %}" class="btn btn-default btn-xs">Equipos</a>
+	        		<a href="{% url 'equipment_model_list' %}" class="btn btn-success btn-xs">Modelos</a>
 	        		<a href="{% url 'equipment_set_list' %}" class="btn btn-default btn-xs">Conjuntos</a>
 		        </div>
         		
@@ -22,34 +22,26 @@
 				    <thead>
 				        <tr>				          
 				          <th>Tipo</th>
+				          <th>Marca</th>
 				          <th>Nombre</th>
-				          <th>Código</th>
-				          <th>Serie</th>
-				          <th>Departamento</th>
-				          <th>Responsable</th>
-				          <th>Acciones</th>
+				          <th>Especificaciones</th>
+				          <th>Existencias</th>				          
 				        </tr>
 				    </thead>
-				    <tbody>					    
-				    	{% for equipment in object_list %}
+				    <tbody>
+				    	{% for model in object_list %}
 				        <tr>					        
-					        <td>{{ equipment.model.type }}</td>					       
-					        <td>{{ equipment.model }}</td>
-					        <td>{{ equipment.code }}</td>
-					        <td>{{ equipment.serial }}</td>
-					        <td>{{ equipment.get_department }}</td>
-					        <td>{{ equipment.get_responsible }}</td>
-					        <td class="col-xs-3">
-					        	<a href="/assignment/add/equipment/{{ equipment.id }}/" class="btn btn-default btn-xs">
-					        		<span class="fa fa-user"></span>
-					        	</a>					        
-					        	<a href="{% url 'equipment_update_by_type' equipment.id equipment.model.type.id %}" class="btn btn-default btn-xs">
-					        		<span class="fa fa-pencil"></span>
-					        	</a>
-					        	<button class="btn btn-default btn-xs delete" data-model="equipment" data-id="{{ equipment.id }}">
-					        		<span class="fa fa-trash"></span>
-					        	</button>
+					        <td>{{ model.type }}</td>
+					        <td>{{ model.brand }}</td>
+					        <td>{{ model.name }}</td>
+					        <td>
+					        	<ul>
+					        		{% for key, value in model.get_specifications %}
+					        		<li>{{ key }}: <strong>{{ value }}</strong></li>
+					        		{% endfor %}
+					        	</ul>
 					        </td>
+					        <td>{{ model.get_equipment_count }}</td>					        
 				        </tr>
 				        {% empty %}
 				        <tr colspan="5"><td>"Sin registros."</td></tr>

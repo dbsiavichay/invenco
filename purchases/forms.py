@@ -29,7 +29,8 @@ class InvoiceLineForm(forms.ModelForm):
 			queryset = Equipment.objects.filter(model=self.instance.model).filter(
 				Q(invoice_line__isnull=True) | Q(invoice_line=self.instance)
 			),
-			initial = self.instance.equipment_set.all()
+			initial = self.instance.equipment_set.all(),
+			required = False
 		)
 
 	def save(self, commit=True):

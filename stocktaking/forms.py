@@ -125,7 +125,7 @@ class ModelSpecificationForm(forms.Form):
 			else:
 				self.fields[key] = forms.CharField(
 					label = specification.label,
-					initial = 'separator',					
+					initial = 'separator',									
 					required = False
 				)
 

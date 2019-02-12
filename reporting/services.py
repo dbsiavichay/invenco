@@ -141,7 +141,7 @@ def get_data(object_list, fields ,style=None):
 	return data
 
 def get_table_equipments(type):
-	equipments = Equipment.objects.filter(model__type=type)
+	equipments = Equipment.objects.filter(model__type=type).exclude(state=10)
 
 	if len(equipments) <= 0:
 		return None

@@ -5,7 +5,6 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from purchases.models import Provider
 from structure.models import *
-from django.contrib.auth.models import User
 
 from audit.mixins import AuditMixin
 
@@ -86,6 +85,10 @@ class SetDetail(AuditMixin, models.Model):
 		contributor = Contributor.objects.using('sim').get(pk=self.owner)
 		return contributor.name
 
+	def get_codes(self):
+		values =[str(code) for code in Equipment.objects.filter(pk__in = self.equipments).values_list('code', flat=True)] 		
+		return values
+
 class Model(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['type', 'brand', 'name']
@@ -105,7 +108,8 @@ class Model(AuditMixin, models.Model):
 
 		for specification in specifications:
 			key = str(specification.id)
-			list_specifications.append((specification.label, self.specifications[key]))
+			if key in self.specifications.keys() and self.specifications[key]:				
+				list_specifications.append((specification.label, self.specifications[key]))
 
 		return list_specifications
 
@@ -115,11 +119,17 @@ class Model(AuditMixin, models.Model):
 
 		for specification in specifications:
 			key = str(specification.id)
-			list_specifications.append(
-				'%s: %s' % (specification.label, self.specifications[key])				
-			)
+			if key in self.specifications.keys():				
+				list_specifications.append(
+					'%s: %s' % (specification.label, self.specifications[key])				
+				)
 
 		return list_specifications
+
+
+	def get_equipment_count(self):
+		count = self.equipment_set.exclude(state=10).count();
+		return count
 
 
 class Equipment(AuditMixin, models.Model):
@@ -155,8 +165,12 @@ class Equipment(AuditMixin, models.Model):
 		if not self.owner:
 			return ''
 
-		contributor = Contributor.objects.using('sim').get(pk=self.owner)
-		return contributor.name
+		assignments = self.assignment_set.order_by('-date_joined')
+		return assignments[0].responsible()
+
+	def get_department(self):
+		assignments = self.assignment_set.order_by('-date_joined')		
+		return assignments[0].get_department() if assignments else ''
 
 	def get_location(self):
 		if not self.owner:
@@ -193,34 +207,48 @@ class Assignment(AuditMixin, models.Model):
 	def __unicode__(self):
 		return '%s, %s' % (self.equipment, self.responsible())
 
+	def get_department(self):
+		department = Department.objects.using('sim').get(code=self.department)
+		return department.name
+
+
 	def responsible(self):
 		contributor = Contributor.objects.using('sim').get(charter=self.employee)
 		arr = contributor.name.split()
 		return '%s %s' % (arr[2], arr[0])
 
+# class Replacement(AuditMixin, models.Model):
+# 	IN_BY_INITIAL = 1
+# 	IN_BY_PURCHASE = 2
+# 	OUT_BY_FIX = 5
+# 	OUT_BY_DISPATCH = 6
+
+# 	MOVEMENT_CHOICES = (
+# 		(IN_BY_INITIAL, 'Entrada por levantamiento inicial'),
+# 		(IN_BY_PURCHASE, 'Entrada por compra'),
+# 		(OUT_BY_FIX, 'Salida por reparación'),
+# 		(OUT_BY_DISPATCH, 'Salida por despacho'),
+# 	)
+
+# 	quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='cantidad')
+# 	unit_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio unitario')
+# 	total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio total')
+# 	stock = models.DecimalField(max_digits=10, decimal_places=2)
+# 	observation = models.TextField(blank=True, null=True, verbose_name='Observaciones')
+# 	movement = models.PositiveSmallIntegerField(choices=MOVEMENT_CHOICES)
+# 	date_joined = models.DateTimeField(auto_now_add=True)
+# 	model = models.ForeignKey(Model)
+
+# 	def __unicode__(self):
+# 		return '%s | %s' % (self.model, self.stock)
+
 class Replacement(AuditMixin, models.Model):
-	IN_BY_INITIAL = 1
-	IN_BY_PURCHASE = 2
-	OUT_BY_FIX = 5
-	OUT_BY_DISPATCH = 6
-
-	MOVEMENT_CHOICES = (
-		(IN_BY_INITIAL, 'Entrada por levantamiento inicial'),
-		(IN_BY_PURCHASE, 'Entrada por compra'),
-		(OUT_BY_FIX, 'Salida por reparación'),
-		(OUT_BY_DISPATCH, 'Salida por despacho'),
-	)
-
-	quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='cantidad')
-	unit_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio unitario')
-	total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio total')
-	stock = models.DecimalField(max_digits=10, decimal_places=2)
-	observation = models.TextField(blank=True, null=True, verbose_name='Observaciones')
-	movement = models.PositiveSmallIntegerField(choices=MOVEMENT_CHOICES)
-	date_joined = models.DateTimeField(auto_now_add=True)
-	model = models.ForeignKey(Model)
+	equipment = models.OneToOneField(Equipment)
+	is_available = models.BooleanField(default=True)
+	is_new = models.BooleanField(default=True)
+	from_equipment = models.ForeignKey(Equipment, related_name='part', blank=True, null=True)		
 
 	def __unicode__(self):
-		return '%s | %s' % (self.model, self.stock)
+		return str(equipment)
 
 	

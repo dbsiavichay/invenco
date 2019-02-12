@@ -16,41 +16,37 @@
 		        </div>
 			    <table class="table">
 				    <thead>
-				        <tr>
-				        	<th>Tipo</th>				          
-					        <th>Modelo</th>
-					        <th>Stock</th>
-					        <th>Caracteristicas</th>
-					        <th>Acciones</th>
+				        <tr>				          
+				          <th>Tipo</th>
+				          <th>Nombre</th>
+				          <th>Disponibilidad</th>				          
+				          <th>Caracteristicas</th>				          
+				          <th>Acciones</th>
 				        </tr>
 				    </thead>
-				    <tbody>
+				    <tbody>					    
 				    	{% for replacement in object_list %}
-				        <tr>
-				        	<td>{{ replacement.model.type }}</td>					        
-					        <td>{{ replacement.model }}</td>
-					        <td>{{ replacement.stock }}</td>
+				        <tr>					        
+					        <td>{{ replacement.equipment.model.type }}</td>					       
+					        <td>{{ replacement.equipment.model }}</td>					        
+					        <td>{% if replacement.is_available %} SI {% else %} NO {% endif %}</td>
 					        <td>
 					        	<ul>
-					        		{% for key, value in replacement.model.get_specifications %}
+					        		{% for key, value in replacement.equipment.model.get_specifications %}
 					        		<li>{{ key }}: {{ value }}</li>
 					        		{% endfor %}					        		
 					        	</ul>
-					        </td>
-					        <td class="col-xs-3">					        	
-					        	<a href="/brand/{{ brand.id }}/edit/" class="btn btn-default btn-xs">
-					        		<span class="fa fa-pencil"></span>
-					        	</a>
-					        	<button class="btn btn-default btn-xs delete" data-model="brand" data-id="{{ brand.id }}">
-					        		<span class="fa fa-trash"></span>
-					        	</button>
+					        </td>				        
+					        <td class="col-xs-3">
+					        	
 					        </td>
 				        </tr>
 				        {% empty %}
-				        <tr colspan="4"><td>"Sin registros."</td></tr>
+				        <tr colspan="5"><td>"Sin registros."</td></tr>
 				        {% endfor %}
 				    </tbody>
 			    </table>
+			    {% include "partials/pagination.html" %}
         	</div>
         </div>
     </div>

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django.utils.html import format_html
 from django.db import models
 
 from audit.mixins import AuditMixin
@@ -19,6 +20,9 @@ class Provider(AuditMixin, models.Model):
 		return '%s | %s' % (self.ruc, self.name)
 
 class Invoice(AuditMixin, models.Model):
+	class Meta:
+		ordering = ['-date',]
+
 	provider = models.ForeignKey(Provider, verbose_name='proveedor')
 	number = models.CharField(max_length=64, verbose_name='número de factura')
 	date = models.DateField(verbose_name='fecha de factura')	
@@ -29,6 +33,21 @@ class Invoice(AuditMixin, models.Model):
 
 	def __unicode__(self):
 		return '%s|%s' % (self.number, self.provider.name)
+
+	def get_status(self):
+		status = 'Completo'
+		label = 'success'
+		for line in self.invoiceline_set.all():
+			if line.quantity != line.equipment_set.all().count():
+				status = 'Incompleto'
+				label = 'danger'
+							
+
+		return format_html(
+            '<span class="label label-{}">{}</span>',
+            label, status,            
+        )
+
 
 class InvoiceLine(AuditMixin, models.Model):
 	quantity = models.FloatField()

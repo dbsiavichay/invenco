@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pure_pagination',
     'widget_tweaks',
+    'ui_components',
     'audit',
     'reporting',
     'security',
@@ -85,18 +86,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'siminvenco',
+        'NAME': 'invencodb',
         'USER': 'postgres',
-        'PASSWORD': 'alfa2010',
-        'HOST': 'localhost',
+        'PASSWORD': '*omega2009a',
+        'HOST': '172.16.8.12',
         'PORT': '5432',
     },
     'sim': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'sim_morona',
         'USER': 'postgres',
-        'PASSWORD': 'omega2009a',
-        'HOST': '172.16.8.11',
+        'PASSWORD': '*omega2009a',
+        'HOST': '172.16.8.12',
         'PORT': '5432',
     },
 }
@@ -133,7 +134,8 @@ PAGINATION_SETTINGS = {
 
 LANGUAGE_CODE = 'es-EC'
 
-TIME_ZONE = 'UTC'
+#TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Guayaquil'
 
 USE_I18N = True
 

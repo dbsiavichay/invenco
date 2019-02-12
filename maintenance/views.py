@@ -29,11 +29,11 @@ class FixCreateView(CreateView):
 	def get_context_data(self, **kwargs):
 		context = super(FixCreateView, self).get_context_data(**kwargs)
 
-		formset = self.get_formset()
+		#formset = self.get_formset()
 
-		context.update({			
-			'formset': formset,
-		})
+		#context.update({			
+		#	'formset': formset,
+		#})
 
 		return context
 

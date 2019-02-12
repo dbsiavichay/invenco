@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^model/(?P<pk>\d+)/delete/$', login_required(ModelDeleteView.as_view()), name='model_delete'),
     url(r'^equipment/$', login_required(EquipmentListView.as_view()), name='equipment_list'),
     url(r'^equipment/set/$', login_required(EquipmentSetListView.as_view()), name='equipment_set_list'),
+    url(r'^equipment/model/$', login_required(EquipmentModelListView.as_view()), name='equipment_model_list'),
     url(r'^equipment/add/select-type/$', login_required(SelectTypeListView.as_view()), name='equipment_select_type'),
     url(r'^equipment/add/type/(?P<type>\d+)/$', login_required(EquipmentCreateView.as_view()), name='equipment_create_by_type'),
     url(r'^equipment/add/set/(?P<set>\d+)/$', login_required(EquipmentCreateView.as_view()), name='equipment_create_by_set'),
@@ -31,6 +32,6 @@ urlpatterns = [
     url(r'^replacement/add/type/(?P<pk>\d+)/$', login_required(ReplacementCreateView.as_view()), name='replacement_create'),
     url(r'^assignment/add/equipment/(?P<pk>\d+)/$', login_required(AssignmentCreateView.as_view()), name='assignment_create_by_equipment'),
     url(r'^assignment/add/set/(?P<set>\d+)/$', login_required(AssignmentCreateView.as_view()), name='assignment_create_by_set'),
-    url(r'^dispatches/$', login_required(DispatchListView.as_view()), name='dispatch_list'),
-    url(r'^dispatch/add/$', login_required(DispatchCreateView.as_view()), name='dispatch_create'),
+    #url(r'^dispatches/$', login_required(DispatchListView.as_view()), name='dispatch_list'),
+    #url(r'^dispatch/add/$', login_required(DispatchCreateView.as_view()), name='dispatch_create'),
 ]

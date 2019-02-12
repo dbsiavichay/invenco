@@ -11,6 +11,7 @@
         		{% include "partials/pagination.html" %}
         		<div class="text-center">
 					<a href="{% url 'equipment_list' %}" class="btn btn-default btn-xs">Equipos</a>
+					<a href="{% url 'equipment_model_list' %}" class="btn btn-default btn-xs">Modelos</a>
 	        		<a href="{% url 'equipment_set_list' %}" class="btn btn-success btn-xs">Conjuntos</a>	        		      			
         		</div>
 			    <table class="table">
@@ -18,7 +19,7 @@
 				        <tr>				          
 				          <th>Tipo</th>
 				          <th>Nombre</th>
-				          <th>Código</th>				          
+				          <th>Códigos</th>				          
 				          <th>Responsable</th>
 				          <th>Acciones</th>
 				        </tr>
@@ -28,7 +29,7 @@
 				        <tr>					        
 					        <td>CONJUNTO</td>					       
 					        <td>{{ set.set.name }}</td>
-					        <td>#CJT{{ set.id }}</td>					        
+					        <td>{{ set.get_codes }}</td>					        
 					        <td>{{ set.get_responsible }}</td>
 					        <td class="col-xs-3">
 					        	<a href="{% url 'assignment_create_by_set' set.id %}" class="btn btn-default btn-xs">

@@ -16,8 +16,9 @@ class Fix(AuditMixin, models.Model):
 	solution = models.TextField(verbose_name='solución')
 	observation = models.TextField(verbose_name='observación', blank=True, null=True)
 	date_joined = models.DateTimeField(auto_now_add=True)
-	equipment = models.ForeignKey(Equipment, verbose_name='equipo')
+	equipment = models.ForeignKey('stocktaking.Equipment', verbose_name='equipo')
 	user = models.ForeignKey('auth.User')
+	replacements = models.ManyToManyField('stocktaking.Replacement', blank=True)
 
 	def __unicode__(self):		
 		r = '%s > %s' % (self.equipment, self.problem)

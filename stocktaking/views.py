@@ -314,14 +314,14 @@ class EquipmentSetListView(PaginationMixin, ListView):
 	paginate_by = 10
 	template_name = 'stocktaking/equipment_set_list.html'
 
-	def get_queryset(self):
+	def get_queryset(self):		
 		import operator
 		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
 		queryset = super(EquipmentSetListView, self).get_queryset()
 
 		if search is None: return queryset
 
-		fields = ['set__name',]
+		fields = ['model__part_number', 'code', 'serial',]
 	
 		args = [Q(**{field+'__icontains': search}) for field in fields]
 		charters = Employee.objects.using('sim').filter(
@@ -329,9 +329,29 @@ class EquipmentSetListView(PaginationMixin, ListView):
 		).values_list('contributor__charter', flat=True)
 		if len(charters) > 0: args.append(Q(owner__in=list(charters)))
 
+		equipment_queryset = Equipment.objects.filter(reduce(operator.__or__, args)).values_list('id', flat=True)
+		equipments = [code for code in equipment_queryset]				
+		queryset = [obj for obj in queryset if len(set(equipments).intersection(obj.equipments))]
+		return queryset
+
+class EquipmentModelListView(PaginationMixin, ListView):
+	model = Model
+	paginate_by = 10
+	template_name = 'stocktaking/equipment_model_list.html'
+
+	def get_queryset(self):
+		import operator
+		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
+		queryset = super(EquipmentModelListView, self).get_queryset()
+
+		if search is None: return queryset
+
+		fields = ['name','type__name', 'brand__name', 'specifications']	
+		args = [Q(**{field+'__icontains': search}) for field in fields]
 		queryset = self.model.objects.filter(reduce(operator.__or__, args))		
 
 		return queryset
+
 
 class EquipmentCreateView(CreateView):
 	model = Equipment
@@ -483,23 +503,22 @@ class EquipmentUpdateView(UpdateView):
 class ReplacementListView(PaginationMixin, ListView):
 	model = Replacement
 	paginate_by = 8
-	queryset = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name')
 
-	def get_context_data(self, **kwargs):
-		context = super(ReplacementListView, self).get_context_data(**kwargs)
+	# def get_context_data(self, **kwargs):
+	# 	context = super(ReplacementListView, self).get_context_data(**kwargs)
 
-		slug = self.request.GET.get('filter') or self.kwargs.get('filter') or None
+	# 	slug = self.request.GET.get('filter') or self.kwargs.get('filter') or None
 
-		if slug is not None:
-			self.queryset = self.queryset.filter(model__type__usage=slug)
+	# 	if slug is not None:
+	# 		self.queryset = self.queryset.filter(model__type__usage=slug)
 
-		context.update({
-			'replacement_list': self.queryset,
-			'object_list': self.queryset,
-			'filter':slug
-		})
+	# 	context.update({
+	# 		'replacement_list': self.queryset,
+	# 		'object_list': self.queryset,
+	# 		'filter':slug
+	# 	})
 
-		return context
+	# 	return context
 
 class ReplacementCreateView(CreateView):
 	model = Replacement
@@ -586,49 +605,49 @@ class AssignmentCreateView(CreateView):
 			return super(AssignmentCreateView, self).form_invalid(form)
 
 
-class DispatchListView(PaginationMixin, ListView):
-	model = Replacement
-	paginate_by = 8
-	template_name = 'stocktaking/dispatch_list.html'
-	queryset = Replacement.objects.order_by('model__name', '-date_joined').\
-				distinct('model__name').filter(movement=Replacement.OUT_BY_DISPATCH)
+# class DispatchListView(PaginationMixin, ListView):
+# 	model = Replacement
+# 	paginate_by = 8
+# 	template_name = 'stocktaking/dispatch_list.html'
+# 	queryset = Replacement.objects.order_by('model__name', '-date_joined').\
+# 				distinct('model__name').filter(movement=Replacement.OUT_BY_DISPATCH)
 
-class DispatchCreateView(CreateView):
-	model = Replacement
-	#form_class = ReplacementForm
-	fields = '__all__'
-	template_name = 'stocktaking/dispatch_form.html'
-	success_url = '/dispatches/'
+# class DispatchCreateView(CreateView):
+# 	model = Replacement
+# 	#form_class = ReplacementForm
+# 	fields = '__all__'
+# 	template_name = 'stocktaking/dispatch_form.html'
+# 	success_url = '/dispatches/'
 
-	def get_context_data(self, **kwargs):
-		context = super(DispatchCreateView, self).get_context_data(**kwargs)
+# 	def get_context_data(self, **kwargs):
+# 		context = super(DispatchCreateView, self).get_context_data(**kwargs)
 
-		context['types'] = Type.objects.filter(Q(usage=2) | Q(usage=4))
+# 		context['types'] = Type.objects.filter(Q(usage=2) | Q(usage=4))
 
-		return context
+# 		return context
 
-	def get(self, request, *args, **kwargs):
-		if request.is_ajax():
-			type_id = request.GET.get('type') or kwargs.get('type') or None			
-			type = Type.objects.get(pk=type_id)
+# 	def get(self, request, *args, **kwargs):
+# 		if request.is_ajax():
+# 			type_id = request.GET.get('type') or kwargs.get('type') or None			
+# 			type = Type.objects.get(pk=type_id)
 
-			inventory = Replacement.objects.order_by('model__name', '-date_joined').\
-				distinct('model__name').filter(model__type=type)			
+# 			inventory = Replacement.objects.order_by('model__name', '-date_joined').\
+# 				distinct('model__name').filter(model__type=type)			
 
-			objects = []
+# 			objects = []
 
-			for replacement in inventory:
-				objects.append({
-					'id': replacement.model.id,
-					'type': replacement.model.type.name,
-					'model': str(replacement.model),
-					'stock': replacement.stock,
-					'properties': replacement.model.get_list_specifications()
-				})
+# 			for replacement in inventory:
+# 				objects.append({
+# 					'id': replacement.model.id,
+# 					'type': replacement.model.type.name,
+# 					'model': str(replacement.model),
+# 					'stock': replacement.stock,
+# 					'properties': replacement.model.get_list_specifications()
+# 				})
 
-			return JsonResponse({'data':objects})
-		else:
-			return super(DispatchCreateView, self).get(request, *args, **kwargs)
+# 			return JsonResponse({'data':objects})
+# 		else:
+# 			return super(DispatchCreateView, self).get(request, *args, **kwargs)
 
 	# def form_valid(self, form):		
 	# 	self.object = form.save(commit=False)
@@ -662,7 +681,7 @@ class SelectTypeListView(ListView):
 			model = 'equipment'
 			sets = Set.objects.all()
 			context['sets'] = sets
-			context['object_list'] = self.model.objects.exclude(usage=2)
+			context['object_list'] = self.model.objects.exclude(usage=4)
 		elif 'replacement' in self.request.path:
 			model = 'replacement'
 			context['object_list'] = self.model.objects.filter(Q(usage=2) | Q(usage=4))
