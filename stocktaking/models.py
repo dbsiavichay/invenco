@@ -165,8 +165,8 @@ class Equipment(AuditMixin, models.Model):
 		if not self.owner:
 			return ''
 
-		assignments = self.assignment_set.order_by('-date_joined')
-		return assignments[0].responsible()
+		assignments = self.assignment_set.order_by('-date_joined')		
+		return assignments[0].responsible() if assignments else ''
 
 	def get_department(self):
 		assignments = self.assignment_set.order_by('-date_joined')		
@@ -192,6 +192,9 @@ class Equipment(AuditMixin, models.Model):
 				)
 
 		return list_specifications
+
+	def get_state(self):
+		return dict(self.STATE_CHOICES).get(self.state)
 
 class Assignment(AuditMixin, models.Model):
 	class Meta:
