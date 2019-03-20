@@ -8,11 +8,29 @@ from structure.models import *
 
 from audit.mixins import AuditMixin
 
-class Brand(AuditMixin, models.Model):
-	class Meta:
-		ordering = ['name',]
+class Specification(models.Model):
+	FIELD_CHOICES = (		
+		('CharField', 'Texto'),('IntegerField', 'Número'),
+		('ChoiceField', 'Selector'), ('ChoiceField:RadioSelect', 'RadioMultiple'),		
+	)
 
-	name = models.CharField(max_length=32, unique=True, verbose_name='nombre')	
+	name = models.CharField(max_length=128, verbose_name='nombre')
+	field = models.CharField(max_length=64, choices=FIELD_CHOICES, verbose_name='campo')
+	attributes = models.CharField(max_length=128, blank=True, null=True, verbose_name='atributos')
+	choices = models.CharField(max_length=256, blank=True, null=True, verbose_name='choices')	
+	is_required = models.BooleanField(default=False, verbose_name='requerido?')	
+
+	def __unicode__(self):
+		return self.name
+
+class Group(models.Model):
+	MODEL = 1
+	EQUIPMENT = 2
+	USAGE_CHOICES = ((MODEL, 'Modelo'), (EQUIPMENT, 'Equipo'),		)
+
+	name = models.CharField(max_length=64, verbose_name='nombre')	
+	usage = models.PositiveSmallIntegerField(verbose_name='uso', choices=USAGE_CHOICES) 
+	specifications = models.ManyToManyField(Specification)
 
 	def __unicode__(self):
 		return self.name
@@ -28,13 +46,105 @@ class Type(AuditMixin, models.Model):
 		(4, 'Consumible'),
 	)
 
-	name = models.CharField(max_length=32, unique=True, verbose_name='nombre')
-	code = models.CharField(max_length=16, unique=True, verbose_name='código')
+	name = models.CharField(max_length=32, unique=True, verbose_name='nombre')	
 	usage = models.PositiveSmallIntegerField(default=1, verbose_name='uso', choices=USAGE_CHOICES)
 	image = models.ImageField(upload_to='types', blank=True, null=True, verbose_name='icono')		
+	groups = models.ManyToManyField(Group)
 
 	def __unicode__(self):
 		return self.name
+
+class Brand(AuditMixin, models.Model):
+	class Meta:
+		verbose_name = 'marca'
+		ordering = ['name',]
+
+	name = models.CharField(max_length=32, unique=True, verbose_name='nombre')	
+
+	def __unicode__(self):
+		return self.name
+
+class Model(AuditMixin, models.Model):
+	class Meta:
+		verbose_name = 'modelo'
+		ordering = ['type', 'brand', 'name']
+
+	type = models.ForeignKey(Type, verbose_name='tipo')
+	brand = models.ForeignKey(Brand, verbose_name='marca')
+	name = models.CharField(max_length=128, verbose_name='nombre')
+	part_number = models.CharField(max_length=32, blank=True, null=True, verbose_name='parte #')
+	specifications = JSONField(blank=True, null=True)
+
+	def __unicode__(self):
+		return '%(brand)s %(name)s' % {'brand': self.brand, 'name': self.name}
+
+	def get_specifications(self):
+		list_specifications = []
+		specifications = self.type.type_specifications.exclude(widget='separator')
+
+		for specification in specifications:
+			key = str(specification.id)
+			if key in self.specifications.keys() and self.specifications[key]:				
+				list_specifications.append((specification.label, self.specifications[key]))
+
+		return list_specifications
+
+	def get_list_specifications(self):
+		list_specifications = []
+		specifications = self.type.type_specifications.exclude(widget='separator')
+
+		for specification in specifications:
+			key = str(specification.id)
+			if key in self.specifications.keys():				
+				list_specifications.append(
+					'%s: %s' % (specification.label, self.specifications[key])				
+				)
+
+		return list_specifications
+
+	def get_equipment_count(self):
+		count = self.equipment_set.exclude(state=10).count();
+		return count
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class TypeSpecification(AuditMixin, models.Model):
 	class Meta:
@@ -89,50 +199,10 @@ class SetDetail(AuditMixin, models.Model):
 		values =[str(code) for code in Equipment.objects.filter(pk__in = self.equipments).values_list('code', flat=True)] 		
 		return values
 
-class Model(AuditMixin, models.Model):
-	class Meta:
-		ordering = ['type', 'brand', 'name']
-
-	name = models.CharField(max_length=128, verbose_name='nombre')
-	part_number = models.CharField(max_length=32, blank=True, null=True, verbose_name='parte #')
-	specifications = JSONField(blank=True, null=True)
-	type = models.ForeignKey(Type, verbose_name='tipo')
-	brand = models.ForeignKey(Brand, verbose_name='marca')
-
-	def __unicode__(self):
-		return '%(brand)s %(name)s' % {'brand': self.brand, 'name': self.name}
-
-	def get_specifications(self):
-		list_specifications = []
-		specifications = self.type.type_specifications.exclude(widget='separator')
-
-		for specification in specifications:
-			key = str(specification.id)
-			if key in self.specifications.keys() and self.specifications[key]:				
-				list_specifications.append((specification.label, self.specifications[key]))
-
-		return list_specifications
-
-	def get_list_specifications(self):
-		list_specifications = []
-		specifications = self.type.type_specifications.exclude(widget='separator')
-
-		for specification in specifications:
-			key = str(specification.id)
-			if key in self.specifications.keys():				
-				list_specifications.append(
-					'%s: %s' % (specification.label, self.specifications[key])				
-				)
-
-		return list_specifications
 
 
-	def get_equipment_count(self):
-		count = self.equipment_set.exclude(state=10).count();
-		return count
 
-
-class Equipment(AuditMixin, models.Model):
+class Equipment(models.Model):
 	class Meta:
 		ordering = ['model',]
 
@@ -144,14 +214,13 @@ class Equipment(AuditMixin, models.Model):
 	)
 
 	model = models.ForeignKey(Model, verbose_name='modelo')	
-	code = models.CharField(max_length=16, verbose_name='código')
+	code = models.CharField(max_length=16, blank=True, null=True, verbose_name='código')
 	serial = models.CharField(max_length=34, verbose_name='número de serie')	
 	specifications = JSONField(blank=True, null=True)
-	state = models.PositiveSmallIntegerField(blank=True, null=True, choices=STATE_CHOICES, verbose_name='estado')	
+	state = models.PositiveSmallIntegerField(choices=STATE_CHOICES, verbose_name='estado')	
 	date = models.DateTimeField(auto_now_add=True)
 	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')
-	owner = models.CharField(max_length=16, blank=True, verbose_name='propietario')
-	in_set = models.BooleanField(default=False)
+	owner = models.CharField(max_length=16, blank=True, null=True, verbose_name='propietario')	
 	invoice_line = models.ForeignKey('purchases.InvoiceLine', blank=True, null=True)
 
 	def __unicode__(self):

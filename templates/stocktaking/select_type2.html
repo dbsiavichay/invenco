@@ -1,0 +1,116 @@
+{% extends 'base2.html' %}
+{% load static %}
+
+{% block title %}Seleccionar{% endblock %}
+
+
+{% block content %}
+<div class="panel panel-headline">	
+	<div class="panel-body">
+		<h4>Equipos</h4>
+		<hr>
+		<div class="row">
+	    	<div class="row">
+		    	{% for type in object_list %}
+		    	<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 text-center">
+		    		<div class="type-item" type-id="{{ type.id }}">			    		
+				    	{% if type.image %}			    	
+			    		<img height="92" src="{{ type.image.url }}">
+			    		{% else %}
+			    		<img height="92" src="{% static 'images/gears.png' %}">
+		    			{% endif %}
+			    		<div>{{ type.name }}</div>			    			
+		    		</div>
+		    	</div>
+		    	{% endfor %}
+		    </div>
+	    </div>
+	</div>
+	<div class="panel-footer">
+		<span id="next" class="hidden">{{ model }}</span>
+		<a id="selectTypeNext" class="btn btn-primary">
+			<span class="fa fa-check"></span> Siguiente
+		</a>		
+	</div>
+</div>
+{% endblock %}
+
+{% block css %}
+<style type="text/css">
+	.type-item {
+		border: 3px dashed transparent;	    
+	    margin-bottom: 10px;
+	    min-height: 150px;	    
+	    cursor: pointer;
+	}
+
+	.type-item.active {
+		border-color: #29c75f;
+	}
+
+	.type-item img {
+		margin-bottom: 10px;
+	}
+</style>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">	
+$(function () {
+	var type;
+
+	$('.delete').on('click', function () {
+		var model = $(this).attr('data-model');
+		var pk = $(this).attr('data-id');
+		var url = '/' + model + '/' + pk + '/delete/' 
+		$('#delete').attr('action', url);
+		$('#delete-modal').modal('show');		
+	});	
+
+
+
+
+	//Select type
+	$('.type-item').on('click', function () {
+		var next = $('#next').text();
+
+		var type = $(this).attr('type-id');
+		var set = $(this).attr('set-id');
+
+		var url;
+		if (type) url = '/'+ next +'/add/type/' + type + '/';
+		else if (set) url = '/'+ next +'/add/set/' + set + '/';
+					
+		$('#selectTypeNext').attr('href', url);
+		$('.type-item').removeClass('active');
+		$(this).addClass('active');
+	});
+
+	//Code for assignments
+	var splitArea = function () {
+		var strcodes = $('#id_area').val();
+
+		if (strcodes) {
+			var codes = strcodes.split(':');
+			$('input[name=department]').val(codes[0]);
+			$('input[name=section]').val(codes[1]);	
+		}		
+	}
+
+	$('#id_area').on('change', function () {
+		splitArea();
+	});
+
+	splitArea();
+
+	//Code for close sets
+	$('.close-formset').on('click', function () {
+		var $panel = $(this).parents('.panel');
+		$panel.fadeOut(500, function() {
+			$panel.remove();
+		});
+
+	});
+});
+</script>
+{% endblock %}

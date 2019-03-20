@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.forms import modelformset_factory, formset_factory
@@ -12,175 +12,10 @@ from .serializers import *
 
 from structure.models import Employee
 
-class SetListView(PaginationMixin, ListView):
-	model = Set
-	paginate_by = 8
-
-class SetCreateView(CreateView):
-	model = Set
-	form_class = SetForm
-	success_url = '/set/'
-
-	def get_context_data(self, **kwargs):
-		context = super(SetCreateView, self).get_context_data(**kwargs)
-		context.update({
-			'formset': self.get_formset()
-		})			
-
-		return context
-
-	def form_valid(self, form):
-		formset = self.get_formset()
-
-		if not formset.is_valid():
-			return self.form_invalid(form)
-		
-		self.object = form.save()
-		
-		for form in formset:
-			if form.has_changed():
-				settype = form.save(commit=False)
-				settype.set = self.object
-				settype.save()
-
-		return redirect(self.success_url)
-
-	def get_formset(self):
-		queryset = SetType.objects.none()		
-		post = None
-		if self.request.method == 'POST':
-			post = self.request.POST
-
-		form = SetTypeFormset(post, queryset=queryset)
-		return form
-
-class SetUpdateView(UpdateView):
-	model = Set
-	form_class=SetForm
-	success_url = '/set/'
-
-	def get_context_data(self, **kwargs):
-		context = super(SetUpdateView, self).get_context_data(**kwargs)
-		context.update({
-			'formset': self.get_formset()
-		})			
-
-		return context
-
-	def form_valid(self, form):
-		formset = self.get_formset()
-
-		if not formset.is_valid():
-			return self.form_invalid(form)
-		
-		self.object = form.save()
-		for form in formset:
-			if form.has_changed():
-				settype = form.save(commit=False)
-				settype.set = self.object
-				settype.save()	
-
-		return redirect(self.success_url)
-
-	def get_formset(self):
-		self.object = self.get_object()
-		queryset = SetType.objects.filter(set=self.object)
-		post = None
-		if self.request.method == 'POST':
-			post = self.request.POST			
-
-		form = SetTypeFormset(post, queryset=queryset)
-		return form
-
-
-class BrandListView(PaginationMixin, ListView):
-	model = Brand
-	paginate_by = 8
-
-class BrandCreateView(CreateView):
-	model = Brand
-	fields = '__all__'
-	success_url = '/brand/'
-
-class BrandUpdateView(UpdateView):
-	model = Brand
-	fields = '__all__'
-	success_url = '/brand/'
-
-class BrandDeleteView(DeleteView):
-	model = Brand
-	success_url = '/brand/'
-
-class TypeListView(PaginationMixin, ListView):
-	model = Type
-	paginate_by = 8
-
-class TypeCreateView(CreateView):
-	model = Type
-	form_class = TypeForm
-	success_url = '/type/'
-
-	def get_context_data(self, **kwargs):
-		context = super(TypeCreateView, self).get_context_data(**kwargs)
-
-		if self.request.method == 'POST':			
-			context['specification_form'] = TypeSpecificationInlineFormSet(self.request.POST)			
-		else:			
-			context['specification_form'] = TypeSpecificationInlineFormSet()
-
-		return context
-
-	def form_valid(self, form):
-		context = self.get_context_data()
-		specification_form = context['specification_form']
-
-		if not specification_form.is_valid():
-			return self.form_invalid(form)
-		
-		self.object = form.save()
-		
-		specification_form.instance = self.object
-		specification_form.save()
-
-		return redirect(self.get_success_url())
-	
-
-class TypeUpdateView(UpdateView):
-	model = Type
-	form_class = TypeForm
-	success_url = '/type/'
-
-	def get_context_data(self, **kwargs):
-		context = super(TypeUpdateView, self).get_context_data(**kwargs)
-
-		if self.request.method == 'POST':			
-			context['specification_form'] = TypeSpecificationInlineFormSet(self.request.POST, instance=self.object)			
-		else:			
-			context['specification_form'] = TypeSpecificationInlineFormSet(instance=self.object)
-
-		return context
-
-	def form_valid(self, form):		
-		context = self.get_context_data()
-		specification_form = context['specification_form']
-
-		if not specification_form.is_valid():
-			return self.form_invalid(form)
-		
-		self.object = form.save()
-
-		specification_form.instance = self.object
-		specification_form.save()
-
-		return redirect(self.get_success_url())
-		
-class TypeDeleteView(DeleteView):
-	model = Type
-	success_url = '/type/'
-
 class ModelListView(PaginationMixin, ListView):
 	model = Model
-	paginate_by = 8
+	paginate_by = 20
+	template_name = 'stocktaking/model_list2.html'
 
 	def get_queryset(self):
 		import operator
@@ -197,66 +32,73 @@ class ModelListView(PaginationMixin, ListView):
 
 class ModelCreateView(CreateView):
 	model = Model
-	fields = '__all__'
-	success_url = '/model/'
+	form_class = ModelForm
+	success_url = '/model/'	
 
 	def get_context_data(self, **kwargs):
-		context = super(ModelCreateView, self).get_context_data(**kwargs)
-
-		type = self.request.GET.get('type') or self.kwargs.get('type') or None
-
-		context['type'] = type
-		context['specification_form'] = self.get_specification_form(type)
-
+		context = super(ModelCreateView, self).get_context_data(**kwargs)		
+		context['specifications_form'] = self.get_specifications_form()
 		return context
 
-	def form_valid(self, form):
-		type = self.request.GET.get('type') or self.kwargs.get('type') or None
-		specification_form = self.get_specification_form(type)
-
-		if not specification_form.is_valid():
+	def form_valid(self, form):		
+		specifications_form = self.get_specifications_form()
+		if not specifications_form.is_valid():
 			return self.form_invalid(form)
 
 		self.object = form.save(commit=False)
-		self.object.specifications = specification_form.cleaned_data
+		self.object.specifications = specifications_form.cleaned_data
 		self.object.save()
 
 		return redirect(self.get_success_url())
 
-	def get_specification_form(self, type):
-		if self.request.method == 'POST':			
-			form = ModelSpecificationForm(self.request.POST, type = type)			
-		else:
-			form = ModelSpecificationForm(type = type)
-
+	def get_specifications_form(self):
+		kwargs = {'type': self.get_type_object(), 'usage': Group.MODEL}				
+		post_data = self.request.POST if self.request.method == 'POST' else None
+		form = SpecificationsForm(post_data, **kwargs)
 		return form
+
+	def get_initial(self):
+		kwargs = super(ModelCreateView, self).get_initial()
+		kwargs.update({'type':self.get_type_object()})
+		return kwargs
+
+	def get_type_object(self):
+		id_type = self.request.GET.get('type') or self.kwargs.get('type') or None
+		type = get_object_or_404(Type, pk=id_type)
+		return type
 
 class ModelUpdateView(UpdateView):
 	model = Model
-	fields = '__all__'
-	success_url = '/model/'
+	form_class = ModelForm
+	success_url = '/model/'	
 
 	def get_context_data(self, **kwargs):
-		context = super(ModelUpdateView, self).get_context_data(**kwargs)
-		type = self.request.GET.get('type') or self.kwargs.get('type') or None
-
-		context['type'] = type		
-		context['specification_form'] = self.get_specification_form(type)
-
+		context = super(ModelUpdateView, self).get_context_data(**kwargs)		
+		context['specifications_form'] = self.get_specifications_form()
 		return context
 
-	def form_valid(self, form):
-		type = self.request.GET.get('type') or self.kwargs.get('type') or None
-		specification_form = self.get_specification_form(type)		
-
-		if not specification_form.is_valid():
+	def form_valid(self, form):		
+		specifications_form = self.get_specifications_form()		
+		if not specifications_form.is_valid():
 			return self.form_invalid(form)			
 
 		self.object = form.save(commit=False)
-		self.object.specifications = specification_form.cleaned_data
+		self.object.specifications = specifications_form.cleaned_data
 		self.object.save()
 
 		return redirect(self.get_success_url())
+
+	def get_specifications_form(self):		
+		kwargs = {'type': self.get_type_object(), 'usage': Group.MODEL}
+		post_data = self.request.POST if self.request.method == 'POST' else None
+		if self.request.method == 'GET':
+			try:
+				initials = self.object.specifications				
+				kwargs.update({'initial': initials})
+			except KeyError:
+				pass
+		form = SpecificationsForm(post_data, **kwargs)
+		return form
 
 	def get_specification_form(self, type):				
 		self.object = self.get_object()		
@@ -268,6 +110,11 @@ class ModelUpdateView(UpdateView):
 
 		return form
 
+	def get_type_object(self):
+		id_type = self.request.GET.get('type') or self.kwargs.get('type') or None
+		type = get_object_or_404(Type, pk=id_type)
+		return type
+
 class ModelDeleteView(DeleteView):
 	model = Model
 	success_url = '/model/'
@@ -276,7 +123,8 @@ class EquipmentListView(PaginationMixin, ListView):
 	model = Equipment
 	#queryset = Equipment.objects.filter(in_set=False)
 	queryset = Equipment.objects.all()
-	paginate_by = 10
+	paginate_by = 20
+	template_name = 'stocktaking/equipment_list2.html'
 
 	def get_context_data(self, **kwargs):
 		context = super(EquipmentListView, self).get_context_data(**kwargs)
@@ -309,31 +157,6 @@ class EquipmentListView(PaginationMixin, ListView):
 
 		return queryset
 
-class EquipmentSetListView(PaginationMixin, ListView):
-	model = SetDetail
-	paginate_by = 10
-	template_name = 'stocktaking/equipment_set_list.html'
-
-	def get_queryset(self):		
-		import operator
-		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
-		queryset = super(EquipmentSetListView, self).get_queryset()
-
-		if search is None: return queryset
-
-		fields = ['model__part_number', 'code', 'serial',]
-	
-		args = [Q(**{field+'__icontains': search}) for field in fields]
-		charters = Employee.objects.using('sim').filter(
-			Q(contributor__charter=search) | Q(contributor__name__icontains=search)
-		).values_list('contributor__charter', flat=True)
-		if len(charters) > 0: args.append(Q(owner__in=list(charters)))
-
-		equipment_queryset = Equipment.objects.filter(reduce(operator.__or__, args)).values_list('id', flat=True)
-		equipments = [code for code in equipment_queryset]				
-		queryset = [obj for obj in queryset if len(set(equipments).intersection(obj.equipments))]
-		return queryset
-
 class EquipmentModelListView(PaginationMixin, ListView):
 	model = Model
 	paginate_by = 10
@@ -352,153 +175,82 @@ class EquipmentModelListView(PaginationMixin, ListView):
 
 		return queryset
 
-
 class EquipmentCreateView(CreateView):
 	model = Equipment
-	fields = []
-	success_url = '/equipment/'
+	form_class = EquipmentForm2
+	success_url = '/equipment/'	
 
 	def get_context_data(self, **kwargs):
 		context = super(EquipmentCreateView, self).get_context_data(**kwargs)		
-		context['formset'] = self.get_formset()
+		context['specifications_form'] = self.get_specification_form()
 
 		return context
+
+	def get_specification_form(self):
+		id_type = self.request.GET.get('type') or self.kwargs.get('type') or None
+		type = get_object_or_404(Type, pk=id_type)
+		usage = Group.EQUIPMENT
+		post_data = self.request.POST if self.request.method == 'POST' else None
+		form = SpecificationsForm(post_data, type=type, usage=usage)
+		return form
 
 	def form_valid(self, form):		
-		set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
-
-		context = self.get_context_data()
-		formset = context['formset']
-
-		if not formset.is_valid():
+		specifications_form = self.get_specification_form()
+		if not specifications_form.is_valid():
 			return self.form_invalid(form)
 		
-		set_equipments = []
-		for form in formset:			
-			if form.has_changed():
-				self.object = form.save(commit=False)				
-				specifications = {}
-				type_specifications = form.cleaned_data['model'].type.type_specifications.filter(when='device').exclude(widget='separator')
-				for ts in type_specifications:
-					key = str(ts.id)
-					specifications[key] = form.cleaned_data[key]
-
-				self.object.specifications = specifications
-
-				if set_id is not None:					
-					self.object.in_set = True
-
-				self.object.save()
-				set_equipments.append(self.object.id)
-
-		if set_id is not None:
-			obj_set = Set.objects.get(pk=set_id)
-			detail = SetDetail()
-			detail.set = obj_set
-			detail.equipments = set_equipments
-			detail.save()
-
-		return redirect(self.get_success_url())
-
-	def get_formset(self):		
-		type = self.request.GET.get('type') or self.kwargs.get('type') or None
-		set = self.request.GET.get('set') or self.kwargs.get('set') or None
-
-		post_data = self.request.POST if self.request.method == 'POST' else None
-
-		if set is not None:			
-			set = Set.objects.get(pk=set)			
-			types = [type for type in set.types.all().order_by('settype__order')]						
-		elif type is not None:
-			type = Type.objects.get(pk=type)
-			types = [type]
-
-		EquipmentFormSet = get_equipment_formset(types = types)			
-
-		formset = EquipmentFormSet(post_data)		
-
-		return formset
-
-class EquipmentUpdateView(UpdateView):
-	model = Equipment
-	fields = []
-	success_url = '/equipment/'
-
-	def get_context_data(self, **kwargs):
-		context = super(EquipmentUpdateView, self).get_context_data(**kwargs)		
-		context['formset'] = self.get_formset()
-
-		return context
-
-	def form_valid(self, form):
-		set_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
-		type_id = self.request.GET.get('type') or self.kwargs.get('type') or None
-
-		context = self.get_context_data()
-		formset = context['formset']
-
-		if not formset.is_valid():
-			return self.form_invalid(form)
-
-		set = None
-		if set_id is not None and type_id is None:
-			set = SetDetail.objects.get(pk=set_id)
-
-		for form in formset:
-			if form.has_changed():
-				obj = form.save(commit=False)				
-				specifications = {}
-				
-				if obj.owner == '':
-					type_specifications = obj.model.type.type_specifications.filter(when='device').exclude(widget='separator')
-				else:
-					type_specifications = obj.model.type.type_specifications.exclude(when='model').exclude(widget='separator')
-
-				for ts in type_specifications:
-					key = str(ts.id)
-					specifications[key] = form.cleaned_data[key]
-
-				obj.specifications = specifications
-
-				if set_id is not None and type_id is None:
-					obj.in_set = True
-
-				obj.save()
-
-				if set is not None:
-					if obj.id not in set.equipments:
-						set.equipments.append(obj.id)
-						set.save()
+		self.object = form.save(commit=False)
+		self.object.specifications = specifications_form.cleaned_data
+		self.object.save()
 
 		return redirect(self.get_success_url())	
 
-	def get_formset(self):		
-		type = self.request.GET.get('type') or self.kwargs.get('type') or None
-		set = self.request.GET.get('pk') or self.kwargs.get('pk') or None
+class EquipmentUpdateView(UpdateView):
+	model = Equipment
+	form_class = EquipmentForm2
+	success_url = '/equipment/'	
 
+	def get_context_data(self, **kwargs):
+		context = super(EquipmentUpdateView, self).get_context_data(**kwargs)		
+		context['specifications_form'] = self.get_specification_form()
+
+		return context
+
+	def get_specification_form(self):
+		id_type = self.request.GET.get('type') or self.kwargs.get('type') or None
+		type = get_object_or_404(Type, pk=id_type)
+		usage = Group.EQUIPMENT
 		post_data = self.request.POST if self.request.method == 'POST' else None
-		
-		if set is not None and type is not None:
-			type = Type.objects.get(pk=type)			
-			equipment = Equipment.objects.get(pk=set)			
-			instances = [(type, equipment),]
-		elif set is not None:			
-			set = SetDetail.objects.get(pk=set)			
-			types_of_set = set.set.types.all().order_by('settype__order')
-			equipments = Equipment.objects.filter(pk__in=set.equipments)
-			instances = [[type, None] for type in types_of_set]
+		kwargs = {'type': type, 'usage': usage}
+		if self.request.method == 'GET':
+			try:
+				initials = self.object.specifications				
+				kwargs.update({'initial': initials})
+			except KeyError:
+				pass
+		form = SpecificationsForm(post_data, **kwargs)
+		return form
 
-			for _list in instances:
-				type, instance = _list
-				for equipment in equipments:
-					if type == equipment.model.type:
-						_list[1] = equipment
-						break
+	def form_valid(self, form):		
+		specifications_form = self.get_specification_form()
+		if not specifications_form.is_valid():
+			return self.form_invalid(form)
 
-		EquipmentFormSet = get_equipment_formset(instances = instances)
-		formset = EquipmentFormSet(post_data)	
+		self.object = form.save(commit=False)
+		self.object.specifications = specifications_form.cleaned_data		
+		self.object.save()
 
-		return formset
+		return redirect(self.get_success_url())	
+
+
+
+
+
+
+
+
+
+
 
 class ReplacementListView(PaginationMixin, ListView):
 	model = Replacement
@@ -670,7 +422,8 @@ class AssignmentCreateView(CreateView):
 
 class SelectTypeListView(ListView):
 	model = Type
-	template_name = 'stocktaking/select_type.html'
+	#template_name = 'stocktaking/select_type.html'
+	template_name = 'stocktaking/select_type2.html'
 
 	def get_context_data(self, **kwargs):
 		context = super(SelectTypeListView, self).get_context_data()
@@ -679,8 +432,8 @@ class SelectTypeListView(ListView):
 			model = 'model'
 		elif 'equipment' in self.request.path:			
 			model = 'equipment'
-			sets = Set.objects.all()
-			context['sets'] = sets
+			#sets = Set.objects.all()
+			#context['sets'] = sets
 			context['object_list'] = self.model.objects.exclude(usage=4)
 		elif 'replacement' in self.request.path:
 			model = 'replacement'

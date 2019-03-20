@@ -1,0 +1,29 @@
+{% load static %}
+<!-- SIDEBAR -->
+<div class="sidebar">
+	<div class="brand">
+		<a href="index.html"><img src="{% static 'new/img/logo.png' %}" alt="Klorofil Logo" class="img-responsive logo"></a>
+	</div>
+	<div class="sidebar-scroll">
+		<nav>
+			<ul class="nav">
+				<li><a href="#" class=""><i class="lnr lnr-home"></i><span>Inicio</span></a></li>
+				<li><a href="{% url 'model_list' %}" class=""><i class="lnr lnr-code"></i> <span>Modelos</span></a></li>				
+				<li>
+					<a href="#subPages" data-toggle="collapse" class="collapsed">
+						<i class="lnr lnr-file-empty"></i> <span>Equipos</span> 
+						<i class="icon-submenu lnr lnr-chevron-left"></i>
+					</a>
+					<div id="subPages" class="collapse ">
+						<ul class="nav">
+							<li><a href="{% url 'equipment_list' %}" class="">Todos</a></li>
+							<li><a href="#" class="">CPU</a></li>
+							<li><a href="#" class="">Impresora</a></li>							
+						</ul>
+					</div>
+				</li>				
+			</ul>
+		</nav>
+	</div>	
+</div>
+<!-- END SIDEBAR -->

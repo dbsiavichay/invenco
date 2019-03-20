@@ -1,0 +1,33 @@
+{% extends 'base2.html' %}
+{% load components %}		
+
+{% block title %}Seleccionar{% endblock %}
+
+
+{% block content %}
+<div class="panel">
+	<div class="panel-body">		
+
+		<form action="" method="POST" enctype="multipart/form-data">
+			{% csrf_token %}			
+
+			{% block hidden_fields %}
+			{% for field in form.hidden_fields %}
+			{{ field }}
+			{% endfor %}
+			{% endblock %}
+
+			{% block visible_fields %}
+			{% for field in form.visible_fields %}
+			{% render_field field class="form-control" %}
+			{% endfor %}
+			{% endblock %}
+
+			{% block extra_fields %}{% endblock %}			
+			<button type="submit" class="btn btn-primary">
+				<i class="fa fa-check"></i> Guardar
+			</button>
+		</form>		
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+<div class="form-group">
+    <label>{{ field.label }}</label>
+    <br>
+	{% for radio in field %}
+	<div class="radio-inline">
+		<label class="fancy-radio">
+			{{ radio.tag }}
+			<span><i></i>{{ radio.choice_label }}</span>			
+		</label>			
+	</div>
+	{% endfor %}	
+</div>

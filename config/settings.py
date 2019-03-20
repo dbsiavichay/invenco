@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'pure_pagination',
     'widget_tweaks',
     'ui_components',
+    'components',
     'audit',
     'reporting',
     'security',

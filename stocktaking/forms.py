@@ -1,14 +1,113 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import uuid
 from django import forms
-from django.forms import ModelForm, formset_factory, modelformset_factory
+from django.forms import ( 
+	ModelForm as DjangoModelForm, Form, formset_factory, modelformset_factory,
+	ModelChoiceField, ModelMultipleChoiceField, 
+	CharField, IntegerField,FloatField, ChoiceField, BooleanField, FileField,
+	ValidationError
+)
+
+from django.forms.widgets import HiddenInput, RadioSelect
 from django.forms.models import inlineformset_factory
 from .models import *
 from structure.models import *
 
 from functools import partial, wraps
 
-class TypeForm(ModelForm):
+class ModelForm(DjangoModelForm):
+	class Meta:
+		model = Model
+		exclude = ['specifications',]
+		widgets = {
+			'type': HiddenInput
+		}
+
+class EquipmentForm2(DjangoModelForm):
+	class Meta:
+		model = Equipment
+		exclude = ['specifications', 'invoice_line', 'owner']
+		widgets = {
+			'state': RadioSelect,
+		}
+
+	def __init__(self, *args, **kwargs):
+		super(EquipmentForm2, self).__init__(*args, **kwargs)
+		self.fields['state'].widget.choices.pop(0)	
+
+class SpecificationsForm(Form):
+	def __init__(self, *args, **kwargs):
+		self.type = kwargs.pop('type', None)		
+		self.usage = kwargs.pop('usage', None)		
+		super(SpecificationsForm, self).__init__(*args, **kwargs)
+
+		if self.type is None or self.usage is None: 
+			raise ValueError('Se requiere un <tipo> y <uso>.')
+
+		groups = self.type.groups.filter(usage=self.usage)
+
+		for group in groups:
+			self.generate_fields(group)
+			
+	def generate_fields(self, group):		
+		for specification in group.specifications.all():
+			key = str(specification.id)
+			try:
+				form_field, widget = specification.field.split(':')
+			except ValueError:
+				form_field = specification.field
+				widget = None			
+
+			self.fields[key] = eval(form_field)(
+				label = specification.name,
+				required = specification.is_required,				
+			)
+			self[key].group = group.name
+						
+			if widget: self.fields[key].widget = eval(widget)()
+			if specification.choices:
+				CHOICES = [(choice, choice) for choice in specification.choices.split(',')]
+				self.fields[key].choices = CHOICES
+
+			pairs = (pair.split('=') for pair in specification.attributes.split(',')) if specification.attributes is not None else None
+			attrs = dict((key.strip(), eval(value.strip())) for key, value in pairs) if pairs is not None else {}
+			self.fields[key].widget.attrs.update(attrs)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class TypeForm(DjangoModelForm):
 	class Meta:
 		model = Type
 		fields = '__all__'
@@ -16,7 +115,7 @@ class TypeForm(ModelForm):
             'usage': forms.RadioSelect,            
         }
 
-class TypeSpecificationInline(ModelForm):
+class TypeSpecificationInline(DjangoModelForm):
 	WHEN_CHOICES = (
 		('model', 'Módelo'),
 		('device', 'Equipo'),
@@ -54,12 +153,12 @@ TypeSpecificationInlineFormSet = inlineformset_factory(Type,
 )
 
 
-class SetForm(ModelForm):
+class SetForm(DjangoModelForm):
 	class Meta:
 		model = Set
 		exclude = ('types',)
 		
-class SetTypeForm(ModelForm):
+class SetTypeForm(DjangoModelForm):
 	class Meta:
 		model = SetType
 		exclude = ('set',)
@@ -134,7 +233,7 @@ class ModelSpecificationForm(forms.Form):
 			if not type_widget == 'RadioSelect' and not type_widget == 'CheckboxInput':
 				self.fields[name].widget.attrs['class'] = 'form-control' if not type_widget == 'Select' else 'select2'
 
-class EquipmentForm(ModelForm):
+class EquipmentForm(DjangoModelForm):
 
 	class Meta:
 		model = Equipment
@@ -242,7 +341,7 @@ def get_equipment_formset(**kwargs):
 			extra=len(instances)
 		)
 
-class ReplacementForm(ModelForm):
+class ReplacementForm(DjangoModelForm):
 	class Meta:
 		model = Replacement
 		exclude = ('total_price','stock', 'inout',)
@@ -262,7 +361,7 @@ class ReplacementForm(ModelForm):
 # 	extra=1
 # )
 
-class AssignmentForm(ModelForm):
+class AssignmentForm(DjangoModelForm):
 	class Meta:
 		model = Assignment
 		fields = '__all__'	

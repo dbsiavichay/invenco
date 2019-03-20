@@ -1,0 +1,12 @@
+{% extends 'base2.html' %}	
+{% block title %}Listado{% endblock %}
+
+{% block content %}
+<div class="panel">	
+	<div class="panel-body">
+		{% include "partials/pagination.html" %}
+		{% block table %}{% endblock %}		
+	    {% include "partials/pagination.html" %}
+	</div>
+</div>
+{% endblock %}
