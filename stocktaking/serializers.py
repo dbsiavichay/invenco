@@ -97,17 +97,17 @@ class EquipmentSerializer(serializers.ModelSerializer):
         assignments = obj.assignment_set.filter(is_active=True)
         return True if len(assignments)>0 else False
 
-class AssignmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Assignment
+# class AssignmentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Assignment
 
-    def create(self, validated_data):
-        equipment = validated_data.get('equipment')
-        assignments = Assignment.objects.filter(equipment=equipment, is_active=True)
+#     def create(self, validated_data):
+#         equipment = validated_data.get('equipment')
+#         assignments = Assignment.objects.filter(equipment=equipment, is_active=True)
 
-        for assignment in assignments:
-            assignment.is_active = False
-            assignment.save()
+#         for assignment in assignments:
+#             assignment.is_active = False
+#             assignment.save()
 
-        assignment = Assignment.objects.create(**validated_data)
-        return assignment
+#         assignment = Assignment.objects.create(**validated_data)
+#         return assignment

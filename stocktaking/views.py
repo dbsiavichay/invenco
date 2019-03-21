@@ -243,7 +243,13 @@ class EquipmentUpdateView(UpdateView):
 		return redirect(self.get_success_url())	
 
 
+class LocationListView(ListView):
+	model = Location
 
+
+class LocationCreateView(CreateView):
+	model = Location
+	fields = '__all__'
 
 
 
@@ -295,66 +301,66 @@ class ReplacementCreateView(CreateView):
 		kwargs.update({'type': type_id})
 		return kwargs
 
-class AssignmentCreateView(CreateView):
-	model = Assignment
-	form_class = AssignmentForm
-	success_url = '/equipment/'
+# class AssignmentCreateView(CreateView):
+# 	model = Assignment
+# 	form_class = AssignmentForm
+# 	success_url = '/equipment/'
 
-	def get_context_data(self, **kwargs):
-		context = super(AssignmentCreateView, self).get_context_data(**kwargs)		
+# 	def get_context_data(self, **kwargs):
+# 		context = super(AssignmentCreateView, self).get_context_data(**kwargs)		
 		
-		equipment_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
-		#set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
+# 		equipment_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
+# 		#set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
 
-		if equipment_id is not None:
-			equipment = Equipment.objects.get(pk=equipment_id)
-			context['equipment'] = equipment
+# 		if equipment_id is not None:
+# 			equipment = Equipment.objects.get(pk=equipment_id)
+# 			context['equipment'] = equipment
 
-		return context
+# 		return context
 
-	def get_form_kwargs(self):
-		kwargs = super(AssignmentCreateView, self).get_form_kwargs()
-		equipment_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
-		set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
-		kwargs.update({'equipment': equipment_id, 'set': set_id})
-		return kwargs
+# 	def get_form_kwargs(self):
+# 		kwargs = super(AssignmentCreateView, self).get_form_kwargs()
+# 		equipment_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
+# 		set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
+# 		kwargs.update({'equipment': equipment_id, 'set': set_id})
+# 		return kwargs
 
 
-	def form_valid(self, form):
-		equipment_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
+# 	def form_valid(self, form):
+# 		equipment_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
 
-		equipment = Equipment.objects.get(pk=equipment_id)
-		equipment.owner = form.cleaned_data['employee']
-		equipment.save()
+# 		equipment = Equipment.objects.get(pk=equipment_id)
+# 		equipment.owner = form.cleaned_data['employee']
+# 		equipment.save()
 
-		return super(AssignmentCreateView, self).form_valid(form)
+# 		return super(AssignmentCreateView, self).form_valid(form)
 
-	def form_invalid(self, form):
-		## Cuando es set no hay equipo y entra por formulario invalido
-		set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
+# 	def form_invalid(self, form):
+# 		## Cuando es set no hay equipo y entra por formulario invalido
+# 		set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
 
-		if set_id is not None:
-			set = SetDetail.objects.get(pk=set_id)
-			for pk in set.equipments:
-				equipment = Equipment.objects.get(pk=pk)
+# 		if set_id is not None:
+# 			set = SetDetail.objects.get(pk=set_id)
+# 			for pk in set.equipments:
+# 				equipment = Equipment.objects.get(pk=pk)
 
-				frmdata = form.data.copy()
-				frmdata['equipment'] = pk				
-				frm = AssignmentForm(frmdata)
+# 				frmdata = form.data.copy()
+# 				frmdata['equipment'] = pk				
+# 				frm = AssignmentForm(frmdata)
 
-				if frm.is_valid():					
-					obj = frm.save()
+# 				if frm.is_valid():					
+# 					obj = frm.save()
 					
-					equipment.owner = frm.cleaned_data['employee']
-					equipment.save()
-					set.owner = frm.cleaned_data['employee']					
-					set.save()
-				else: 
-					return self.render_to_response(self.get_context_data(form=form))
+# 					equipment.owner = frm.cleaned_data['employee']
+# 					equipment.save()
+# 					set.owner = frm.cleaned_data['employee']					
+# 					set.save()
+# 				else: 
+# 					return self.render_to_response(self.get_context_data(form=form))
 
-			return redirect(self.success_url)
-		else:			
-			return super(AssignmentCreateView, self).form_invalid(form)
+# 			return redirect(self.success_url)
+# 		else:			
+# 			return super(AssignmentCreateView, self).form_invalid(form)
 
 
 # class DispatchListView(PaginationMixin, ListView):

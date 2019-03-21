@@ -215,12 +215,11 @@ class Equipment(models.Model):
 
 	model = models.ForeignKey(Model, verbose_name='modelo')	
 	code = models.CharField(max_length=16, blank=True, null=True, verbose_name='código')
-	serial = models.CharField(max_length=34, verbose_name='número de serie')	
+	serial = models.CharField(max_length=34, blank=True, null=True, verbose_name='número de serie')	
 	specifications = JSONField(blank=True, null=True)
 	state = models.PositiveSmallIntegerField(choices=STATE_CHOICES, verbose_name='estado')	
 	date = models.DateTimeField(auto_now_add=True)
-	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')
-	owner = models.CharField(max_length=16, blank=True, null=True, verbose_name='propietario')	
+	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')		
 	invoice_line = models.ForeignKey('purchases.InvoiceLine', blank=True, null=True)
 
 	def __unicode__(self):
@@ -231,22 +230,21 @@ class Equipment(models.Model):
 		return representation 
 
 	def get_responsible(self):
-		if not self.owner:
-			return ''
+		return ''
 
-		assignments = self.assignment_set.order_by('-date_joined')		
-		return assignments[0].responsible() if assignments else ''
+	# 	assignments = self.assignment_set.order_by('-date_joined')		
+	# 	return assignments[0].responsible() if assignments else ''
 
-	def get_department(self):
-		assignments = self.assignment_set.order_by('-date_joined')		
-		return assignments[0].get_department() if assignments else ''
+	# def get_department(self):
+	# 	assignments = self.assignment_set.order_by('-date_joined')		
+	# 	return assignments[0].get_department() if assignments else ''
 
-	def get_location(self):
-		if not self.owner:
-			return ''
+	# def get_location(self):
+	# 	if not self.owner:
+	# 		return ''
 
-		assignments = Assignment.objects.filter(employee=self.owner).order_by('-date_joined')
-		ass = assignments[0].building.name
+	# 	assignments = Assignment.objects.filter(employee=self.owner).order_by('-date_joined')
+	# 	ass = assignments[0].building.name
 
 
 	def get_list_specifications(self):
@@ -263,18 +261,18 @@ class Equipment(models.Model):
 		return list_specifications
 
 	def get_state(self):
-		return dict(self.STATE_CHOICES).get(self.state)
+		return dict(self.STATE_CHOICES).get(self.state)	
 
-class Assignment(AuditMixin, models.Model):
+class Location(models.Model):
 	class Meta:
-		ordering = ['department', 'section', '-date_joined']	
+		ordering = ['department', 'section',]
+		unique_together = ['employee', 'department', 'section', 'building']	
 
 	employee = models.CharField(max_length=16, verbose_name='empleado')
 	department = models.FloatField(verbose_name='departamento')
-	section = models.FloatField(verbose_name='sección')
-	date_joined = models.DateTimeField(auto_now_add=True)	
-	equipment = models.ForeignKey(Equipment)
+	section = models.FloatField(verbose_name='sección')		
 	building = models.ForeignKey(Building, blank=True, null=True, verbose_name='edificio')
+	equipments = models.ManyToManyField(Equipment, through='Assignment')
 
 	def __unicode__(self):
 		return '%s, %s' % (self.equipment, self.responsible())
@@ -288,6 +286,12 @@ class Assignment(AuditMixin, models.Model):
 		contributor = Contributor.objects.using('sim').get(charter=self.employee)
 		arr = contributor.name.split()
 		return '%s %s' % (arr[2], arr[0])
+
+class Assignment(models.Model):
+	location = models.ForeignKey(Location)
+	equipment = models.ForeignKey(Equipment)
+	date = models.DateTimeField(auto_now_add=True)
+	active = models.BooleanField(default=True)
 
 # class Replacement(AuditMixin, models.Model):
 # 	IN_BY_INITIAL = 1

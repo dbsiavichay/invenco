@@ -5,6 +5,7 @@
 <div class="panel">	
 	<div class="panel-body">
 		{% include "partials/pagination.html" %}
+		{% block button %}{% endblock %}
 		{% block table %}{% endblock %}		
 	    {% include "partials/pagination.html" %}
 	</div>
