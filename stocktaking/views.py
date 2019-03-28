@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.forms import modelformset_factory, formset_factory
@@ -249,14 +250,19 @@ class LocationListView(ListView):
 
 class LocationCreateView(CreateView):
 	model = Location
-	fields = '__all__'
+	form_class = LocationForm
+	success_url = reverse_lazy('location_list')
 
-
-
-
-
-
-
+	def form_valid(self, form):
+		self.object = form.save()		
+		try:		
+			for eq in form.cleaned_data['equipments']:
+				Assignment.objects.create(location=self.object, equipment=eq)
+		except:
+			self.object.delete()
+			return self.form_invalid
+		
+		return redirect(self.success_url)
 
 class ReplacementListView(PaginationMixin, ListView):
 	model = Replacement

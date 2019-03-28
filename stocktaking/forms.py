@@ -9,7 +9,7 @@ from django.forms import (
 	ValidationError
 )
 
-from django.forms.widgets import HiddenInput, RadioSelect
+from django.forms.widgets import HiddenInput, RadioSelect, Select
 from django.forms.models import inlineformset_factory
 from .models import *
 from structure.models import *
@@ -85,11 +85,36 @@ class SpecificationsForm(Form):
 			self.fields[key].widget.attrs.update(attrs)
 
 class LocationForm(DjangoModelForm):
+	equipments = ModelMultipleChoiceField(
+		queryset = Equipment.objects.filter(model__type__usage=1),
+		label = 'Equipos disponibles',
+	)
+
+	def __init__(self, *args, **kwargs):
+		#self.fields['equipments'].queryset.filter(state=10)
+		super(LocationForm, self).__init__(*args, **kwargs)		
+		self.fields['employee'].widget.choices = self.get_employee_choices()
+		self.fields['department'].widget.choices = self.get_department_choices()	
+
+	def get_employee_choices(self):
+		choices = [('', '---------'),]
+		employees = Employee.objects.using('sim').filter(contributor__state='ACTIVO')
+		choices = choices + [(emp.contributor.charter, emp.contributor.charter+' | '+emp.contributor.name) for emp in employees]		
+		return choices
+
+	def get_department_choices(self):
+		choices = [('', '---------'),]		
+		departments = Department.objects.using('sim').all()
+		choices = choices + [(dep.code, dep.name) for dep in departments]	
+		return choices
+
 	class Meta:
 		model = Location
 		exclude = ['equipments',]
-
-
+		widgets = {
+			'employee': Select,
+			'department': Select
+		}
 
 class ReplacementForm(DjangoModelForm):
 	class Meta:

@@ -265,14 +265,13 @@ class Equipment(models.Model):
 
 class Location(models.Model):
 	class Meta:
-		ordering = ['department', 'section',]
-		unique_together = ['employee', 'department', 'section', 'building']	
+		ordering = ['department',]
+		unique_together = ['employee', 'department', 'building']	
 
 	employee = models.CharField(max_length=16, verbose_name='empleado')
-	department = models.FloatField(verbose_name='departamento')
-	section = models.FloatField(verbose_name='sección')		
+	department = models.FloatField(verbose_name='departamento')	
 	building = models.ForeignKey(Building, blank=True, null=True, verbose_name='edificio')
-	equipments = models.ManyToManyField(Equipment, through='Assignment')
+	equipments = models.ManyToManyField(Equipment, through='Assignment', verbose_name='equipos disponibles')
 
 	def __unicode__(self):
 		return '%s, %s' % (self.equipment, self.responsible())
