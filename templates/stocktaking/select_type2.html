@@ -13,7 +13,7 @@
 	    	<div class="row">
 		    	{% for type in object_list %}
 		    	<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2 text-center">
-		    		<div class="type-item" type-id="{{ type.id }}">			    		
+		    		<div class="type-item" data-type="{{ type.id }}">			    		
 				    	{% if type.image %}			    	
 			    		<img height="92" src="{{ type.image.url }}">
 			    		{% else %}
@@ -26,9 +26,9 @@
 		    </div>
 	    </div>
 	</div>
-	<div class="panel-footer">
-		<span id="next" class="hidden">{{ model }}</span>
-		<a id="selectTypeNext" class="btn btn-primary">
+	<div class="panel-footer">		
+		<input id="model" type="hidden" value="{{ model }}">
+		<a id="next" class="btn btn-primary">
 			<span class="fa fa-check"></span> Siguiente
 		</a>		
 	</div>
@@ -56,6 +56,31 @@
 
 {% block js %}
 <script type="text/javascript">	
+document.addEventListener('DOMContentLoaded', function () {
+	//Select type
+	types = document.querySelectorAll('.type-item');
+	types.forEach(function (type, index) {
+		type.addEventListener('click', function () {
+			var id = this.dataset.type;
+			var model = document.getElementById('model').value;
+			url = '/'+ model +'/add/type/' + id + '/';
+			document.getElementById('next').setAttribute('href', url)
+			deactiveAllTypes();
+			activeType(this)
+		});
+	});
+
+	var deactiveAllTypes = function () {
+		types.forEach(function (type, index) {
+			type.classList.remove('active')
+		});
+	}
+
+	var activeType = function (elem) {
+		elem.classList.add('active')
+	}
+});
+
 $(function () {
 	var type;
 
@@ -66,25 +91,6 @@ $(function () {
 		$('#delete').attr('action', url);
 		$('#delete-modal').modal('show');		
 	});	
-
-
-
-
-	//Select type
-	$('.type-item').on('click', function () {
-		var next = $('#next').text();
-
-		var type = $(this).attr('type-id');
-		var set = $(this).attr('set-id');
-
-		var url;
-		if (type) url = '/'+ next +'/add/type/' + type + '/';
-		else if (set) url = '/'+ next +'/add/set/' + set + '/';
-					
-		$('#selectTypeNext').attr('href', url);
-		$('.type-item').removeClass('active');
-		$(this).addClass('active');
-	});
 
 	//Code for assignments
 	var splitArea = function () {

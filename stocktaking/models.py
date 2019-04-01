@@ -281,7 +281,7 @@ class Location(models.Model):
 		return department.name
 
 
-	def responsible(self):
+	def get_employee(self):
 		contributor = Contributor.objects.using('sim').get(charter=self.employee)
 		arr = contributor.name.split()
 		return '%s %s' % (arr[2], arr[0])

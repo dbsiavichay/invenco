@@ -4,7 +4,7 @@ from .views import *
 
 urlpatterns = [	            
     url(r'^model/$', login_required(ModelListView.as_view()), name='model_list'),    
-    url(r'^model/add/select-type/$', login_required(SelectTypeListView.as_view()), name='model_select_type'),
+    url(r'^(?P<model>[-\w]+)/select-type/$', login_required(SelectTypeListView.as_view()), name='select_type'),
     url(r'^model/add/type/(?P<type>\d+)/$', login_required(ModelCreateView.as_view()), name='model_create'),
     url(r'^model/(?P<pk>\d+)/type/(?P<type>\d+)/edit/$', login_required(ModelUpdateView.as_view()), name='model_update'),
     url(r'^model/(?P<pk>\d+)/delete/$', login_required(ModelDeleteView.as_view()), name='model_delete'),

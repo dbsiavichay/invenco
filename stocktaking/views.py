@@ -260,9 +260,18 @@ class LocationCreateView(CreateView):
 				Assignment.objects.create(location=self.object, equipment=eq)
 		except:
 			self.object.delete()
+			#Falta eliminar hijos creados si hay error
 			return self.form_invalid
 		
 		return redirect(self.success_url)
+
+
+
+
+
+
+
+
 
 class ReplacementListView(PaginationMixin, ListView):
 	model = Replacement
@@ -439,18 +448,12 @@ class SelectTypeListView(ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super(SelectTypeListView, self).get_context_data()
-
-		if 'model' in self.request.path:
-			model = 'model'
-		elif 'equipment' in self.request.path:			
-			model = 'equipment'
-			#sets = Set.objects.all()
-			#context['sets'] = sets
+		model = self.request.GET.get('model') or self.kwargs.get('model') or None
+		
+		if model == 'equipment':						
 			context['object_list'] = self.model.objects.exclude(usage=4)
-		elif 'replacement' in self.request.path:
-			model = 'replacement'
+		elif model == 'replacement':			
 			context['object_list'] = self.model.objects.filter(Q(usage=2) | Q(usage=4))
 
 		context['model'] = model
-
 		return context

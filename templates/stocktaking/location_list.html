@@ -16,13 +16,17 @@
     <tbody>
     	{% for object in object_list %}
         <tr>					        
-	        <td>{{ model.type }}</td>
-	        <td>{{ model.brand }}</td>
-	        <td>{{ model.name }}</td>
-	        <td>{% if model.part_number %} {{ model.part_number }} {% endif %}</td>
+	        <td>{{ object.building }}</td>
+	        <td>{{ object.get_department }}</td>
+	        <td>{{ object.get_employee }}</td>
+	        <td>
+            <button class="btn btn-default btn-xs">
+              <span class="fa fa-search"></span>
+            </button>
+          </td>
 	        <td class="col-xs-3">					        	
 	        	<a href="/model/{{ model.id }}/type/{{ model.type.id }}/edit/" class="btn btn-default btn-xs">
-	        		<span class="fa fa-pencil"></span>
+	        		<span class="fa fa-exchange"></span>
 	        	</a>
 	        	<button class="btn btn-default btn-xs delete" data-model="model" data-id="{{ model.id }}">
 	        		<span class="fa fa-trash"></span>
