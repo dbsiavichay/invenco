@@ -40,21 +40,21 @@ def get_letterhead_page(canvas, doc):
 		base_path = join(settings.BASE_DIR, 'static/images/reports/')
 
 		escudo = Image(base_path + 'escudo_morona.png', width=6*cm,height=2*cm)
-		logo = Image(base_path + 'logo_morona.jpg', width=2*cm,height=2*cm)		
+		#logo = Image(base_path + 'logo_morona.jpg', width=2*cm,height=2*cm)		
 		footer_caption = Image(base_path + 'footer-caption.png', width=6.5*cm,height=1.5*cm)
-		footer_image = Image(base_path + 'footer-image.png', width=3*cm,height=1.5*cm)
+		#footer_image = Image(base_path + 'footer-image.png', width=3*cm,height=1.5*cm)
 
 		w, h = escudo.wrap(doc.width, doc.topMargin)
 		escudo.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - 20)
 
-		w, h = logo.wrap(doc.width, doc.topMargin)
-		logo.drawOn(canvas, doc.leftMargin + 700, doc.height + doc.topMargin - 20)
+		#w, h = logo.wrap(doc.width, doc.topMargin)
+		#logo.drawOn(canvas, doc.leftMargin + 700, doc.height + doc.topMargin - 20)
 		
 		w, h = footer_caption.wrap(doc.width, doc.topMargin)
-		footer_caption.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - 530)
+		footer_caption.drawOn(canvas, doc.leftMargin, doc.height + doc.topMargin - 780)
 
-		w, h = footer_image.wrap(doc.width, doc.topMargin)
-		footer_image.drawOn(canvas, doc.leftMargin + 700, doc.height + doc.topMargin - 530)
+		#w, h = footer_image.wrap(doc.width, doc.topMargin)
+		#footer_image.drawOn(canvas, doc.leftMargin + 700, doc.height + doc.topMargin - 530)
 
         # Release the canvas
 		canvas.restoreState()
@@ -147,58 +147,37 @@ def get_table_equipments(type):
 		return None
 
 	table_title = get_table_title(type.name)
-	headers = ['Marca', 'Equipo', 'Serie', 'Código','Responsable']
+	headers = ['Marca', 'Equipo', 'Serie', 'Código','Responsable', 'Estado']
 	columns_width = [1.5*cm, 3*cm,2.3*cm,1.5*cm,4*cm, 3*cm]
-	fields = ('model.brand', 'model.name', 'serial', 'code', 'get_responsible')
-
-	#headers = ['Equipo',]
-
-	#fields = ('model.name',)
+	fields = ('model.brand', 'model.name', 'serial', 'code', 'get_responsible', 'get_state')
 
 	data = get_data(equipments, fields)	
 
 	# ##Specifications
 	specifications = type.type_specifications.filter(when='device')
 
+	
 	# for i in range(len(equipments)):
 	# 	equipment = equipments[i]
 	# 	values = []		
 		
-	# 	for specification in specifications:
+	# 	for specification in specifications:			
 	# 		if specification.widget == 'separator':
-	# 			values.append([get_strong_text(specification.label, 6),])
+	# 			if not specification.label in headers:
+	# 				headers.append(specification.label)
+	# 			if len(values) > 0:
+	# 				data[i].append(get_list_component(values))
+	# 				values = []
 	# 		else:
 	# 			key = str(specification.id)
 	# 			if key in equipment.specifications.keys():
-	# 				values.append(['%s: %s' % (specification.label, equipment.specifications[key]),])
-		
+	# 				val = '%s: %s' % (specification.label, equipment.specifications[key])
+	# 				val = get_paragraph(val, 6)
+
+	# 				values.append([val,])
+
 	# 	if len(values) > 0:
-	# 		data[i].append(get_list_component(values))		
-	# 	else:
-	# 		data[i].append(None)
-
-
-	for i in range(len(equipments)):
-		equipment = equipments[i]
-		values = []		
-		
-		for specification in specifications:			
-			if specification.widget == 'separator':
-				if not specification.label in headers:
-					headers.append(specification.label)
-				if len(values) > 0:
-					data[i].append(get_list_component(values))
-					values = []
-			else:
-				key = str(specification.id)
-				if key in equipment.specifications.keys():
-					val = '%s: %s' % (specification.label, equipment.specifications[key])
-					val = get_paragraph(val, 6)
-
-					values.append([val,])
-
-		if len(values) > 0:
-			data[i].append(get_list_component(values))
+	# 		data[i].append(get_list_component(values))
 
 	data = get_styled_data([headers,] + data)	
 	table = Table(data, columns_width, style=get_table_style(), hAlign='LEFT')

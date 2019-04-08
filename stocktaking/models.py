@@ -193,8 +193,8 @@ class Equipment(AuditMixin, models.Model):
 
 		return list_specifications
 
-	def get_state(self):
-		return dict(self.STATE_CHOICES).get(self.state)
+	def get_state(self):		
+		return dict(self.STATE_CHOICES).get(self.state) if self.state else ''
 
 class Assignment(AuditMixin, models.Model):
 	class Meta:

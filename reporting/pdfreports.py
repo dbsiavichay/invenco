@@ -22,7 +22,7 @@ def pdf_equipments():
 
 	#Document settings
 	buff = BytesIO()
-	doc = SimpleDocTemplate(buff, pagesize=landscape(A4), rightMargin=60, leftMargin=40, topMargin=75, bottomMargin=50,)
+	doc = SimpleDocTemplate(buff, pagesize=A4, rightMargin=60, leftMargin=40, topMargin=75, bottomMargin=50,)
 
 	#Styles settings
 	styles = getSampleStyleSheet()
