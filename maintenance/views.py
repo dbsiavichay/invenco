@@ -42,26 +42,26 @@ class FixCreateView(CreateView):
 		self.object.user = self.request.user
 		self.object.save()
 
-		formset = self.get_formset()
+		#formset = self.get_formset()
 
-		if not formset.is_valid():
-			return self.form_invalid(form)
+		#if not formset.is_valid():
+		#	return self.form_invalid(form)
 
-		for frm in formset:
-			last = Replacement.objects.filter(model=frm.cleaned_data['model']).order_by('-date_joined')[0]				
+		# for frm in formset:
+		# 	last = Replacement.objects.filter(model=frm.cleaned_data['model']).order_by('-date_joined')[0]				
 
-			if frm.cleaned_data.get('quantity') > 0:					
-				rep = frm.save(commit=False)				
-				rep.total_price = rep.quantity * rep.unit_price
-				rep.stock = last.stock - rep.quantity				
+		# 	if frm.cleaned_data.get('quantity') > 0:					
+		# 		rep = frm.save(commit=False)				
+		# 		rep.total_price = rep.quantity * rep.unit_price
+		# 		rep.stock = last.stock - rep.quantity				
 
-				obs = {
-					'fix_id':  self.object.id,
-					'description': 'Salida por uso en arreglo.'
-				}
+		# 		obs = {
+		# 			'fix_id':  self.object.id,
+		# 			'description': 'Salida por uso en arreglo.'
+		# 		}
 
-				rep.observation = str(obs)
-				rep.save()
+		# 		rep.observation = str(obs)
+		# 		rep.save()
 
 		return redirect(self.get_success_url())
 
