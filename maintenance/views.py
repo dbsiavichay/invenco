@@ -74,3 +74,8 @@ class FixCreateView(CreateView):
 			formset = ReplacementFormSet()
 
 		return formset
+
+class FixUpdateView(UpdateView):
+	model = Fix
+	fields = ('problem', 'solution', 'observation', 'equipment')
+	success_url = '/fix/'
