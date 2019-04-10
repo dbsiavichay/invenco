@@ -274,7 +274,7 @@ class Location(models.Model):
 	equipments = models.ManyToManyField(Equipment, through='Assignment', verbose_name='equipos disponibles')
 
 	def __unicode__(self):
-		return '%s, %s' % (self.equipment, self.responsible())
+		return '%s, %s' % (self.building, self.get_employee())
 
 	def get_department(self):
 		department = Department.objects.using('sim').get(code=self.department)

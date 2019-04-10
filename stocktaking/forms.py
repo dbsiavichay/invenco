@@ -90,16 +90,18 @@ class LocationForm(DjangoModelForm):
 		label = 'Equipos disponibles',
 	)
 
-	def __init__(self, *args, **kwargs):
-		#self.fields['equipments'].queryset.filter(state=10)
+	def __init__(self, *args, **kwargs):		
 		super(LocationForm, self).__init__(*args, **kwargs)		
 		self.fields['employee'].widget.choices = self.get_employee_choices()
-		self.fields['department'].widget.choices = self.get_department_choices()	
+		self.fields['department'].widget.choices = self.get_department_choices()
+
+	def _get_employees(self):		
+		employees = Employee.objects.using('sim').filter(contributor__state='ACTIVO')
+		return employees	
 
 	def get_employee_choices(self):
-		choices = [('', '---------'),]
-		employees = Employee.objects.using('sim').filter(contributor__state='ACTIVO')
-		choices = choices + [(emp.contributor.charter, emp.contributor.charter+' | '+emp.contributor.name) for emp in employees]		
+		choices = [('', '---------'),]		
+		choices = choices + [(emp.contributor.charter, emp.contributor.charter+' | '+emp.contributor.name) for emp in self._get_employees()]		
 		return choices
 
 	def get_department_choices(self):
@@ -115,6 +117,22 @@ class LocationForm(DjangoModelForm):
 			'employee': Select,
 			'department': Select
 		}
+
+class LocationTransferForm(LocationForm):
+	def __init__(self, *args, **kwargs):
+		self.charter = kwargs.pop('charter', None)		
+		queryset = kwargs.pop('queryset', None)		
+		super(LocationTransferForm, self).__init__(*args, **kwargs)			
+		if queryset is not None: self.fields['equipments'].queryset = queryset
+
+	def clean(self):
+		super(LocationTransferForm, self).clean()
+		self._validate_unique = False
+
+	def _get_employees(self):		
+		queryset = super(LocationTransferForm, self)._get_employees()
+		employees = queryset.exclude(contributor__charter=self.charter)
+		return employees
 
 class ReplacementForm(DjangoModelForm):
 	class Meta:

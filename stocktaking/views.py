@@ -255,21 +255,54 @@ class LocationCreateView(CreateView):
 
 	def form_valid(self, form):
 		self.object = form.save()		
-		try:		
-			for eq in form.cleaned_data['equipments']:
-				Assignment.objects.create(location=self.object, equipment=eq)
-		except:
-			self.object.delete()
-			#Falta eliminar hijos creados si hay error
-			return self.form_invalid
-		
+		self.create_assigments(form.cleaned_data['equipments'])		
 		return redirect(self.success_url)
 
+	def create_assigments(self, equipments):
+		try:		
+			for eq in equipments:
+				Assignment.objects.create(location=self.object, equipment=eq)				
+		except:
+			self.object.assignment_set.all().delete()
+			self.object.delete()			
+			raise Exception
 
 
+class LocationTransferView(LocationCreateView):
+	form_class = LocationTransferForm
+	template_name = 'stocktaking/location_transfer.html'
 
+	def get_context_data(self, **kwargs):
+		context = super(LocationTransferView, self).get_context_data(**kwargs)
+		context.update({'object':self.get_object()})
+		return context
 
+	def get_form_kwargs(self):
+		_object = self.get_object()
+		kwargs = super(LocationTransferView, self).get_form_kwargs()
+		queryset = _object.equipments.filter(assignment__active=True)
+		kwargs.update({
+			'queryset': queryset,
+			'charter': _object.employee,
+			'initial': {
+				'department': _object.department,
+				'building':_object.building,
+				'equipments': queryset.values_list('id', flat=True),
+			}			
+		})
+		return kwargs	
 
+	def form_valid(self, form):
+		try:
+			kwargs = { key: value for key, value in form.cleaned_data.items() if key != 'equipments'}			
+			self.object = self.model.objects.get(**kwargs)			
+		except self.model.DoesNotExist:
+			self.object = form.save()
+				
+		equipments = form.cleaned_data['equipments']
+		self.create_assigments(equipments)
+		Assignment.objects.filter(location=self.get_object(), active=True, equipment__in=equipments).update(active=False)		
+		return redirect(self.success_url)
 
 
 

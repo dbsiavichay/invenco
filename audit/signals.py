@@ -25,7 +25,7 @@ def audit_delete_log(sender, instance, **kwargs):
 
 def check_allows(sender):
 	list_of_models = (
-		'Brand', 'Type', 'TypeSpecification', 'Set', 'SetDetail', 'Model', 'Assignment', 'Replacement',
+		'Brand', 'Type', 'TypeSpecification', 'Set', 'SetDetail', 'Model', 'Replacement',
 		'Fix','Profile','Building','Provider',
 	)
 

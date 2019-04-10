@@ -8,7 +8,9 @@
 <script type="text/javascript">
 	window.addEventListener('DOMContentLoaded', function () {
 		var inputEquipments = document.getElementById('id_equipments');
-		var choices = new Choices(inputEquipments);
+		var choices = new Choices(inputEquipments,{
+			removeItemButton:true,
+		});
 	});
 </script>
 {% endblock %}

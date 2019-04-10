@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^equipment/(?P<pk>\d+)/type/(?P<type>\d+)/edit/$', login_required(EquipmentUpdateView.as_view()), name='equipment_update_by_type'),    
     url(r'^location/$', login_required(LocationListView.as_view()), name='location_list'),    
     url(r'^location/add/$', login_required(LocationCreateView.as_view()), name='location_create'),    
+    url(r'^location/(?P<pk>\d+)/transfer/$', login_required(LocationTransferView.as_view()), name='location_transfer'),    
     url(r'^replacement/$', login_required(ReplacementListView.as_view()), name='replacement_list'),
     url(r'^replacement/add/select-type/$', login_required(SelectTypeListView.as_view()), name='replacement_select_type'),
     url(r'^replacement/add/type/(?P<pk>\d+)/$', login_required(ReplacementCreateView.as_view()), name='replacement_create'),
