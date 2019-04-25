@@ -3,6 +3,15 @@ from django.contrib.auth.decorators import login_required
 from .views import *
 
 urlpatterns = [	
+    url(r'^ticket/$',login_required(TicketListView.as_view()), name='ticket_list'),
+    url(r'^ticket/add/$', login_required(TicketCreateView.as_view()), name='ticket_create'),
+    url(r'^ticket/(?P<pk>\d+)/update/$', login_required(TicketUpdateView.as_view()), name='ticket_update'),    
+    url(r'^ticket/(?P<pk>\d+)/detail/$', login_required(TicketDetailView.as_view()), name='ticket_detail'),    
+    url(r'^reply/ticket/(?P<pk>\d+)/solved/$', login_required(ReplySolvedCreateView.as_view()), name='reply_solved'),    
+    url(r'^reply/ticket/(?P<pk>\d+)/closed/$', login_required(ReplyClosedCreateView.as_view()), name='reply_closed'),    
+    url(r'^reply/ticket/(?P<pk>\d+)/canceled/$', login_required(ReplyCanceledCreateView.as_view()), name='reply_canceled'),    
+
+
     url(r'^fix/$',login_required(FixListView.as_view()), name='fix_list'),
     url(r'^fix/add/$', login_required(FixCreateView.as_view()), name='fix_create'),
     #url(r'^brand/(?P<pk>\d+)/edit/$', login_required(BrandUpdateView.as_view()), name='brand_update'),    

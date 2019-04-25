@@ -1,8 +1,21 @@
 from django import forms
 from django.forms import formset_factory, ModelForm
+from django.forms.widgets import HiddenInput
+from .models import Reply
 # from stocktaking.models import Replacement
 
 # from functools import partial, wraps
+
+class ReplyForm(ModelForm):
+	class Meta:
+		model = Reply
+		exclude = ('date',)
+		widgets = {
+			'ticket': HiddenInput
+		}
+
+
+
 
 # class ReplacementForm(ModelForm):
 # 	class Meta:

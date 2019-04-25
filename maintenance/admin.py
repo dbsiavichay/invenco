@@ -1,3 +1,8 @@
 from django.contrib import admin
+from .models import ProblemType
 
-# Register your models here.
+class ProblemTypeAdmin(admin.ModelAdmin):
+	pass
+
+
+admin.site.register(ProblemType, ProblemTypeAdmin)

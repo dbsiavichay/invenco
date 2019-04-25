@@ -1,5 +1,9 @@
 {% extends 'base/base_list.html' %}	
 
+{% block title %}Lista de equipos{% endblock %}
+{% block button %}
+<a href="{% url 'select_type' 'equipment' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Agregar</a>
+{% endblock %}
 {% block table %}
 <table class="table">
   <thead>

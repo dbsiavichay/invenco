@@ -9,6 +9,10 @@ from structure.models import *
 from audit.mixins import AuditMixin
 
 class Specification(models.Model):
+	class Meta:
+		verbose_name = 'especificación'
+		verbose_name_plural = 'especificaciones'
+		
 	FIELD_CHOICES = (		
 		('CharField', 'Texto'),('IntegerField', 'Número'),
 		('ChoiceField', 'Selector'), ('ChoiceField:RadioSelect', 'RadioMultiple'),		
@@ -106,6 +110,98 @@ class Model(AuditMixin, models.Model):
 		count = self.equipment_set.exclude(state=10).count();
 		return count
 
+class Equipment(models.Model):
+	class Meta:
+		ordering = ['model',]
+
+	STATE_CHOICES = (
+		(1, 'Bueno'),
+		(2, 'Regular'),
+		(3, 'En reparación'),
+		(10, 'Dañado'),
+	)
+
+	model = models.ForeignKey(Model, verbose_name='modelo')	
+	code = models.CharField(max_length=16, blank=True, null=True, verbose_name='código')
+	serial = models.CharField(max_length=34, blank=True, null=True, verbose_name='número de serie')	
+	specifications = JSONField(blank=True, null=True)
+	state = models.PositiveSmallIntegerField(choices=STATE_CHOICES, verbose_name='estado')	
+	date = models.DateTimeField(auto_now_add=True)
+	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')		
+	invoice_line = models.ForeignKey('purchases.InvoiceLine', blank=True, null=True)
+
+	def __unicode__(self):
+		representation =  '%s | %s | %s' % (self.model, self.code, self.serial)
+		responsible = self.get_responsible()
+		representation = '%s | %s' % (representation, responsible) if responsible else representation
+		return representation 
+
+	def get_responsible(self):
+		try:
+			assignment = self.assignment_set.get(active=True)
+			return assignment.location.get_employee()
+		except:
+			return ''
+
+	def get_department(self):
+		try:
+			assignment = self.assignment_set.get(active=True)
+			return assignment.location.get_department()
+		except:
+			return ''
+
+	# def get_location(self):
+	# 	if not self.owner:
+	# 		return ''
+
+	# 	assignments = Assignment.objects.filter(employee=self.owner).order_by('-date_joined')
+	# 	ass = assignments[0].building.name
+
+
+	def get_list_specifications(self):
+		list_specifications = []
+		specifications = self.model.type.type_specifications.exclude(widget='separator')
+
+		for specification in specifications:
+			key = str(specification.id)
+			if key in self.specifications.keys():				
+				list_specifications.append(
+					'%s: %s' % (specification.label, self.specifications[key])				
+				)
+
+		return list_specifications
+
+	def get_state(self):
+		return dict(self.STATE_CHOICES).get(self.state)	
+
+class Location(models.Model):
+	class Meta:
+		ordering = ['department',]
+		unique_together = ['employee', 'department', 'building']	
+
+	employee = models.CharField(max_length=16, verbose_name='empleado')
+	department = models.FloatField(verbose_name='departamento')	
+	building = models.ForeignKey(Building, blank=True, null=True, verbose_name='edificio')
+	equipments = models.ManyToManyField(Equipment, through='Assignment', verbose_name='equipos disponibles')
+
+	def __unicode__(self):
+		return '%s, %s' % (self.building, self.get_employee())
+
+	def get_department(self):
+		department = Department.objects.using('sim').get(code=self.department)
+		return department.name
+
+
+	def get_employee(self):
+		contributor = Contributor.objects.using('sim').get(charter=self.employee)
+		arr = contributor.name.split()
+		return '%s %s' % (arr[2], arr[0])
+
+class Assignment(models.Model):
+	location = models.ForeignKey(Location)
+	equipment = models.ForeignKey(Equipment)
+	date = models.DateTimeField(auto_now_add=True)
+	active = models.BooleanField(default=True)
 
 
 
@@ -202,95 +298,6 @@ class SetDetail(AuditMixin, models.Model):
 
 
 
-class Equipment(models.Model):
-	class Meta:
-		ordering = ['model',]
-
-	STATE_CHOICES = (
-		(1, 'Bueno'),
-		(2, 'Regular'),
-		(3, 'En reparación'),
-		(10, 'Dañado'),
-	)
-
-	model = models.ForeignKey(Model, verbose_name='modelo')	
-	code = models.CharField(max_length=16, blank=True, null=True, verbose_name='código')
-	serial = models.CharField(max_length=34, blank=True, null=True, verbose_name='número de serie')	
-	specifications = JSONField(blank=True, null=True)
-	state = models.PositiveSmallIntegerField(choices=STATE_CHOICES, verbose_name='estado')	
-	date = models.DateTimeField(auto_now_add=True)
-	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')		
-	invoice_line = models.ForeignKey('purchases.InvoiceLine', blank=True, null=True)
-
-	def __unicode__(self):
-		representation =  '%s | %s | %s' % (self.model, self.code, self.serial)
-		responsible = self.get_responsible()
-		representation = '%s | %s' % (representation, responsible) if responsible else representation
-
-		return representation 
-
-	def get_responsible(self):
-		return ''
-
-	# 	assignments = self.assignment_set.order_by('-date_joined')		
-	# 	return assignments[0].responsible() if assignments else ''
-
-	# def get_department(self):
-	# 	assignments = self.assignment_set.order_by('-date_joined')		
-	# 	return assignments[0].get_department() if assignments else ''
-
-	# def get_location(self):
-	# 	if not self.owner:
-	# 		return ''
-
-	# 	assignments = Assignment.objects.filter(employee=self.owner).order_by('-date_joined')
-	# 	ass = assignments[0].building.name
-
-
-	def get_list_specifications(self):
-		list_specifications = []
-		specifications = self.model.type.type_specifications.exclude(widget='separator')
-
-		for specification in specifications:
-			key = str(specification.id)
-			if key in self.specifications.keys():				
-				list_specifications.append(
-					'%s: %s' % (specification.label, self.specifications[key])				
-				)
-
-		return list_specifications
-
-	def get_state(self):
-		return dict(self.STATE_CHOICES).get(self.state)	
-
-class Location(models.Model):
-	class Meta:
-		ordering = ['department',]
-		unique_together = ['employee', 'department', 'building']	
-
-	employee = models.CharField(max_length=16, verbose_name='empleado')
-	department = models.FloatField(verbose_name='departamento')	
-	building = models.ForeignKey(Building, blank=True, null=True, verbose_name='edificio')
-	equipments = models.ManyToManyField(Equipment, through='Assignment', verbose_name='equipos disponibles')
-
-	def __unicode__(self):
-		return '%s, %s' % (self.building, self.get_employee())
-
-	def get_department(self):
-		department = Department.objects.using('sim').get(code=self.department)
-		return department.name
-
-
-	def get_employee(self):
-		contributor = Contributor.objects.using('sim').get(charter=self.employee)
-		arr = contributor.name.split()
-		return '%s %s' % (arr[2], arr[0])
-
-class Assignment(models.Model):
-	location = models.ForeignKey(Location)
-	equipment = models.ForeignKey(Equipment)
-	date = models.DateTimeField(auto_now_add=True)
-	active = models.BooleanField(default=True)
 
 # class Replacement(AuditMixin, models.Model):
 # 	IN_BY_INITIAL = 1

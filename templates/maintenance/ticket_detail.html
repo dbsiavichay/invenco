@@ -1,0 +1,46 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="panel">	
+	<div class="panel-body">				
+		<br>
+		<h3 class="panel-title">Problema {{ object.get_status_html }}</h3>		
+		<hr>
+
+		<div class="row">
+			<div class="col-sm-6">
+				<label>Fecha de ingreso</label>
+				<p>{{ object.date }}</p>		   	
+			</div>
+			<div class="col-sm-6">
+				<label>Tipo de problema</label>
+				<p>{{ object.problem_type }}</p>		   	
+			</div>
+			<div class="col-xs-12">
+		    	<label>Descripción del problema</label>		   
+		    	<p>{{ object.problem }}</p>				
+			</div>
+		</div>
+		
+		{% if object.reply %}
+		<br>
+		<h3 class="panel-title"><span class="label label-default">Respuesta</span></h3>		
+		<hr>
+		<div class="row">
+			<div class="col-sm-6">
+				<label>Fecha de respuesta</label>
+				<p>{{ object.reply.date }}</p>		   	
+			</div>
+			<div class="col-sm-6">
+				<label>Atendido por</label>
+				<p>{{ object.user.get_full_name }}</p>		   	
+			</div>
+			<div class="col-xs-12">
+		    	<label>Descripción de la respuesta</label>		   
+		    	<p>{{ object.reply.description }}</p>				
+			</div>			
+		</div>		
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

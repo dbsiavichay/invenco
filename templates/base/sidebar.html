@@ -10,11 +10,11 @@
 				<li><a href="#" class=""><i class="lnr lnr-home"></i><span>Inicio</span></a></li>
 				<li><a href="{% url 'model_list' %}" class=""><i class="lnr lnr-code"></i> <span>Modelos</span></a></li>				
 				<li>
-					<a href="#subPages" data-toggle="collapse" class="collapsed">
+					<a href="#subEquipments" data-toggle="collapse" class="collapsed">
 						<i class="lnr lnr-file-empty"></i> <span>Equipos</span> 
 						<i class="icon-submenu lnr lnr-chevron-left"></i>
 					</a>
-					<div id="subPages" class="collapse ">
+					<div id="subEquipments" class="collapse ">
 						<ul class="nav">
 							<li><a href="{% url 'equipment_list' %}" class="">Todos</a></li>
 							<li><a href="#" class="">CPU</a></li>
@@ -22,7 +22,18 @@
 						</ul>
 					</div>
 				</li>
-				<li><a href="{% url 'location_list' %}" class=""><i class="lnr lnr-user"></i> <span>Asignaciones</span></a></li>				
+				<li><a href="{% url 'location_list' %}" class=""><i class="lnr lnr-user"></i> <span>Asignaciones</span></a></li>
+				<li>
+					<a href="#subMaintenance" data-toggle="collapse" class="collapsed">
+						<i class="lnr lnr-file-empty"></i> <span>Mantenimiento</span> 
+						<i class="icon-submenu lnr lnr-chevron-left"></i>
+					</a>
+					<div id="subMaintenance" class="collapse ">
+						<ul class="nav">
+							<li><a href="{% url 'ticket_list' %}" class="">Tickets</a></li>
+						</ul>
+					</div>
+				</li>				
 			</ul>
 		</nav>
 	</div>	

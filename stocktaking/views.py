@@ -306,6 +306,12 @@ class LocationTransferView(LocationCreateView):
 
 
 
+
+
+
+
+ 
+
 class ReplacementListView(PaginationMixin, ListView):
 	model = Replacement
 	paginate_by = 8
