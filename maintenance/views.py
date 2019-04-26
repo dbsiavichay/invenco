@@ -17,6 +17,12 @@ class TicketListView(PaginationMixin, ListView):
 	model = Ticket
 	paginate_by = 20
 
+class TicketUserListView(TicketListView):
+	def get_queryset(self):
+		queryset = super(TicketUserListView, self).get_queryset()
+		queryset = queryset.filter(user=self.request.user)
+		return queryset
+
 class TicketCreateView(CreateView):
 	model = Ticket
 	fields = ('problem_type', 'equipment', 'problem')

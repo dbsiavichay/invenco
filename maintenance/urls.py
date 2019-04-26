@@ -4,6 +4,7 @@ from .views import *
 
 urlpatterns = [	
     url(r'^ticket/$',login_required(TicketListView.as_view()), name='ticket_list'),
+    url(r'^ticket/user/$',login_required(TicketUserListView.as_view()), name='ticket_user_list'),
     url(r'^ticket/add/$', login_required(TicketCreateView.as_view()), name='ticket_create'),
     url(r'^ticket/(?P<pk>\d+)/update/$', login_required(TicketUpdateView.as_view()), name='ticket_update'),    
     url(r'^ticket/(?P<pk>\d+)/detail/$', login_required(TicketDetailView.as_view()), name='ticket_detail'),    

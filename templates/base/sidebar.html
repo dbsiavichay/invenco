@@ -7,7 +7,7 @@
 	<div class="sidebar-scroll">
 		<nav>
 			<ul class="nav">
-				<li><a href="#" class=""><i class="lnr lnr-home"></i><span>Inicio</span></a></li>
+				<li><a href="{% url 'home' %}" class=""><i class="lnr lnr-home"></i><span>Inicio</span></a></li>
 				<li><a href="{% url 'model_list' %}" class=""><i class="lnr lnr-code"></i> <span>Modelos</span></a></li>				
 				<li>
 					<a href="#subEquipments" data-toggle="collapse" class="collapsed">
@@ -43,6 +43,7 @@
 					<div id="subMaintenance" class="collapse ">
 						<ul class="nav">
 							<li><a href="{% url 'ticket_list' %}" class="">Tickets</a></li>
+							<li><a href="{% url 'ticket_user_list' %}" class="">Mis tickets</a></li>
 						</ul>
 					</div>
 				</li>				
