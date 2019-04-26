@@ -1,131 +1,55 @@
-{% extends 'base.html' %}
+{% extends 'base/base_form.html' %}
+{% load components %}
 
-{% load staticfiles %}
-{% load widget_tweaks %}
-
-{% block page_title %}Facturas{% endblock %}
-
-{% block content %}
-<div class="row">
-	<div class="col-xs-12">
-      	<div class="card">
-        	<div class="card-header">Añadir factura</div>
-        	<div class="card-body">
-        		{% if form.errors %}
-        		<div class="alert alert-danger alert-dismissible" role="alert">
-					<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<strong>Error!</strong> Hay algunos errores que resolver.
-				</div>
-        		{% endif %}
-        		<form id="form" class="form form-horizontal" action="" method="POST" enctype="multipart/form-data" novalidate>
-        			{% csrf_token %}        			
-				    <div class="form-group {% if form.provider.errors %} has-error {% endif %}">
-				        <label class="col-md-3 control-label" for="{{ form.provider.id_for_label }}">{{ form.provider.label }}</label>
-				        <div class="col-md-9">
-					        {{ form.provider|add_class:"select2" }}
-					        {% for error in form.provider.errors %}
-							<span class="help-block">{{ error }}</span>
-							{% endfor %}					    
-				        </div>
-				    </div>
-				    <div class="form-group {% if form.number.errors %} has-error {% endif %}">
-				        <label class="col-md-3 control-label" for="{{ form.number.id_for_label }}">{{ form.number.label }}</label>
-				        <div class="col-md-9">
-					        {{ form.number|add_class:"form-control" }}
-					        {% for error in form.number.errors %}
-							<span class="help-block">{{ error }}</span>
-							{% endfor %}					    
-				        </div>
-				    </div>
-				    <div class="form-group {% if form.date.errors %} has-error {% endif %}">
-				        <label class="col-md-3 control-label" for="{{ form.date.id_for_label }}">{{ form.date.label }}</label>
-				        <div class="col-md-9">
-					        {{ form.date|add_class:"form-control" }}
-					        {% for error in form.date.errors %}
-							<span class="help-block">{{ error }}</span>
-							{% endfor %}					    
-				        </div>
-				    </div>
-
-				    <div class="table-responsive">				    	
-					    <table class="table table-striped table-bordered">
-						    <thead>
-						        <tr>
-						          <th>Modelo</th>
-						          <th>Cantidad</th>
-						          <th>Precio Unitario</th>
-						          <th>Descuento</th>
-						          <th>Iva</th>
-						          <th>Subtotal</th>					          
-						          <th>Eliminar?</th>
-						        </tr>
-						    </thead>
-						    <tbody>
-						    {{ formset.management_form }}
-					    	{% for form in formset %}
-					    		{{ form.id }}
-						        <tr class="inline {{ formset.prefix }}">
-							        <td class="col-xs-3">{{ form.model|add_class:"select2" }}{{ form.model.errors }}</td>
-							        <td>{{ form.quantity|add_class:"form-control" }}{{ form.quantity.errors }}</td>
-							        <td>{{ form.unit_price|add_class:"form-control" }}{{ form.unit_price.errors }}</td>
-							        <td>{{ form.discount|add_class:"form-control" }}{{ form.discount.errors }}</td>
-							        <td >{{ form.iva_percent|add_class:"form-control" }}{{ form.iva_percent.errors }}</td>
-							        <td>{{ form.total_price|add_class:"form-control"|attr:"readOnly" }}{{ form.total_price.errors }}</td>
-							        <td class="col-xs-1">{{ form.DELETE }}</td>
-						        </tr>
-						    {% endfor %}					    	
-						    </tbody>
-						</table>				    	
-				    </div>
-
-				    {% if object %}
-				    <div class="table-responsive">				    	
-					    <table class="table table-striped table-bordered">						    
-						    <tbody>						    
-						        <tr>							        
-							        <td><strong>Base imponible:</strong> ${{ object.untaxed_amount }}</td>
-							        <td><strong>Total descuento:</strong> ${{ object.total_discount }}</td>
-							        <td><strong>Impuestos:</strong> ${{ object.tax_amount }}</td>
-							        <td><strong>Monto total:</strong> ${{ object.total_amount }}</td>
-						        </tr>						    
-						    </tbody>
-						</table>				    	
-				    </div>
-				    {% endif %}
-				    
-				    
-				</form>
-				<form id="delete" action="/equipment/{{ equipment.id }}/delete/" method="POST">{% csrf_token %}</form>
-				<div class="form form-horizontal">
-					<div class="form-footer">
-					    <div class="form-group">
-					      <div class="col-md-9">
-					        <button type="submit" form="form" class="btn btn-primary">
-					        	<span class="fa fa-floppy-o"></span>
-					        	Guardar
-					        </button>		
-					        {% if object %}
-					        <button type="submit" form="delete" class="btn btn-danger">
-					        	<span class="fa fa-trash"></span>
-					        	Eliminar
-					        </button>
-					        {% endif %}			        
-					        <a href="{% url 'invoice_list' %}" class="btn btn-default">
-					        	<span class="fa fa-reply"></span>
-					        	Regresar
-					        </a>
-					      </div>
-					    </div>
-					</div>
-				</div>
-        	</div>
-        </div>
-    </div>
+{% block extra_fields %}
+<div class="table-responsive">				    	
+    <table class="table table-striped table-bordered">
+	    <thead>
+	        <tr>
+		        <th>Modelo</th>
+		        <th>Cantidad</th>
+		        <th>Precio Unitario</th>
+		        <th>Descuento</th>
+		        <th>Iva</th>
+		        <th>Subtotal</th>					          
+		        <th>Eliminar?</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	    {{ formset.management_form }}
+    	{% for form in formset %}
+    		{{ form.id }}
+	        <tr class="inline {{ formset.prefix }}">
+		        <td class="col-xs-3">{{ form.model|add_class:"form-control" }}{{ form.model.errors }}</td>
+		        <td>{{ form.quantity|add_class:"form-control" }}{{ form.quantity.errors }}</td>
+		        <td>{{ form.unit_price|add_class:"form-control" }}{{ form.unit_price.errors }}</td>
+		        <td>{{ form.discount|add_class:"form-control" }}{{ form.discount.errors }}</td>
+		        <td >{{ form.iva_percent|add_class:"form-control" }}{{ form.iva_percent.errors }}</td>
+		        <td>{{ form.total_price|add_class:"form-control"|attr:"readOnly" }}{{ form.total_price.errors }}</td>
+		        <td class="col-xs-1">{{ form.DELETE }}</td>
+	        </tr>
+	    {% endfor %}					    	
+	    </tbody>
+	</table>				    	
 </div>
+{% if object %}
+<div class="table-responsive">				    	
+    <table class="table table-striped table-bordered">						    
+	    <tbody>						    
+	        <tr>							        
+		        <td><strong>Base imponible:</strong> ${{ object.untaxed_amount }}</td>
+		        <td><strong>Total descuento:</strong> ${{ object.total_discount }}</td>
+		        <td><strong>Impuestos:</strong> ${{ object.tax_amount }}</td>
+		        <td><strong>Monto total:</strong> ${{ object.total_amount }}</td>
+	        </tr>						    
+	    </tbody>
+	</table>				    	
+</div>
+{% endif %}
 {% endblock %}
 
-{% block customjs %}
-{% load staticfiles %}
+{% block js %}
+{% load static %}
 <script src="{% static 'plugins/jquery.formset.js' %}"></script>    
 
 <script type="text/javascript">    
@@ -190,7 +114,7 @@
         $(".inline.{{ formset.prefix }}").formset({
             prefix: "{{ formset.prefix }}",
             addText: '<span class="fa fa-plus"></span> Agregar linea',
-            deleteCssClass: 'btn btn-danger btn-xs pull-right',
+            deleteCssClass: 'btn btn-danger btn-xs',
             deleteText: '<span class="fa fa-close"></span>',
             added: function ($row) {
             	$row.find('.select2-container').remove();

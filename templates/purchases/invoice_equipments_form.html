@@ -1,97 +1,73 @@
-{% extends 'base.html' %}
-{% load widget_tweaks %}
+{% extends 'base2.html' %}
+{% load static %}
 
-{% block page_title %}Facturas{% endblock %}
+{% block title %}Vinculación de equipos a factura{% endblock %}
 
 {% block content %}
-<div class="row">
-	<div class="col-xs-12">
-      	<div class="card">
-        	<div class="card-header">Vinculación de equipos a factura</div>
-        	<div class="card-body">
-        		{% include "partials/pagination.html" %}
-        		<p><strong>Factura:</strong> #{{ invoice.number }}</p>
-        		<p><strong>Proveedor:</strong> {{ invoice.provider }}</p>
-        		<p><strong>Fecha:</strong> {{ invoice.date }}</p>
+<div class="panel">
+	<div class="panel-body">
+		{% include "partials/pagination.html" %}
+		<p><strong>Factura:</strong> #{{ invoice.number }}</p>
+		<p><strong>Proveedor:</strong> {{ invoice.provider }}</p>
+		<p><strong>Fecha:</strong> {{ invoice.date }}</p>
 
-        		<form id="form" class="form form-horizontal" action="" method="POST" enctype="multipart/form-data" novalidate>
-        			{% csrf_token %}        			
-				    <table class="table">
-					    <thead>
-					        <tr>				          
-					          <th>Cantidad</th>
-					          <th>Modelo</th>				          
-					          <th>Seleccione los equipos</th>
-					        </tr>
-					    </thead>
-					    <tbody>
-					    	{{ formset.management_form }}
-					    	{% for form in formset %}
-					    	{{ form.id }}
-					        <tr>					        
-						        <td>{{ form.instance.quantity }}</td>
-						        <td>{{ form.instance.model }}</td>					        
-						        <td>					        	
-						        	{{ form.equipments|add_class:'select2' }}
-						        	{{ form.equipments.errors }}
-						        </td>					        
-					        </tr>				        
-					        {% empty %}
-					        <tr><td colspan="5">"Sin registros."</td></tr>
-					        {% endfor %}
-					    </tbody>
-				    </table>
-				</form>
-			    <div class="table-responsive">				    	
-				    <table class="table table-striped table-bordered">						    
-					    <tbody>						    					    
-					        <tr>							        
-						        <td><strong>Base imponible:</strong> ${{ invoice.untaxed_amount }}</td>
-						        <td><strong>Total descuento:</strong> ${{ object.total_discount }}</td>
-						        <td><strong>Impuestos:</strong> ${{ invoice.tax_amount }}</td>
-						        <td><strong>Monto total:</strong> ${{ invoice.total_amount }}</td>
-					        </tr>						    
-					    </tbody>
-					</table>				    	
-			    </div>
-			    <div class="form form-horizontal">
-					<div class="form-footer">
-					    <div class="form-group">
-					      <div class="col-md-9">
-					        <button type="submit" form="form" class="btn btn-primary">
-					        	<span class="fa fa-floppy-o"></span>
-					        	Guardar
-					        </button>					        		       
-					        <a href="{% url 'invoice_list' %}" class="btn btn-default">
-					        	<span class="fa fa-reply"></span>
-					        	Regresar
-					        </a>
-					      </div>
-					    </div>
-					</div>
-				</div>
-        	</div>
-        </div>
-    </div>
+	    <div class="table-responsive">				    	
+		    <table class="table table-striped table-bordered">						    
+			    <tbody>						    					    
+			        <tr>							        
+				        <td><strong>Base imponible:</strong> ${{ invoice.untaxed_amount }}</td>
+				        <td><strong>Total descuento:</strong> ${{ object.total_discount }}</td>
+				        <td><strong>Impuestos:</strong> ${{ invoice.tax_amount }}</td>
+				        <td><strong>Monto total:</strong> ${{ invoice.total_amount }}</td>
+			        </tr>						    
+			    </tbody>
+			</table>				    	
+	    </div>
+
+		<form id="form" class="form form-horizontal" action="" method="POST" enctype="multipart/form-data" novalidate>
+			{% csrf_token %}        			
+		    <table class="table">
+			    <thead>
+			        <tr>				          
+			        	<th>Cantidad</th>
+			        	<th>Modelo</th>				          
+			        	<th>Seleccione los equipos</th>
+			        </tr>
+			    </thead>
+			    <tbody>
+			    	{{ formset.management_form }}
+			    	{% for form in formset %}
+			    	{{ form.id }}
+			        <tr>					        
+				        <td>{{ form.instance.quantity }}</td>
+				        <td>{{ form.instance.model }}</td>					        
+				        <td>					        	
+				        	{{ form.equipments }}
+				        	{{ form.equipments.errors }}
+				        </td>					        
+			        </tr>				        
+			        {% empty %}
+			        <tr><td colspan="5">"Sin registros."</td></tr>
+			        {% endfor %}
+			    </tbody>
+		    </table>
+		    <button type="submit" form="form" class="btn btn-primary">
+	        	<span class="fa fa-check-circle"></span>
+	        	Guardar
+	        </button>
+		</form>	    
+	</div>
 </div>
-
-{% include "purchases/partials/equipments.html" %}
 {% endblock %}
-
-{% block customjs %}
-{% load staticfiles %}
-<script src="{% static 'stocktaking/custom.js' %}"></script>
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'new/plugins/choices/choices.css' %}">
+{% endblock %}
+{% block js %}
+<script type="text/javascript" src="{% static 'new/plugins/choices/choices.js' %}"></script>
 <script type="text/javascript">
-	$(function () {
-		$('button[data-id]').on('click', function () {
-
-			var line = $(this).attr('data-id');
-			var url = '/purchases/invoice/line/' + line + '/equipments/';
-			$.get(url, function (data) {
-				var $item = $('.equipments > .list-group-item.hide').clone().removeClass('hide');
-				data[data]
-				$('#equipment-modal').modal('show');
-			});
+	window.addEventListener('DOMContentLoaded', function () {		
+		var choices = new Choices('select', {
+			removeItemButton: true,
 		});
 	});
 </script>

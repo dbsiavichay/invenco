@@ -11,7 +11,7 @@
 				<li><a href="{% url 'model_list' %}" class=""><i class="lnr lnr-code"></i> <span>Modelos</span></a></li>				
 				<li>
 					<a href="#subEquipments" data-toggle="collapse" class="collapsed">
-						<i class="lnr lnr-file-empty"></i> <span>Equipos</span> 
+						<i class="lnr lnr-laptop"></i> <span>Equipos</span> 
 						<i class="icon-submenu lnr lnr-chevron-left"></i>
 					</a>
 					<div id="subEquipments" class="collapse ">
@@ -24,8 +24,20 @@
 				</li>
 				<li><a href="{% url 'location_list' %}" class=""><i class="lnr lnr-user"></i> <span>Asignaciones</span></a></li>
 				<li>
+					<a href="#subPurchases" data-toggle="collapse" class="collapsed">
+						<i class="lnr lnr-cart"></i> <span>Compras</span> 
+						<i class="icon-submenu lnr lnr-chevron-left"></i>
+					</a>
+					<div id="subPurchases" class="collapse ">
+						<ul class="nav">
+							<li><a href="{% url 'invoice_list' %}" class="">Facturas</a></li>
+							<li><a href="{% url 'provider_list' %}" class="">Proveedores</a></li>
+						</ul>
+					</div>
+				</li>
+				<li>
 					<a href="#subMaintenance" data-toggle="collapse" class="collapsed">
-						<i class="lnr lnr-file-empty"></i> <span>Mantenimiento</span> 
+						<i class="lnr lnr-bug"></i> <span>Mantenimiento</span> 
 						<i class="icon-submenu lnr lnr-chevron-left"></i>
 					</a>
 					<div id="subMaintenance" class="collapse ">
