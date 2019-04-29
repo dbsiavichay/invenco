@@ -3,8 +3,7 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.conf import settings
 from django.views.generic import TemplateView
-#from stocktaking.urls import stocktaking_router
-#from structure.urls import structure_router
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -13,8 +12,6 @@ urlpatterns = [
     url(r'^purchases/', include('purchases.urls')), 
     url(r'', include('structure.urls')),
     url(r'', include('maintenance.urls')),
-    url(r'', include('reporting.urls')),
-    #url(r'^api/', include(stocktaking_router.urls)),
-    #url(r'^api/', include(structure_router.urls)),
-    url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
+    url(r'', include('reporting.urls')),    
+    url(r'^$', login_required(TemplateView.as_view(template_name='home.html')), name='home'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

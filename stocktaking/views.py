@@ -18,16 +18,25 @@ class ModelListView(PaginationMixin, ListView):
 	paginate_by = 20
 	template_name = 'stocktaking/model_list2.html'
 
+	def get_context_data(self, **kwargs):
+		context = super(ModelListView, self).get_context_data(**kwargs)
+		context.update({
+			'types': Type.objects.all()
+		})
+		return context
+
 	def get_queryset(self):
 		import operator
 		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
+		type = self.request.GET.get('type') or self.kwargs.get('type') or None		
 		queryset = super(ModelListView, self).get_queryset()
 
-		if search is None: return queryset
-
-		fields = ['name','type__name', 'brand__name', 'part_number', 'specifications']	
-		args = [Q(**{field+'__icontains': search}) for field in fields]
-		queryset = self.model.objects.filter(reduce(operator.__or__, args))		
+		if search is not None:
+			fields = ['name', 'brand__name', 'part_number', 'specifications']	
+			args = [Q(**{field+'__icontains': search}) for field in fields]
+			queryset = queryset.filter(reduce(operator.__or__, args))		
+		elif type is not None:
+			queryset = queryset.filter(type = type)
 
 		return queryset
 
@@ -121,20 +130,14 @@ class ModelDeleteView(DeleteView):
 	success_url = '/model/'
 
 class EquipmentListView(PaginationMixin, ListView):
-	model = Equipment
-	#queryset = Equipment.objects.filter(in_set=False)
-	queryset = Equipment.objects.all()
+	model = Equipment	
 	paginate_by = 20
 	template_name = 'stocktaking/equipment_list2.html'
 
-	def get_context_data(self, **kwargs):
+	def get_context_data(self, **kwargs):		
 		context = super(EquipmentListView, self).get_context_data(**kwargs)
-		type = self.request.GET.get('type') or self.kwargs.get('type') or None
-
-		types = Type.objects.exclude(usage=2)
-		context.update({
-			#'type_id': int(type),
-			'types': types
+		context.update({			
+			'types': Type.objects.filter(usage=Type.EQUIPMENT)
 		})
 
 		return context
@@ -142,20 +145,22 @@ class EquipmentListView(PaginationMixin, ListView):
 	def get_queryset(self):
 		import operator
 		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
+		type = self.request.GET.get('type') or self.kwargs.get('type') or None		
 		queryset = super(EquipmentListView, self).get_queryset()
 
-		if search is None: return queryset
+		if search is not None:
+			fields = ['model__name', 'model__brand__name', 'model__part_number', 'code', 'serial', 'specifications']
+		
+			args = [Q(**{field+'__icontains': search}) for field in fields]
+			charters = Employee.objects.using('sim').filter(
+				Q(contributor__charter=search) | Q(contributor__name__icontains=search)
+			).values_list('contributor__charter', flat=True)
+			if len(charters) > 0: args.append(Q(owner__in=list(charters)))
 
-		fields = ['model__name','model__type__name', 'model__brand__name', 'model__part_number', 'code', 'serial', 'specifications']
-	
-		args = [Q(**{field+'__icontains': search}) for field in fields]
-		charters = Employee.objects.using('sim').filter(
-			Q(contributor__charter=search) | Q(contributor__name__icontains=search)
-		).values_list('contributor__charter', flat=True)
-		if len(charters) > 0: args.append(Q(owner__in=list(charters)))
-
-		queryset = self.model.objects.filter(reduce(operator.__or__, args))		
-
+			queryset = queryset.filter(reduce(operator.__or__, args))		
+		elif type is not None:
+			queryset = queryset.filter(model__type= type)
+			
 		return queryset
 
 class EquipmentModelListView(PaginationMixin, ListView):

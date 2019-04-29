@@ -40,23 +40,21 @@ class Group(models.Model):
 		return self.name
 
 class Type(AuditMixin, models.Model):
-	class Meta:
-		ordering = ['usage','name']
-
+	EQUIPMENT, REPLACEMENT, ACCESSORY, CONSUMABLE = (1,2,3,4)
 	USAGE_CHOICES = (
-		(1, 'Equipo'),
-		(2, 'Repuesto'),
-		(3, 'Accesorio'),
-		(4, 'Consumible'),
+		(EQUIPMENT, 'Equipo'),(REPLACEMENT, 'Repuesto'),(ACCESSORY, 'Accesorio'),(CONSUMABLE, 'Consumible'),
 	)
 
 	name = models.CharField(max_length=32, unique=True, verbose_name='nombre')	
 	usage = models.PositiveSmallIntegerField(default=1, verbose_name='uso', choices=USAGE_CHOICES)
 	image = models.ImageField(upload_to='types', blank=True, null=True, verbose_name='icono')		
-	groups = models.ManyToManyField(Group)
+	groups = models.ManyToManyField(Group, blank=True)
 
 	def __unicode__(self):
 		return self.name
+
+	class Meta:
+		ordering = ['usage','name']
 
 class Brand(AuditMixin, models.Model):
 	class Meta:

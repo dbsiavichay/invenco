@@ -1,24 +1,16 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
 {% load static %}
 
-{% block page_title %}Reportes{% endblock %}
+{% block title %}Reportes{% endblock %}
+
 
 {% block content %}
-<div id="app" class="row">
-<div class="col-xs-12">
-<div class="card">
-
-	<div class="card-header">Elegir</div>
-	<div class="card-body">
-		<a href="/reporting/equipments/" class="btn btn-primary">
+<div class="panel">
+	<div class="panel-body">
+		<a href="{% url 'report_equipments' %}" class="btn btn-primary">
 			Reporte de equipos
     		<span class="fa fa-download"></span>
-		</a>		
+		</a>
 	</div>
 </div>
-</div>
-</div>
-{% endblock %}
-
-{% block customjs %}
 {% endblock %}
