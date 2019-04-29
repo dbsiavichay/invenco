@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pure_pagination',
     'widget_tweaks',
-    'ui_components',
     'components',
     'audit',
     'reporting',
