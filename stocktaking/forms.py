@@ -60,8 +60,8 @@ class SpecificationsForm(Form):
 		for group in groups:
 			self.generate_fields(group)
 			
-	def generate_fields(self, group):		
-		for specification in group.specifications.all():
+	def generate_fields(self, group):			
+		for specification in group.specifications.all():			
 			key = str(specification.id)
 			try:
 				form_field, widget = specification.field.split(':')
@@ -73,7 +73,6 @@ class SpecificationsForm(Form):
 				label = specification.name,
 				required = specification.is_required,				
 			)
-			self[key].group = group.name
 						
 			if widget: self.fields[key].widget = eval(widget)()
 			if specification.choices:
@@ -83,6 +82,7 @@ class SpecificationsForm(Form):
 			pairs = (pair.split('=') for pair in specification.attributes.split(',')) if specification.attributes is not None else None
 			attrs = dict((key.strip(), eval(value.strip())) for key, value in pairs) if pairs is not None else {}
 			self.fields[key].widget.attrs.update(attrs)
+			self[key].group = group.name
 
 class LocationForm(DjangoModelForm):
 	equipments = ModelMultipleChoiceField(

@@ -123,7 +123,7 @@ class Equipment(models.Model):
 	code = models.CharField(max_length=16, blank=True, null=True, verbose_name='código')
 	serial = models.CharField(max_length=34, blank=True, null=True, verbose_name='número de serie')	
 	specifications = JSONField(blank=True, null=True)
-	state = models.PositiveSmallIntegerField(choices=STATE_CHOICES, verbose_name='estado')	
+	state = models.PositiveSmallIntegerField(default=1, choices=STATE_CHOICES, verbose_name='estado')	
 	date = models.DateTimeField(auto_now_add=True)
 	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')		
 	invoice_line = models.ForeignKey('purchases.InvoiceLine', blank=True, null=True)
