@@ -1,0 +1,54 @@
+{% extends 'base/base_list.html' %}	
+
+{% block title %}Lista de tickets{% endblock %}
+{% block button %}
+<a href="{% url 'ticket_create' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Agregar</a>
+{% endblock %}
+{% block table %}
+<table class="table">
+    <thead>
+        <tr>				          
+            <th>Problema</th>
+            <th>Equipo</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Atendido por</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    	{% for object in object_list %}
+        <tr>					        
+            <td>{{ object.problem_type }}</td>
+	        <td>{{ object.equipment }}</td>
+            <td>{{ object.date }}</td>
+	        <td>{{ object.get_status_html }}</td>
+	        <td>{{ object.user }}</td>
+	        <td class="col-xs-3">
+                {% if object.status <= object.OPEN and object.user == user %}
+                <a href="{% url 'reply_solved' object.id %}" class="btn btn-success btn-xs">
+                    <span class="fa fa-check-circle"></span>
+                </a>
+                <a href="{% url 'reply_closed' object.id %}" class="btn btn-warning btn-xs">
+                    <span class="fa fa-warning"></span>
+                </a>
+                <a href="{% url 'reply_canceled' object.id %}" class="btn btn-danger btn-xs">
+                    <span class="fa fa-ban"></span>
+                </a>            
+    	        	<a href="{% url 'ticket_update' object.id %}" class="btn btn-default btn-xs">
+                    <span class="fa fa-pencil"></span>
+                </a>
+                {% endif %}
+                {% if object.status > object.OPEN %}
+                <a href="{% url 'ticket_detail' object.id %}" class="btn btn-default btn-xs">
+                    <span class="fa fa-search"></span>
+                </a>
+                {% endif %}            
+	        </td>
+        </tr>
+        {% empty %}
+        <tr colspan="5"><td>"Sin registros."</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

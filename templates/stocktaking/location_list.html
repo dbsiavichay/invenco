@@ -1,0 +1,44 @@
+{% extends 'base/base_list.html' %}	
+{% block button %}
+<a href="{% url 'location_create' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Agregar</a>
+{% endblock %}
+{% block table %}
+<table class="table">
+    <thead>
+        <tr>				          
+          <th>Edificio</th>
+          <th>Departemento</th>
+          <th>Usuario</th>
+          <th>Equipos</th>
+          <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    	{% for object in object_list %}
+        <tr>					        
+	        <td>{{ object.building }}</td>
+	        <td>{{ object.get_department }}</td>
+	        <td>{{ object.get_employee }}</td>
+	        <td>
+            <button class="btn btn-default btn-xs">
+              <span class="fa fa-search"></span>
+            </button>
+          </td>
+	        <td class="col-xs-3">
+            <a href="#" class="btn btn-default btn-xs">
+              <span class="fa fa-plus"></span>
+            </a>					        	
+	        	<a href="{% url 'location_transfer' object.id %}" class="btn btn-default btn-xs">
+	        		<span class="fa fa-exchange"></span>
+	        	</a>
+	        	<button class="btn btn-default btn-xs delete" data-model="model" data-id="{{ model.id }}">
+	        		<span class="fa fa-trash"></span>
+	        	</button>
+	        </td>
+        </tr>
+        {% empty %}
+        <tr colspan="5"><td>"Sin registros."</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

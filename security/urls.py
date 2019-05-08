@@ -3,8 +3,8 @@ from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
-    url(r'^login/$', auth_views.login, {'template_name': 'security/login.html',}),
-    url(r'^logout/$', auth_views.logout, {'next_page': '/login/'}), 
+    url(r'^login/$', auth_views.login, {'template_name': 'security/login.html',}, name='login'),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/login/'}, name='logout'), 
     url(
     	r'^change-password/$', auth_views.password_change, 
     	{

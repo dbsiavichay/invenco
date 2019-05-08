@@ -1,0 +1,36 @@
+{% extends 'base2.html' %}
+{% load components %}		
+
+{% block title %}Crear{% endblock %}
+
+
+{% block content %}
+<div class="panel">
+	<div class="panel-body">		
+
+		<form action="" method="POST" enctype="multipart/form-data">
+			{% csrf_token %}			
+
+			{{ form.errors }}
+			{% block hidden_fields %}
+			{% for field in form.hidden_fields %}
+			{{ field }}
+			{% endfor %}
+			{% endblock %}
+
+			{% block visible_fields %}
+			{% for field in form.visible_fields %}
+			{% render_field field class="form-control" %}
+			{% endfor %}
+			{% endblock %}
+
+			{% block extra_fields %}{% endblock %}
+			{% block submit %}			
+			<button type="submit" class="btn btn-primary">
+				<i class="fa fa-check-circle"></i> Guardar
+			</button>
+			{% endblock %}
+		</form>		
+	</div>
+</div>
+{% endblock %}

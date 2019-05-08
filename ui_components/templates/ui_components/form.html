@@ -1,8 +1,0 @@
-{% load ui_components %}
-
-<form id="form" class="form form-horizontal" action="" method="POST" enctype="multipart/form-data" novalidate>
-    {% csrf_token %}
-    {% for field in form %}
-    	{% ui_input field %}
-    {% endfor %}    
-</form>

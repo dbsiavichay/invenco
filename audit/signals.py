@@ -24,10 +24,11 @@ def audit_delete_log(sender, instance, **kwargs):
 	instance.save_deletion(user)
 
 def check_allows(sender):
-	list_of_models = (
-		'Brand', 'Type', 'TypeSpecification', 'Set', 'SetDetail', 'Model', 'Equipment', 'Assignment', 'Replacement',
-		'Fix','Profile','Building','Provider',
-	)
+	#list_of_models = (
+	#	'Brand', 'Type', 'TypeSpecification', 'Set', 'SetDetail', 'Model', 'Replacement',
+	#	'Fix','Profile','Building','Provider',
+	#)
+	list_of_models = []
 
 	if sender.__name__ in list_of_models:
 		return True
