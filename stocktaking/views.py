@@ -9,14 +9,28 @@ from .models import *
 from .forms import *
 from pure_pagination.mixins import PaginationMixin
 
-from .serializers import *
-
 from structure.models import Employee
+
+class SelectTypeListView(ListView):
+	model = Type
+	template_name = 'stocktaking/select_type.html'
+
+	def get_context_data(self, **kwargs):
+		context = super(SelectTypeListView, self).get_context_data()
+		model = self.request.GET.get('model') or self.kwargs.get('model') or None
+		
+		if model == 'equipment':						
+			context['object_list'] = self.model.objects.exclude(usage=4)
+		elif model == 'replacement':			
+			context['object_list'] = self.model.objects.filter(Q(usage=2) | Q(usage=4))
+
+		context['model'] = model
+		return context
+
 
 class ModelListView(PaginationMixin, ListView):
 	model = Model
-	paginate_by = 20
-	template_name = 'stocktaking/model_list2.html'
+	paginate_by = 20	
 
 	def get_context_data(self, **kwargs):
 		context = super(ModelListView, self).get_context_data(**kwargs)
@@ -132,7 +146,6 @@ class ModelDeleteView(DeleteView):
 class EquipmentListView(PaginationMixin, ListView):
 	model = Equipment	
 	paginate_by = 20
-	template_name = 'stocktaking/equipment_list2.html'
 
 	def get_context_data(self, **kwargs):		
 		context = super(EquipmentListView, self).get_context_data(**kwargs)
@@ -315,6 +328,11 @@ class LocationTransferView(LocationCreateView):
 
 
 
+
+
+
+
+
  
 
 class ReplacementListView(PaginationMixin, ListView):
@@ -360,144 +378,3 @@ class ReplacementCreateView(CreateView):
 		kwargs.update({'type': type_id})
 		return kwargs
 
-# class AssignmentCreateView(CreateView):
-# 	model = Assignment
-# 	form_class = AssignmentForm
-# 	success_url = '/equipment/'
-
-# 	def get_context_data(self, **kwargs):
-# 		context = super(AssignmentCreateView, self).get_context_data(**kwargs)		
-		
-# 		equipment_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
-# 		#set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
-
-# 		if equipment_id is not None:
-# 			equipment = Equipment.objects.get(pk=equipment_id)
-# 			context['equipment'] = equipment
-
-# 		return context
-
-# 	def get_form_kwargs(self):
-# 		kwargs = super(AssignmentCreateView, self).get_form_kwargs()
-# 		equipment_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
-# 		set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
-# 		kwargs.update({'equipment': equipment_id, 'set': set_id})
-# 		return kwargs
-
-
-# 	def form_valid(self, form):
-# 		equipment_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None
-
-# 		equipment = Equipment.objects.get(pk=equipment_id)
-# 		equipment.owner = form.cleaned_data['employee']
-# 		equipment.save()
-
-# 		return super(AssignmentCreateView, self).form_valid(form)
-
-# 	def form_invalid(self, form):
-# 		## Cuando es set no hay equipo y entra por formulario invalido
-# 		set_id = self.request.GET.get('set') or self.kwargs.get('set') or None
-
-# 		if set_id is not None:
-# 			set = SetDetail.objects.get(pk=set_id)
-# 			for pk in set.equipments:
-# 				equipment = Equipment.objects.get(pk=pk)
-
-# 				frmdata = form.data.copy()
-# 				frmdata['equipment'] = pk				
-# 				frm = AssignmentForm(frmdata)
-
-# 				if frm.is_valid():					
-# 					obj = frm.save()
-					
-# 					equipment.owner = frm.cleaned_data['employee']
-# 					equipment.save()
-# 					set.owner = frm.cleaned_data['employee']					
-# 					set.save()
-# 				else: 
-# 					return self.render_to_response(self.get_context_data(form=form))
-
-# 			return redirect(self.success_url)
-# 		else:			
-# 			return super(AssignmentCreateView, self).form_invalid(form)
-
-
-# class DispatchListView(PaginationMixin, ListView):
-# 	model = Replacement
-# 	paginate_by = 8
-# 	template_name = 'stocktaking/dispatch_list.html'
-# 	queryset = Replacement.objects.order_by('model__name', '-date_joined').\
-# 				distinct('model__name').filter(movement=Replacement.OUT_BY_DISPATCH)
-
-# class DispatchCreateView(CreateView):
-# 	model = Replacement
-# 	#form_class = ReplacementForm
-# 	fields = '__all__'
-# 	template_name = 'stocktaking/dispatch_form.html'
-# 	success_url = '/dispatches/'
-
-# 	def get_context_data(self, **kwargs):
-# 		context = super(DispatchCreateView, self).get_context_data(**kwargs)
-
-# 		context['types'] = Type.objects.filter(Q(usage=2) | Q(usage=4))
-
-# 		return context
-
-# 	def get(self, request, *args, **kwargs):
-# 		if request.is_ajax():
-# 			type_id = request.GET.get('type') or kwargs.get('type') or None			
-# 			type = Type.objects.get(pk=type_id)
-
-# 			inventory = Replacement.objects.order_by('model__name', '-date_joined').\
-# 				distinct('model__name').filter(model__type=type)			
-
-# 			objects = []
-
-# 			for replacement in inventory:
-# 				objects.append({
-# 					'id': replacement.model.id,
-# 					'type': replacement.model.type.name,
-# 					'model': str(replacement.model),
-# 					'stock': replacement.stock,
-# 					'properties': replacement.model.get_list_specifications()
-# 				})
-
-# 			return JsonResponse({'data':objects})
-# 		else:
-# 			return super(DispatchCreateView, self).get(request, *args, **kwargs)
-
-	# def form_valid(self, form):		
-	# 	self.object = form.save(commit=False)
-		
-	# 	last = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(model=self.object.model)
-
-	# 	self.object.total_price = self.object.quantity * self.object.unit_price
-	# 	self.object.stock = last[0].stock + self.object.quantity if len(last) else self.object.quantity
-	# 	self.object.inout = 1
-	# 	self.object.save()
-
-	# 	return redirect(self.get_success_url())
-
-	# def get_form_kwargs(self):
-	# 	kwargs = super(ReplacementCreateView, self).get_form_kwargs()
-	# 	type_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None		
-	# 	kwargs.update({'type': type_id})
-	# 	return kwargs
-
-
-class SelectTypeListView(ListView):
-	model = Type
-	#template_name = 'stocktaking/select_type.html'
-	template_name = 'stocktaking/select_type2.html'
-
-	def get_context_data(self, **kwargs):
-		context = super(SelectTypeListView, self).get_context_data()
-		model = self.request.GET.get('model') or self.kwargs.get('model') or None
-		
-		if model == 'equipment':						
-			context['object_list'] = self.model.objects.exclude(usage=4)
-		elif model == 'replacement':			
-			context['object_list'] = self.model.objects.filter(Q(usage=2) | Q(usage=4))
-
-		context['model'] = model
-		return context

@@ -52,19 +52,3 @@ class Reply(models.Model):
 	description = models.TextField(verbose_name='razón')	
 	date = models.DateTimeField(auto_now_add=True)
 	ticket = models.OneToOneField(Ticket)
-
-class Fix(models.Model):
-	class Meta:
-		ordering = ['-date_joined',]
-
-	equipment = models.ForeignKey('stocktaking.Equipment', verbose_name='equipo')
-	problem = models.TextField(verbose_name='descripción del problema')
-	solution = models.TextField(verbose_name='solución')
-	observation = models.TextField(verbose_name='observación', blank=True, null=True)
-	date_joined = models.DateTimeField(auto_now_add=True)
-	user = models.ForeignKey('auth.User')
-	#replacements = models.ManyToManyField('stocktaking.Replacement', blank=True)
-
-	def __unicode__(self):		
-		r = '%s > %s' % (self.equipment, self.problem)
-		return r.upper()
