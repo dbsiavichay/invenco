@@ -1,34 +1,46 @@
-from stocktaking.models import Equipment, Model
+from stocktaking.models import Specification
 
-lst = [{'list': [122, 42, 59, 84, 88, 23, 97, 138, 126, 158], 'id': 1}, {'list': [43, 127], 'id': 2}, {'list': [30, 50, 92], 'id': 3}, {'list': [93], 'id': 4}, {'list': [94], 'id': 5}, {'list': [95], 'id': 6}, {'list': [140, 74, 2], 'id': 7}, {'list': [3], 'id': 8}, {'list': [103, 142, 66, 5], 'id': 9}, {'list': [104, 143, 6, 67], 'id': 10}, {'list': [105, 68, 7], 'id': 11}, {'list': [107, 145, 70, 9], 'id': 12}, {'list': [110, 150, 129, 12, 133], 'id': 14}, {'list': [121, 155, 83, 22], 'id': 15}, {'list': [123, 85, 24], 'id': 16}, {'list': [124, 86, 25], 'id': 17}, {'list': [108, 71, 10, 146], 'id': 13}, {'list': [111, 152, 73, 13, 135], 'id': 18}, {'list': [90], 'id': 19}, {'list': [27], 'id': 20}, {'list': [28, 48], 'id': 21}, {'list': [51, 31], 'id': 22}, {'list': [52, 32], 'id': 23}, {'list': [53, 33], 'id': 24}, {'list': [35], 'id': 25}, {'list': [36], 'id': 26}, {'list': [99, 17, 62], 'id': 27}, {'list': [100, 63], 'id': 28}, {'list': [101, 64], 'id': 29}, {'list': [75], 'id': 30}, {'list': [76], 'id': 31}, {'list': [78, 118], 'id': 32}, {'list': [79, 119], 'id': 33}, {'list': [80, 115], 'id': 34}, {'list': [81, 117], 'id': 35}, {'list': [130], 'id': 36}, {'list': [16], 'id': 37}, {'list': [55], 'id': 38}, {'list': [56], 'id': 39}, {'list': [57], 'id': 40}, {'list': [58], 'id': 41}, {'list': [147], 'id': 42}, {'list': [154], 'id': 43}, {'list': [156], 'id': 44}, {'list': [157], 'id': 45}, {'list': [151], 'id': 46}, {'list': [], 'id': 47}, {'list': [38], 'id': 48}, {'list': [], 'id': 49}, {'list': [134], 'id': 50}, {'list': [136], 'id': 51}, {'list': [21, 19], 'id': 52}]
+sp = Specification.objects.all()
 
-eqs = Equipment.objects.all()
-for e in eqs:		
-	s = {}
-	for key in e.specifications:
-		for l in lst:
-			intkey = int(key)
-			if intkey in l['list']:							
-				id = str(l['id'])
-				value = 'SI' if e.specifications[key] == True else 'NO' if e.specifications[key] == False else e.specifications[key]
-				s.update({id: value})
-				break;	
-	e.specifications.update(s)
-	e.save()
+for s in sp:
+	if s.field == 'IntegerField':
+		s.field = 'FloatField'
+		s.save()
 
-eqs = Model.objects.all()
-for e in eqs:		
-	s = {}
-	for key in e.specifications:
-		for l in lst:
-			intkey = int(key)
-			if intkey in l['list']:							
-				id = str(l['id'])
-				value = 'SI' if e.specifications[key] == True else 'NO' if e.specifications[key] == False else e.specifications[key]
-				s.update({id: value})
-				break;	
-	e.specifications.update(s)
-	e.save()
+
+
+
+# from stocktaking.models import Equipment, Model
+
+# lst = [{'list': [122, 42, 59, 84, 88, 23, 97, 138, 126, 158], 'id': 1}, {'list': [43, 127], 'id': 2}, {'list': [30, 50, 92], 'id': 3}, {'list': [93], 'id': 4}, {'list': [94], 'id': 5}, {'list': [95], 'id': 6}, {'list': [140, 74, 2], 'id': 7}, {'list': [3], 'id': 8}, {'list': [103, 142, 66, 5], 'id': 9}, {'list': [104, 143, 6, 67], 'id': 10}, {'list': [105, 68, 7], 'id': 11}, {'list': [107, 145, 70, 9], 'id': 12}, {'list': [110, 150, 129, 12, 133], 'id': 14}, {'list': [121, 155, 83, 22], 'id': 15}, {'list': [123, 85, 24], 'id': 16}, {'list': [124, 86, 25], 'id': 17}, {'list': [108, 71, 10, 146], 'id': 13}, {'list': [111, 152, 73, 13, 135], 'id': 18}, {'list': [90], 'id': 19}, {'list': [27], 'id': 20}, {'list': [28, 48], 'id': 21}, {'list': [51, 31], 'id': 22}, {'list': [52, 32], 'id': 23}, {'list': [53, 33], 'id': 24}, {'list': [35], 'id': 25}, {'list': [36], 'id': 26}, {'list': [99, 17, 62], 'id': 27}, {'list': [100, 63], 'id': 28}, {'list': [101, 64], 'id': 29}, {'list': [75], 'id': 30}, {'list': [76], 'id': 31}, {'list': [78, 118], 'id': 32}, {'list': [79, 119], 'id': 33}, {'list': [80, 115], 'id': 34}, {'list': [81, 117], 'id': 35}, {'list': [130], 'id': 36}, {'list': [16], 'id': 37}, {'list': [55], 'id': 38}, {'list': [56], 'id': 39}, {'list': [57], 'id': 40}, {'list': [58], 'id': 41}, {'list': [147], 'id': 42}, {'list': [154], 'id': 43}, {'list': [156], 'id': 44}, {'list': [157], 'id': 45}, {'list': [151], 'id': 46}, {'list': [], 'id': 47}, {'list': [38], 'id': 48}, {'list': [], 'id': 49}, {'list': [134], 'id': 50}, {'list': [136], 'id': 51}, {'list': [21, 19], 'id': 52}]
+
+# eqs = Equipment.objects.all()
+# for e in eqs:		
+# 	s = {}
+# 	for key in e.specifications:
+# 		for l in lst:
+# 			intkey = int(key)
+# 			if intkey in l['list']:							
+# 				id = str(l['id'])
+# 				value = 'SI' if e.specifications[key] == True else 'NO' if e.specifications[key] == False else e.specifications[key]
+# 				s.update({id: value})
+# 				break;	
+# 	e.specifications.update(s)
+# 	e.save()
+
+# eqs = Model.objects.all()
+# for e in eqs:		
+# 	s = {}
+# 	for key in e.specifications:
+# 		for l in lst:
+# 			intkey = int(key)
+# 			if intkey in l['list']:							
+# 				id = str(l['id'])
+# 				value = 'SI' if e.specifications[key] == True else 'NO' if e.specifications[key] == False else e.specifications[key]
+# 				s.update({id: value})
+# 				break;	
+# 	e.specifications.update(s)
+# 	e.save()
 ###
 
 

@@ -8,13 +8,9 @@ from structure.models import *
 
 from audit.mixins import AuditMixin
 
-class Specification(models.Model):
-	class Meta:
-		verbose_name = 'especificación'
-		verbose_name_plural = 'especificaciones'
-		
+class Specification(models.Model):		
 	FIELD_CHOICES = (		
-		('CharField', 'Texto'),('IntegerField', 'Número'),
+		('CharField', 'Texto'),('FloatField', 'Número'),
 		('ChoiceField', 'Selector'), ('ChoiceField:RadioSelect', 'RadioMultiple'),		
 	)
 
@@ -27,6 +23,10 @@ class Specification(models.Model):
 	def __unicode__(self):
 		return self.name
 
+	class Meta:
+		verbose_name = 'especificación'
+		verbose_name_plural = 'especificaciones'
+
 class Group(models.Model):
 	MODEL = 1
 	EQUIPMENT = 2
@@ -38,6 +38,9 @@ class Group(models.Model):
 
 	def __unicode__(self):
 		return self.name
+
+	class Meta:
+		verbose_name = 'grupo'
 
 class Type(AuditMixin, models.Model):
 	EQUIPMENT, REPLACEMENT, ACCESSORY, CONSUMABLE = (1,2,3,4)
@@ -54,17 +57,18 @@ class Type(AuditMixin, models.Model):
 		return self.name
 
 	class Meta:
+		verbose_name = 'tipo'
 		ordering = ['usage','name']
 
 class Brand(AuditMixin, models.Model):
-	class Meta:
-		verbose_name = 'marca'
-		ordering = ['name',]
-
 	name = models.CharField(max_length=32, unique=True, verbose_name='nombre')	
 
 	def __unicode__(self):
 		return self.name
+
+	class Meta:
+		verbose_name = 'marca'
+		ordering = ['name',]
 
 class Model(AuditMixin, models.Model):
 	class Meta:
@@ -109,9 +113,6 @@ class Model(AuditMixin, models.Model):
 		return count
 
 class Equipment(models.Model):
-	class Meta:
-		ordering = ['model',]
-
 	STATE_CHOICES = (
 		(1, 'Bueno'),
 		(2, 'Regular'),
@@ -171,6 +172,10 @@ class Equipment(models.Model):
 
 	def get_state(self):		
 		return dict(self.STATE_CHOICES).get(self.state) if self.state else ''
+
+	class Meta:
+		verbose_name = 'equipo'
+		ordering = ['model',]
 
 class Location(models.Model):
 	class Meta:

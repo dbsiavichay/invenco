@@ -196,7 +196,7 @@ class EquipmentModelListView(PaginationMixin, ListView):
 
 class EquipmentCreateView(CreateView):
 	model = Equipment
-	form_class = EquipmentForm2
+	form_class = EquipmentForm
 	success_url = '/equipment/'	
 
 	def get_context_data(self, **kwargs):
@@ -226,7 +226,7 @@ class EquipmentCreateView(CreateView):
 
 class EquipmentUpdateView(UpdateView):
 	model = Equipment
-	form_class = EquipmentForm2
+	form_class = EquipmentForm
 	success_url = '/equipment/'	
 
 	def get_context_data(self, **kwargs):
