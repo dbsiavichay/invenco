@@ -86,10 +86,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'invencoklorofile',
+        'NAME': 'invencodb',
         'USER': 'postgres',
         'PASSWORD': '*omega2009a',
-        'HOST': 'localhost',
+        'HOST': '172.16.8.12',
         'PORT': '5432',
     },
     'sim': {
