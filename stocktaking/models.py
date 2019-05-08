@@ -170,7 +170,7 @@ class Equipment(models.Model):
 		return list_specifications
 
 	def get_state(self):
-		return dict(self.STATE_CHOICES).get(self.state)	
+		return dict (self.STATE_CHOICES).get(self.state)	
 
 class Location(models.Model):
 	class Meta:
