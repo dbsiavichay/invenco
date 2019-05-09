@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.http import JsonResponse
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, FormView
 from django.forms import modelformset_factory, formset_factory
 from django.db.models import Q
 
@@ -17,12 +17,12 @@ class SelectTypeListView(ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super(SelectTypeListView, self).get_context_data()
-		model = self.request.GET.get('model') or self.kwargs.get('model') or None
-		
+		model = self.kwargs.get('model', None)
+		queryset = context['object_list']
 		if model == 'equipment':						
-			context['object_list'] = self.model.objects.exclude(usage=4)
+			context['object_list'] = queryset.filter(usage=Type.EQUIPMENT)
 		elif model == 'replacement':			
-			context['object_list'] = self.model.objects.filter(Q(usage=2) | Q(usage=4))
+			context['object_list'] = queryset.filter(usage=Type.REPLACEMENT)
 
 		context['model'] = model
 		return context
@@ -146,6 +146,7 @@ class ModelDeleteView(DeleteView):
 class EquipmentListView(PaginationMixin, ListView):
 	model = Equipment	
 	paginate_by = 20
+	queryset = model.objects.filter(model__type__usage=Type.EQUIPMENT)
 
 	def get_context_data(self, **kwargs):		
 		context = super(EquipmentListView, self).get_context_data(**kwargs)
@@ -261,6 +262,39 @@ class EquipmentUpdateView(UpdateView):
 
 		return redirect(self.get_success_url())	
 
+class ReplacementListView(EquipmentListView):	
+	queryset = Equipment.objects.filter(model__type__usage=Type.REPLACEMENT)
+	template_name = 'stocktaking/replacement_list.html'
+
+	def get_context_data(self, **kwargs):		
+		context = super(ReplacementListView, self).get_context_data(**kwargs)
+		context.update({			
+			'types': Type.objects.filter(usage=Type.REPLACEMENT)
+		})
+
+		return context
+
+class ReplacementCreateView(FormView):	
+	form_class = ReplacementForm
+	template_name = 'stocktaking/replacement_form.html'
+	success_url = reverse_lazy('replacement_list')
+
+	def form_valid(self, form):
+		quantity = form.cleaned_data['quantity']
+
+		for i in range(quantity):
+			Equipment.objects.create(model=form.cleaned_data['model'])
+		return redirect(self.get_success_url())
+
+	def get_form_kwargs(self):
+		kwargs = super(ReplacementCreateView, self).get_form_kwargs()
+		type_id = self.kwargs.get('pk', None)	
+		kwargs.update({'type': type_id})
+		return kwargs
+
+class ReplacementDeleteView(DeleteView):
+	model = Equipment
+	success_url = reverse_lazy('replacement_list')
 
 class LocationListView(ListView):
 	model = Location
@@ -325,56 +359,26 @@ class LocationTransferView(LocationCreateView):
 
 
 
+# class ReplacementCreateView(CreateView):
+# 	model = Replacement
+# 	form_class = ReplacementForm
+# 	success_url = '/replacement/'
 
-
-
-
-
-
-
-
- 
-
-class ReplacementListView(PaginationMixin, ListView):
-	model = Replacement
-	paginate_by = 8
-
-	# def get_context_data(self, **kwargs):
-	# 	context = super(ReplacementListView, self).get_context_data(**kwargs)
-
-	# 	slug = self.request.GET.get('filter') or self.kwargs.get('filter') or None
-
-	# 	if slug is not None:
-	# 		self.queryset = self.queryset.filter(model__type__usage=slug)
-
-	# 	context.update({
-	# 		'replacement_list': self.queryset,
-	# 		'object_list': self.queryset,
-	# 		'filter':slug
-	# 	})
-
-	# 	return context
-
-class ReplacementCreateView(CreateView):
-	model = Replacement
-	form_class = ReplacementForm
-	success_url = '/replacement/'
-
-	def form_valid(self, form):		
-		self.object = form.save(commit=False)
+# 	def form_valid(self, form):		
+# 		self.object = form.save(commit=False)
 		
-		last = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(model=self.object.model)
+# 		last = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(model=self.object.model)
 
-		self.object.total_price = self.object.quantity * self.object.unit_price
-		self.object.stock = last[0].stock + self.object.quantity if len(last) else self.object.quantity
-		self.object.inout = 1
-		self.object.save()
+# 		self.object.total_price = self.object.quantity * self.object.unit_price
+# 		self.object.stock = last[0].stock + self.object.quantity if len(last) else self.object.quantity
+# 		self.object.inout = 1
+# 		self.object.save()
 
-		return redirect(self.get_success_url())
+# 		return redirect(self.get_success_url())
 
-	def get_form_kwargs(self):
-		kwargs = super(ReplacementCreateView, self).get_form_kwargs()
-		type_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None		
-		kwargs.update({'type': type_id})
-		return kwargs
+# 	def get_form_kwargs(self):
+# 		kwargs = super(ReplacementCreateView, self).get_form_kwargs()
+# 		type_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None		
+# 		kwargs.update({'type': type_id})
+# 		return kwargs
 

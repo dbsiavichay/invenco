@@ -10,4 +10,26 @@
 	    {% include "partials/pagination.html" %}
 	</div>
 </div>
+{% include 'base/delete_modal.html' %}
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+	var type;
+
+	var deleteButtons = document.querySelectorAll('.delete');
+	deleteButtons.forEach(function(btn, index) {
+		btn.addEventListener('click', function () {
+			var url = this.dataset.url;			
+			document.getElementById('delete').setAttribute('action', url);			
+			$('#deleteModal').modal('show');
+		});
+	});
+
+	$('.delete').on('click', function () {
+				
+	});	
+});
+</script>
 {% endblock %}

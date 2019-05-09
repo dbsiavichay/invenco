@@ -40,7 +40,8 @@
 	.type-item {
 		border: 3px dashed transparent;	    
 	    margin-bottom: 10px;
-	    min-height: 150px;	    
+	    padding: 15px 0;
+	    border-radius: 10px;
 	    cursor: pointer;
 	}
 
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	//Select type
 	types = document.querySelectorAll('.type-item');
 	types.forEach(function (type, index) {
-		type.addEventListener('click', function () {
+		type.addEventListener('click', function () {			
 			var id = this.dataset.type;
 			var model = document.getElementById('model').value;
 			url = '/'+ model +'/add/type/' + id + '/';
@@ -79,44 +80,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	var activeType = function (elem) {
 		elem.classList.add('active')
 	}
-});
-
-$(function () {
-	var type;
-
-	$('.delete').on('click', function () {
-		var model = $(this).attr('data-model');
-		var pk = $(this).attr('data-id');
-		var url = '/' + model + '/' + pk + '/delete/' 
-		$('#delete').attr('action', url);
-		$('#delete-modal').modal('show');		
-	});	
-
-	//Code for assignments
-	var splitArea = function () {
-		var strcodes = $('#id_area').val();
-
-		if (strcodes) {
-			var codes = strcodes.split(':');
-			$('input[name=department]').val(codes[0]);
-			$('input[name=section]').val(codes[1]);	
-		}		
-	}
-
-	$('#id_area').on('change', function () {
-		splitArea();
-	});
-
-	splitArea();
-
-	//Code for close sets
-	$('.close-formset').on('click', function () {
-		var $panel = $(this).parents('.panel');
-		$panel.fadeOut(500, function() {
-			$panel.remove();
-		});
-
-	});
 });
 </script>
 {% endblock %}

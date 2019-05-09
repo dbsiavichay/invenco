@@ -149,14 +149,6 @@ class Equipment(models.Model):
 		except:
 			return ''
 
-	# def get_location(self):
-	# 	if not self.owner:
-	# 		return ''
-
-	# 	assignments = Assignment.objects.filter(employee=self.owner).order_by('-date_joined')
-	# 	ass = assignments[0].building.name
-
-
 	def get_list_specifications(self):
 		list_specifications = []
 		specifications = self.model.type.type_specifications.exclude(widget='separator')
@@ -234,7 +226,7 @@ class Assignment(models.Model):
 # 	def __unicode__(self):
 # 		return '%s | %s' % (self.model, self.stock)
 
-class Replacement(AuditMixin, models.Model):
+class Replacement(models.Model):
 	equipment = models.OneToOneField(Equipment)
 	is_available = models.BooleanField(default=True)
 	is_new = models.BooleanField(default=True)

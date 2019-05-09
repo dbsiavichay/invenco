@@ -85,7 +85,7 @@ class SpecificationsForm(Form):
 
 class LocationForm(DjangoModelForm):
 	equipments = ModelMultipleChoiceField(
-		queryset = Equipment.objects.filter(model__type__usage=1),
+		queryset = Equipment.objects.filter(model__type__usage=Type.EQUIPMENT),
 		label = 'Equipos disponibles',
 	)
 
@@ -133,18 +133,17 @@ class LocationTransferForm(LocationForm):
 		employees = queryset.exclude(contributor__charter=self.charter)
 		return employees
 
-class ReplacementForm(DjangoModelForm):
-	class Meta:
-		model = Replacement
-		exclude = ('total_price','stock', 'inout',)
+
+
+
+
+
+
+class ReplacementForm(Form):
+	model = ModelChoiceField(queryset=None, label='Modelo')
+	quantity = IntegerField(min_value=0, label='Cantidad')
 
 	def __init__(self, *args, **kwargs):		
 		type = kwargs.pop('type', None)		
-
 		super(ReplacementForm, self).__init__(*args, **kwargs)		
-
-		self.fields['model'] = forms.ModelChoiceField(
-			queryset=Model.objects.filter(type=type, type__usage=2),
-			label='Modelo'
-		)		
-
+		self.fields['model'].queryset=Model.objects.filter(type=type, type__usage=Type.REPLACEMENT)

@@ -17,7 +17,7 @@ urlpatterns = [
     url(r'^location/add/$', login_required(LocationCreateView.as_view()), name='location_create'),    
     url(r'^location/(?P<pk>\d+)/transfer/$', login_required(LocationTransferView.as_view()), name='location_transfer'),    
     
-    url(r'^replacement/$', login_required(ReplacementListView.as_view()), name='replacement_list'),
-    url(r'^replacement/add/select-type/$', login_required(SelectTypeListView.as_view()), name='replacement_select_type'),
+    url(r'^replacement/$', login_required(ReplacementListView.as_view()), name='replacement_list'),    
     url(r'^replacement/add/type/(?P<pk>\d+)/$', login_required(ReplacementCreateView.as_view()), name='replacement_create'),
+    url(r'^replacement/(?P<pk>\d+)/delete/$', login_required(ReplacementDeleteView.as_view()), name='replacement_delete'),
 ]
