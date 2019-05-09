@@ -19,6 +19,10 @@ class Provider(AuditMixin, models.Model):
 	def __unicode__(self):
 		return '%s | %s' % (self.ruc, self.name)
 
+	class Meta:
+		verbose_name = 'proveedor'
+		verbose_name_plural = 'proveedores'
+
 class Invoice(AuditMixin, models.Model):
 	class Meta:
 		ordering = ['-date',]
@@ -48,6 +52,8 @@ class Invoice(AuditMixin, models.Model):
             label, status,            
         )
 
+	class Meta:
+		verbose_name = 'factura'
 
 class InvoiceLine(AuditMixin, models.Model):
 	quantity = models.FloatField()

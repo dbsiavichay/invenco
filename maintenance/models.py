@@ -52,3 +52,7 @@ class Reply(models.Model):
 	description = models.TextField(verbose_name='razón')	
 	date = models.DateTimeField(auto_now_add=True)
 	ticket = models.OneToOneField(Ticket)
+
+	class Meta:
+		verbose_name = 'resolución'
+		verbose_name_plural = 'resoluciones'

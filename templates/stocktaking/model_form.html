@@ -4,8 +4,7 @@
 {% block extra_fields %}
 {% regroup specifications_form by group as group_list  %}
 {% for group in group_list %}
-	<h4>{{ group.grouper }}</h4>
-	<hr>
+	<h4 style="border-bottom: 1px solid; padding-bottom: 10px;">{{ group.grouper }}</h4>	
 	{% for field in group.list %}				
 	{% render_field field class="form-control" %}
 	{% endfor %}
