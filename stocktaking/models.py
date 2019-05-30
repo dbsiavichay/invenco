@@ -28,8 +28,7 @@ class Specification(models.Model):
 		verbose_name_plural = 'especificaciones'
 
 class Group(models.Model):
-	MODEL = 1
-	EQUIPMENT = 2
+	MODEL, EQUIPMENT = (1, 2)
 	USAGE_CHOICES = ((MODEL, 'Modelo'), (EQUIPMENT, 'Equipo'),		)
 
 	name = models.CharField(max_length=64, verbose_name='nombre')	
@@ -84,35 +83,35 @@ class Model(AuditMixin, models.Model):
 	def __unicode__(self):
 		return '%(brand)s %(name)s' % {'brand': self.brand, 'name': self.name}
 
-	def get_specifications(self):
-		list_specifications = []
-		specifications = self.type.type_specifications.exclude(widget='separator')
+	# def get_specifications(self):
+	# 	list_specifications = []
+	# 	specifications = self.type.type_specifications.exclude(widget='separator')
 
-		for specification in specifications:
-			key = str(specification.id)
-			if key in self.specifications.keys() and self.specifications[key]:				
-				list_specifications.append((specification.label, self.specifications[key]))
+	# 	for specification in specifications:
+	# 		key = str(specification.id)
+	# 		if key in self.specifications.keys() and self.specifications[key]:				
+	# 			list_specifications.append((specification.label, self.specifications[key]))
 
-		return list_specifications
+	# 	return list_specifications
 
-	def get_list_specifications(self):
-		list_specifications = []
-		specifications = self.type.type_specifications.exclude(widget='separator')
+	# def get_list_specifications(self):
+	# 	list_specifications = []
+	# 	specifications = self.type.type_specifications.exclude(widget='separator')
 
-		for specification in specifications:
-			key = str(specification.id)
-			if key in self.specifications.keys():				
-				list_specifications.append(
-					'%s: %s' % (specification.label, self.specifications[key])				
-				)
+	# 	for specification in specifications:
+	# 		key = str(specification.id)
+	# 		if key in self.specifications.keys():				
+	# 			list_specifications.append(
+	# 				'%s: %s' % (specification.label, self.specifications[key])				
+	# 			)
 
-		return list_specifications
+	# 	return list_specifications
 
-	def get_equipment_count(self):
-		count = self.equipment_set.exclude(state=10).count();
+	def get_replacement_count(self):
+		count = self.equipment_set.filter(reply__isnull=True).exclude(state=10).count();
 		return count
 
-class Equipment(models.Model):
+class Equipment(models.Model):	
 	STATE_CHOICES = (
 		(1, 'Bueno'),
 		(2, 'Regular'),
@@ -127,8 +126,6 @@ class Equipment(models.Model):
 	state = models.PositiveSmallIntegerField(default=1, choices=STATE_CHOICES, verbose_name='estado')	
 	date = models.DateTimeField(auto_now_add=True)
 	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')
-	#replacements = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='parents',verbose_name='repuestos')
-	#parent = models.ForeignKey('self', blank=True, null=True, related_name='replacements')
 	reply = models.ForeignKey('maintenance.Reply', blank=True, null=True, related_name='replacements')
 	invoice_line = models.ForeignKey('purchases.InvoiceLine', blank=True, null=True)
 
@@ -152,18 +149,18 @@ class Equipment(models.Model):
 		except:
 			return ''
 
-	def get_list_specifications(self):
-		list_specifications = []
-		specifications = self.model.type.type_specifications.exclude(widget='separator')
+	# def get_list_specifications(self):
+	# 	list_specifications = []
+	# 	specifications = self.model.type.type_specifications.exclude(widget='separator')
 
-		for specification in specifications:
-			key = str(specification.id)
-			if key in self.specifications.keys():				
-				list_specifications.append(
-					'%s: %s' % (specification.label, self.specifications[key])				
-				)
+	# 	for specification in specifications:
+	# 		key = str(specification.id)
+	# 		if key in self.specifications.keys():				
+	# 			list_specifications.append(
+	# 				'%s: %s' % (specification.label, self.specifications[key])				
+	# 			)
 
-		return list_specifications
+	# 	return list_specifications
 
 	def get_state(self):		
 		return dict(self.STATE_CHOICES).get(self.state) if self.state else ''

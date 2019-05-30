@@ -41,7 +41,11 @@ class EquipmentForm(DjangoModelForm):
 		}
 
 	def __init__(self, *args, **kwargs):
+		type = kwargs.pop('type', None)
 		super(EquipmentForm, self).__init__(*args, **kwargs)
+		if type is not None:
+			queryset = self.fields['model'].queryset
+			self.fields['model'].queryset = queryset.filter(type=type)
 		self.fields['code'].required = True
 		self.fields['serial'].required = True		
 
@@ -132,12 +136,3 @@ class LocationTransferForm(LocationForm):
 		queryset = super(LocationTransferForm, self)._get_employees()
 		employees = queryset.exclude(contributor__charter=self.charter)
 		return employees
-
-class ReplacementForm(Form):
-	model = ModelChoiceField(queryset=None, label='Modelo')
-	quantity = IntegerField(min_value=0, label='Cantidad')
-
-	def __init__(self, *args, **kwargs):		
-		type = kwargs.pop('type', None)		
-		super(ReplacementForm, self).__init__(*args, **kwargs)		
-		self.fields['model'].queryset=Model.objects.filter(type=type, type__usage=Type.REPLACEMENT)

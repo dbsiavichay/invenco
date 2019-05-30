@@ -1,0 +1,40 @@
+{% extends 'base/base_list.html' %}	
+
+{% block title %}Stock de repuestos{% endblock %}
+{% block button %}
+<div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Filtar por <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li><a href="#">Todos</a></li>
+        {% for type in types %}
+        <li><a href="?type={{ type.id }}">{{ type.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+{% block table %}
+<table class="table">
+    <thead>
+        <tr>                          
+          <th>Tipo</th>
+          <th>Marca</th>
+          <th>Nombre</th>          
+          <th>Existencias</th>                        
+        </tr>
+    </thead>
+    <tbody>
+        {% for model in object_list %}
+        <tr>                            
+            <td>{{ model.type }}</td>
+            <td>{{ model.brand }}</td>
+            <td>{{ model.name }}</td>            
+            <td>{{ model.get_replacement_count }}</td>                            
+        </tr>
+        {% empty %}
+        <tr colspan="5"><td>"Sin registros."</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

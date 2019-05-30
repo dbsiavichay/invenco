@@ -2,6 +2,7 @@
 
 {% block title %}Lista de repuestos{% endblock %}
 {% block button %}
+<a href="{% url 'select_type' 'replacement' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Agregar</a>
 <div class="btn-group">
     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Filtar por <span class="caret"></span>
@@ -36,7 +37,7 @@
           <!-- <a href="#" class="btn btn-default btn-xs">
             <span class="fa fa-user"></span>
           </a> -->
-          <a href="{% url 'equipment_update_by_type' equipment.id equipment.model.type.id %}" class="btn btn-default btn-xs">
+          <a href="{% url 'equipment_update' equipment.id %}" class="btn btn-default btn-xs">
             <span class="fa fa-pencil"></span>
           </a>
           <button class="btn btn-default btn-xs delete" data-url="{% url 'replacement_delete' equipment.id %}">

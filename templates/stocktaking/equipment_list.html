@@ -43,7 +43,7 @@
           <a href="#" class="btn btn-default btn-xs">
             <span class="fa fa-user"></span>
           </a>                  
-          <a href="{% url 'equipment_update_by_type' equipment.id equipment.model.type.id %}" class="btn btn-default btn-xs">
+          <a href="{% url 'equipment_update' equipment.id %}" class="btn btn-default btn-xs">
             <span class="fa fa-pencil"></span>
           </a>
           <button class="btn btn-default btn-xs delete" data-model="equipment" data-id="{{ equipment.id }}">

@@ -23,6 +23,7 @@ class SelectTypeListView(ListView):
 			context['object_list'] = queryset.filter(usage=Type.EQUIPMENT)
 		elif model == 'replacement':			
 			context['object_list'] = queryset.filter(usage=Type.REPLACEMENT)
+			model = 'equipment'
 
 		context['model'] = model
 		return context
@@ -35,24 +36,37 @@ class ModelListView(PaginationMixin, ListView):
 	def get_context_data(self, **kwargs):
 		context = super(ModelListView, self).get_context_data(**kwargs)
 		context.update({
-			'types': Type.objects.all()
+			'types': self.get_types()
 		})
 		return context
 
 	def get_queryset(self):
 		import operator
+		queryset = super(ModelListView, self).get_queryset()		
+		type = self.get_type()
 		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
-		type = self.request.GET.get('type') or self.kwargs.get('type') or None		
-		queryset = super(ModelListView, self).get_queryset()
+
+		if type is not None:
+			queryset = queryset.filter(type = type)
 
 		if search is not None:
 			fields = ['name', 'brand__name', 'part_number', 'specifications']	
 			args = [Q(**{field+'__icontains': search}) for field in fields]
-			queryset = queryset.filter(reduce(operator.__or__, args))		
-		elif type is not None:
-			queryset = queryset.filter(type = type)
+			queryset = queryset.filter(reduce(operator.__or__, args))				
 
 		return queryset
+
+	def get_type(self):
+		pk = self.kwargs.get('type', None)
+		try:
+			type = Types.objects.get(pk=pk)
+			return type
+		except:
+			return None
+
+	def get_types(self):
+		types = Type.objects.all()
+		return types
 
 class ModelCreateView(CreateView):
 	model = Model
@@ -177,24 +191,6 @@ class EquipmentListView(PaginationMixin, ListView):
 			
 		return queryset
 
-class EquipmentModelListView(PaginationMixin, ListView):
-	model = Model
-	paginate_by = 10
-	template_name = 'stocktaking/equipment_model_list.html'
-
-	def get_queryset(self):
-		import operator
-		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
-		queryset = super(EquipmentModelListView, self).get_queryset()
-
-		if search is None: return queryset
-
-		fields = ['name','type__name', 'brand__name', 'specifications']	
-		args = [Q(**{field+'__icontains': search}) for field in fields]
-		queryset = self.model.objects.filter(reduce(operator.__or__, args))		
-
-		return queryset
-
 class EquipmentCreateView(CreateView):
 	model = Equipment
 	form_class = EquipmentForm
@@ -207,8 +203,7 @@ class EquipmentCreateView(CreateView):
 		return context
 
 	def get_specification_form(self):
-		id_type = self.request.GET.get('type') or self.kwargs.get('type') or None
-		type = get_object_or_404(Type, pk=id_type)
+		type = self.get_type()
 		usage = Group.EQUIPMENT
 		post_data = self.request.POST if self.request.method == 'POST' else None
 		form = SpecificationsForm(post_data, type=type, usage=usage)
@@ -223,7 +218,19 @@ class EquipmentCreateView(CreateView):
 		self.object.specifications = specifications_form.cleaned_data
 		self.object.save()
 
-		return redirect(self.get_success_url())	
+		return redirect(self.get_success_url())
+
+	def get_form_kwargs(self):
+		kwargs = super(EquipmentCreateView, self).get_form_kwargs()
+		kwargs.update({
+			'type': self.get_type(),
+		})
+		return kwargs
+
+	def get_type(self):
+		pk = self.kwargs.get('type', None)
+		type = get_object_or_404(Type, pk=pk)
+		return type
 
 class EquipmentUpdateView(UpdateView):
 	model = Equipment
@@ -237,8 +244,7 @@ class EquipmentUpdateView(UpdateView):
 		return context
 
 	def get_specification_form(self):
-		id_type = self.request.GET.get('type') or self.kwargs.get('type') or None
-		type = get_object_or_404(Type, pk=id_type)
+		type = self.get_type()
 		usage = Group.EQUIPMENT
 		post_data = self.request.POST if self.request.method == 'POST' else None
 		kwargs = {'type': type, 'usage': usage}
@@ -260,7 +266,18 @@ class EquipmentUpdateView(UpdateView):
 		self.object.specifications = specifications_form.cleaned_data		
 		self.object.save()
 
-		return redirect(self.get_success_url())	
+		return redirect(self.get_success_url())
+
+	def get_form_kwargs(self):
+		kwargs = super(EquipmentUpdateView, self).get_form_kwargs()
+		kwargs.update({
+			'type': self.get_type(),
+		})
+		return kwargs	
+
+	def get_type(self):
+		self.object = self.get_object()		
+		return self.object.model.type
 
 class ReplacementListView(EquipmentListView):	
 	queryset = Equipment.objects.filter(model__type__usage=Type.REPLACEMENT)
@@ -274,23 +291,17 @@ class ReplacementListView(EquipmentListView):
 
 		return context
 
-class ReplacementCreateView(FormView):	
-	form_class = ReplacementForm
-	template_name = 'stocktaking/replacement_form.html'
-	success_url = reverse_lazy('replacement_list')
+class ReplacementStockView(ModelListView):	
+	template_name = 'stocktaking/replacement_stock.html'
 
-	def form_valid(self, form):
-		quantity = form.cleaned_data['quantity']
+	def get_queryset(self):		
+		queryset = super(ReplacementStockView, self).get_queryset()
+		queryset = queryset.filter(type__usage=Type.REPLACEMENT)
+		return queryset
 
-		for i in range(quantity):
-			Equipment.objects.create(model=form.cleaned_data['model'])
-		return redirect(self.get_success_url())
-
-	def get_form_kwargs(self):
-		kwargs = super(ReplacementCreateView, self).get_form_kwargs()
-		type_id = self.kwargs.get('pk', None)	
-		kwargs.update({'type': type_id})
-		return kwargs
+	def get_types(self):
+		types = Type.objects.filter(usage=Type.REPLACEMENT)
+		return types
 
 class ReplacementDeleteView(DeleteView):
 	model = Equipment

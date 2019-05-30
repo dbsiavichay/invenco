@@ -9,15 +9,14 @@ urlpatterns = [
     url(r'^model/(?P<pk>\d+)/type/(?P<type>\d+)/edit/$', login_required(ModelUpdateView.as_view()), name='model_update'),
     url(r'^model/(?P<pk>\d+)/delete/$', login_required(ModelDeleteView.as_view()), name='model_delete'),
     url(r'^equipment/$', login_required(EquipmentListView.as_view()), name='equipment_list'),    
-    url(r'^equipment/model/$', login_required(EquipmentModelListView.as_view()), name='equipment_model_list'),
-    url(r'^equipment/add/type/(?P<type>\d+)/$', login_required(EquipmentCreateView.as_view()), name='equipment_create_by_type'),
-    url(r'^equipment/add/set/(?P<set>\d+)/$', login_required(EquipmentCreateView.as_view()), name='equipment_create_by_set'),
-    url(r'^equipment/(?P<pk>\d+)/type/(?P<type>\d+)/edit/$', login_required(EquipmentUpdateView.as_view()), name='equipment_update_by_type'),    
+
+    url(r'^equipment/add/type/(?P<type>\d+)/$', login_required(EquipmentCreateView.as_view()), name='equipment_create'),
+    url(r'^equipment/(?P<pk>\d+)/edit/$', login_required(EquipmentUpdateView.as_view()), name='equipment_update'),    
     url(r'^location/$', login_required(LocationListView.as_view()), name='location_list'),    
     url(r'^location/add/$', login_required(LocationCreateView.as_view()), name='location_create'),    
     url(r'^location/(?P<pk>\d+)/transfer/$', login_required(LocationTransferView.as_view()), name='location_transfer'),    
     
-    url(r'^replacement/$', login_required(ReplacementListView.as_view()), name='replacement_list'),    
-    #url(r'^replacement/add/type/(?P<pk>\d+)/$', login_required(ReplacementCreateView.as_view()), name='replacement_create'),
+    url(r'^replacement/$', login_required(ReplacementListView.as_view()), name='replacement_list'),        
+    url(r'^replacement/stock/$', login_required(ReplacementStockView.as_view()), name='replacement_stock'),
     url(r'^replacement/(?P<pk>\d+)/delete/$', login_required(ReplacementDeleteView.as_view()), name='replacement_delete'),
 ]
