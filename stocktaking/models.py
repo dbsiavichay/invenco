@@ -111,6 +111,10 @@ class Model(AuditMixin, models.Model):
 		count = self.equipment_set.filter(reply__isnull=True).exclude(state=10).count();
 		return count
 
+	def get_consumable_count(self):
+		count = self.equipment_set.exclude(state=10).count();
+		return count
+
 class Equipment(models.Model):	
 	STATE_CHOICES = (
 		(1, 'Bueno'),

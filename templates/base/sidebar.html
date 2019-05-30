@@ -12,13 +12,25 @@
 				<li><a href="{% url 'equipment_list' %}" class=""><i class="lnr lnr-laptop"></i> <span>Equipos</span></a></li>
 				<li>
 					<a href="#subReplacements" data-toggle="collapse" class="collapsed">
-						<i class="lnr lnr-cart"></i> <span>Repuestos</span> 
+						<i class="lnr lnr-dice"></i> <span>Repuestos</span> 
 						<i class="icon-submenu lnr lnr-chevron-left"></i>
 					</a>
 					<div id="subReplacements" class="collapse ">
 						<ul class="nav">
 							<li><a href="{% url 'replacement_list' %}" class="">Listado</a></li>
 							<li><a href="{% url 'replacement_stock' %}" class="">Stock</a></li>
+						</ul>
+					</div>
+				</li>
+				<li>
+					<a href="#subConsumables" data-toggle="collapse" class="collapsed">
+						<i class="lnr lnr-drop"></i> <span>Consumibles</span> 
+						<i class="icon-submenu lnr lnr-chevron-left"></i>
+					</a>
+					<div id="subConsumables" class="collapse ">
+						<ul class="nav">
+							<li><a href="{% url 'consumable_list' %}" class="">Listado</a></li>
+							<li><a href="{% url 'consumable_stock' %}" class="">Stock</a></li>
 						</ul>
 					</div>
 				</li>				

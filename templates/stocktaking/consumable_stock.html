@@ -1,0 +1,27 @@
+{% extends 'stocktaking/replacement_stock.html' %}	
+
+{% block title %}Stock de consumibles{% endblock %}
+{% block table %}
+<table class="table">
+    <thead>
+        <tr>                          
+          <th>Tipo</th>
+          <th>Marca</th>
+          <th>Nombre</th>          
+          <th>Existencias</th>                        
+        </tr>
+    </thead>
+    <tbody>
+        {% for model in object_list %}
+        <tr>                            
+            <td>{{ model.type }}</td>
+            <td>{{ model.brand }}</td>
+            <td>{{ model.name }}</td>            
+            <td>{{ model.get_consumable_count }}</td>                            
+        </tr>
+        {% empty %}
+        <tr colspan="5"><td>"Sin registros."</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

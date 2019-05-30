@@ -25,6 +25,9 @@ class SelectTypeListView(ListView):
 		elif model == 'replacement':			
 			context['object_list'] = queryset.filter(usage=Type.REPLACEMENT)
 			model = 'equipment'
+		elif model == 'consumable':			
+			context['object_list'] = queryset.filter(usage=Type.CONSUMABLE)
+			model = 'equipment'
 
 		context['model'] = model
 		return context
@@ -241,6 +244,7 @@ class EquipmentUpdateView(UpdateView):
 		self.object = self.get_object()		
 		return self.object.model.type
 
+#Repuestos
 class ReplacementListView(EquipmentListView):	
 	queryset = Equipment.objects.filter(model__type__usage=Type.REPLACEMENT)
 	template_name = 'stocktaking/replacement_list.html'
@@ -260,10 +264,26 @@ class ReplacementStockView(ModelListView):
 class ReplacementDeleteView(DeleteView):
 	model = Equipment
 	success_url = reverse_lazy('replacement_list')
+###
+# Consumibles
+class ConsumableListView(EquipmentListView):	
+	queryset = Equipment.objects.filter(model__type__usage=Type.CONSUMABLE)
+	template_name = 'stocktaking/consumable_list.html'
+
+	def get_types(self):
+		types = Type.objects.filter(usage=Type.CONSUMABLE)
+		return types
+
+class ConsumableStockView(ModelListView):	
+	template_name = 'stocktaking/consumable_stock.html'
+	queryset = Model.objects.filter(type__usage=Type.CONSUMABLE)
+
+	def get_types(self):
+		types = Type.objects.filter(usage=Type.CONSUMABLE)
+		return types
 
 class LocationListView(ListView):
 	model = Location
-
 
 class LocationCreateView(CreateView):
 	model = Location
@@ -283,7 +303,6 @@ class LocationCreateView(CreateView):
 			self.object.assignment_set.all().delete()
 			self.object.delete()			
 			raise Exception
-
 
 class LocationTransferView(LocationCreateView):
 	form_class = LocationTransferForm
@@ -320,30 +339,3 @@ class LocationTransferView(LocationCreateView):
 		self.create_assigments(equipments)
 		Assignment.objects.filter(location=self.get_object(), active=True, equipment__in=equipments).update(active=False)		
 		return redirect(self.success_url)
-
-
-
-
-# class ReplacementCreateView(CreateView):
-# 	model = Replacement
-# 	form_class = ReplacementForm
-# 	success_url = '/replacement/'
-
-# 	def form_valid(self, form):		
-# 		self.object = form.save(commit=False)
-		
-# 		last = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(model=self.object.model)
-
-# 		self.object.total_price = self.object.quantity * self.object.unit_price
-# 		self.object.stock = last[0].stock + self.object.quantity if len(last) else self.object.quantity
-# 		self.object.inout = 1
-# 		self.object.save()
-
-# 		return redirect(self.get_success_url())
-
-# 	def get_form_kwargs(self):
-# 		kwargs = super(ReplacementCreateView, self).get_form_kwargs()
-# 		type_id = self.request.GET.get('pk') or self.kwargs.get('pk') or None		
-# 		kwargs.update({'type': type_id})
-# 		return kwargs
-

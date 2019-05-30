@@ -19,4 +19,7 @@ urlpatterns = [
     url(r'^replacement/$', login_required(ReplacementListView.as_view()), name='replacement_list'),        
     url(r'^replacement/stock/$', login_required(ReplacementStockView.as_view()), name='replacement_stock'),
     url(r'^replacement/(?P<pk>\d+)/delete/$', login_required(ReplacementDeleteView.as_view()), name='replacement_delete'),
+    
+    url(r'^consumable/$', login_required(ConsumableListView.as_view()), name='consumable_list'),        
+    url(r'^consumable/stock/$', login_required(ConsumableStockView.as_view()), name='consumable_stock'),
 ]

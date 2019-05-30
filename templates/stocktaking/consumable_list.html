@@ -1,0 +1,17 @@
+{% extends 'stocktaking/replacement_list.html' %}
+
+{% block title %}Lista de consumibles{% endblock %}
+{% block button %}
+<a href="{% url 'select_type' 'consumable' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Agregar</a>
+<div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Filtar por <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        <li><a href="#">Todos</a></li>
+        {% for type in types %}
+        <li><a href="?type={{ type.id }}">{{ type.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
