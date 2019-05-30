@@ -3,13 +3,14 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, FormView
 from django.forms import modelformset_factory, formset_factory
-from django.db.models import Q
+#from django.db.models import Q
 
 from .models import *
 from .forms import *
+from .mixins import SearchMixin
 from pure_pagination.mixins import PaginationMixin
 
-from structure.models import Employee
+#from structure.models import Employee
 
 class SelectTypeListView(ListView):
 	model = Type
@@ -29,9 +30,10 @@ class SelectTypeListView(ListView):
 		return context
 
 
-class ModelListView(PaginationMixin, ListView):
+class ModelListView(PaginationMixin, SearchMixin, ListView):
 	model = Model
-	paginate_by = 20	
+	paginate_by = 20
+	search_fields = ('name', 'brand__name', 'part_number', 'specifications')	
 
 	def get_context_data(self, **kwargs):
 		context = super(ModelListView, self).get_context_data(**kwargs)
@@ -39,30 +41,6 @@ class ModelListView(PaginationMixin, ListView):
 			'types': self.get_types()
 		})
 		return context
-
-	def get_queryset(self):
-		import operator
-		queryset = super(ModelListView, self).get_queryset()		
-		type = self.get_type()
-		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
-
-		if type is not None:
-			queryset = queryset.filter(type = type)
-
-		if search is not None:
-			fields = ['name', 'brand__name', 'part_number', 'specifications']	
-			args = [Q(**{field+'__icontains': search}) for field in fields]
-			queryset = queryset.filter(reduce(operator.__or__, args))				
-
-		return queryset
-
-	def get_type(self):
-		pk = self.kwargs.get('type', None)
-		try:
-			type = Types.objects.get(pk=pk)
-			return type
-		except:
-			return None
 
 	def get_types(self):
 		types = Type.objects.all()
@@ -157,39 +135,23 @@ class ModelDeleteView(DeleteView):
 	model = Model
 	success_url = '/model/'
 
-class EquipmentListView(PaginationMixin, ListView):
+class EquipmentListView(PaginationMixin, SearchMixin, ListView):
 	model = Equipment	
 	paginate_by = 20
+	search_fields = ['model__name', 'model__brand__name', 'model__part_number', 'code', 'serial', 'specifications']
 	queryset = model.objects.filter(model__type__usage=Type.EQUIPMENT)
 
 	def get_context_data(self, **kwargs):		
 		context = super(EquipmentListView, self).get_context_data(**kwargs)
 		context.update({			
-			'types': Type.objects.filter(usage=Type.EQUIPMENT)
+			'types': self.get_types(),
 		})
 
 		return context
 
-	def get_queryset(self):
-		import operator
-		search = self.request.GET.get('search') or self.kwargs.get('search') or None		
-		type = self.request.GET.get('type') or self.kwargs.get('type') or None		
-		queryset = super(EquipmentListView, self).get_queryset()
-
-		if search is not None:
-			fields = ['model__name', 'model__brand__name', 'model__part_number', 'code', 'serial', 'specifications']
-		
-			args = [Q(**{field+'__icontains': search}) for field in fields]
-			charters = Employee.objects.using('sim').filter(
-				Q(contributor__charter=search) | Q(contributor__name__icontains=search)
-			).values_list('contributor__charter', flat=True)
-			if len(charters) > 0: args.append(Q(owner__in=list(charters)))
-
-			queryset = queryset.filter(reduce(operator.__or__, args))		
-		elif type is not None:
-			queryset = queryset.filter(model__type= type)
-			
-		return queryset
+	def get_types(self):
+		types = Type.objects.filter(usage=Type.EQUIPMENT)
+		return types
 
 class EquipmentCreateView(CreateView):
 	model = Equipment
@@ -283,21 +245,13 @@ class ReplacementListView(EquipmentListView):
 	queryset = Equipment.objects.filter(model__type__usage=Type.REPLACEMENT)
 	template_name = 'stocktaking/replacement_list.html'
 
-	def get_context_data(self, **kwargs):		
-		context = super(ReplacementListView, self).get_context_data(**kwargs)
-		context.update({			
-			'types': Type.objects.filter(usage=Type.REPLACEMENT)
-		})
-
-		return context
+	def get_types(self):
+		types = Type.objects.filter(usage=Type.REPLACEMENT)
+		return types
 
 class ReplacementStockView(ModelListView):	
 	template_name = 'stocktaking/replacement_stock.html'
-
-	def get_queryset(self):		
-		queryset = super(ReplacementStockView, self).get_queryset()
-		queryset = queryset.filter(type__usage=Type.REPLACEMENT)
-		return queryset
+	queryset = Model.objects.filter(type__usage=Type.REPLACEMENT)
 
 	def get_types(self):
 		types = Type.objects.filter(usage=Type.REPLACEMENT)
