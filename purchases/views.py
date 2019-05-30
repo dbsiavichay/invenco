@@ -7,7 +7,7 @@ from django.views.generic.edit import ModelFormMixin
 from .models import *
 from .forms import * 
 
-from stocktaking.models import Equipment
+from stocktaking.models import Type, Equipment
 
 class ProviderListView(ListView):
 	model = Provider
@@ -55,7 +55,7 @@ class InvoiceCreateView(CreateView):
 			total_discount += line.discount
 			tax_amount = tax_amount + tax			
 			untaxed_amount = untaxed_amount + line.total_price
-			total_amount = total_amount + (tax + line.total_price)			
+			total_amount = total_amount + (tax + line.total_price)
 
 		self.object.total_discount = total_discount
 		self.object.untaxed_amount = untaxed_amount
@@ -65,8 +65,17 @@ class InvoiceCreateView(CreateView):
 
 		formset.instance = self.object
 		formset.save()
+		# Para repuestos y consumibles
+		self.create_instances()
+		##
 
 		return redirect(self.success_url)
+
+	# Crea instancias de repuestos y consumibles automaticamente
+	def create_instances(self):
+		for line in self.object.invoiceline_set.exclude(model__type__usage=Type.EQUIPMENT):
+			for i in range(int(line.quantity)):
+				Equipment.objects.create(model=line.model, invoice_line=line)
 
 	def get_invoiceline_formset(self):
 		post_data = self.request.POST if self.request.method == 'POST' else None
@@ -104,8 +113,17 @@ class InvoiceUpdateView(UpdateView):
 		self.object.tax_amount = tax_amount
 		self.object.total_amount = total_amount
 		self.object.save()
+		self.create_instances()
 
 		return redirect(self.success_url)
+
+	# Crea instancias de repuestos y consumibles automaticamente
+	def create_instances(self):
+		for line in self.object.invoiceline_set.exclude(model__type__usage=Type.EQUIPMENT):
+			count = line.equipment_set.all().count()
+			if int(line.quantity) > count:
+				for i in range(int(line.quantity)-count):
+					Equipment.objects.create(model=line.model, invoice_line=line)
 
 	def get_invoiceline_formset(self):
 		self.object = self.get_object()

@@ -35,7 +35,7 @@ class ModelForm(DjangoModelForm):
 class EquipmentForm(DjangoModelForm):
 	class Meta:
 		model = Equipment
-		exclude = ['specifications', 'invoice_line',]
+		exclude = ['specifications', 'reply', 'invoice_line']
 		widgets = {
 			'state': RadioSelect,
 		}
@@ -132,12 +132,6 @@ class LocationTransferForm(LocationForm):
 		queryset = super(LocationTransferForm, self)._get_employees()
 		employees = queryset.exclude(contributor__charter=self.charter)
 		return employees
-
-
-
-
-
-
 
 class ReplacementForm(Form):
 	model = ModelChoiceField(queryset=None, label='Modelo')

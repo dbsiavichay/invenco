@@ -11,4 +11,6 @@ urlpatterns = [
     url(r'^reply/ticket/(?P<pk>\d+)/solved/$', login_required(ReplySolvedCreateView.as_view()), name='reply_solved'),    
     url(r'^reply/ticket/(?P<pk>\d+)/closed/$', login_required(ReplyClosedCreateView.as_view()), name='reply_closed'),    
     url(r'^reply/ticket/(?P<pk>\d+)/canceled/$', login_required(ReplyCanceledCreateView.as_view()), name='reply_canceled'),  
+
+    url(r'^get_component/(?P<pk>\d+)/$', login_required(get_component), name='get_component'),
 ]

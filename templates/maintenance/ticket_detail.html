@@ -38,7 +38,17 @@
 			<div class="col-xs-12">
 		    	<label>Descripción de la respuesta</label>		   
 		    	<p>{{ object.reply.description }}</p>				
-			</div>			
+			</div>
+			{% with object.reply.replacements.all as replacements %}
+			{% if replacements %}
+			<div class="col-xs-12">
+		    	<label>Repuestos empleados</label>		   
+		    	{% for replacement in replacements %}
+		    	<li>{{ replacement }}</li>				
+		    	{% endfor %}
+			</div>
+			{% endif %}
+			{% endwith %}		
 		</div>		
 		{% endif %}
 	</div>

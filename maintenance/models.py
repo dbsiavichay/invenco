@@ -25,7 +25,7 @@ class Ticket(models.Model):
 	)
 
 	problem_type = models.ForeignKey(ProblemType, verbose_name='tipo de problema')
-	equipment = models.ForeignKey('stocktaking.Equipment', verbose_name='equipo')
+	equipment = models.ForeignKey('stocktaking.Equipment', verbose_name='equipo',)
 	problem = models.TextField(verbose_name='descripción del problema')
 	status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=OPEN)
 	date = models.DateTimeField(auto_now_add=True)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.forms.models import inlineformset_factory
-from stocktaking.models import Equipment
+from stocktaking.models import Type, Equipment
 from .models import *
 
 class InvoiceForm(forms.ModelForm):
@@ -34,7 +34,7 @@ class InvoiceLineForm(forms.ModelForm):
 		)
 
 	def save(self, commit=True):
-		for equipment in self.instance.equipment_set.all():
+		for equipment in self.instance.equipment_set.filter(model__type__usage=Type.EQUIPMENT):
 			equipment.invoice_line = None
 			equipment.save()
 

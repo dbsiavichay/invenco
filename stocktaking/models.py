@@ -126,7 +126,10 @@ class Equipment(models.Model):
 	specifications = JSONField(blank=True, null=True)
 	state = models.PositiveSmallIntegerField(default=1, choices=STATE_CHOICES, verbose_name='estado')	
 	date = models.DateTimeField(auto_now_add=True)
-	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')		
+	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')
+	#replacements = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='parents',verbose_name='repuestos')
+	#parent = models.ForeignKey('self', blank=True, null=True, related_name='replacements')
+	reply = models.ForeignKey('maintenance.Reply', blank=True, null=True, related_name='replacements')
 	invoice_line = models.ForeignKey('purchases.InvoiceLine', blank=True, null=True)
 
 	def __unicode__(self):
@@ -197,42 +200,5 @@ class Assignment(models.Model):
 	equipment = models.ForeignKey(Equipment)
 	date = models.DateTimeField(auto_now_add=True)
 	active = models.BooleanField(default=True)
-
-
-
-
-# class Replacement(AuditMixin, models.Model):
-# 	IN_BY_INITIAL = 1
-# 	IN_BY_PURCHASE = 2
-# 	OUT_BY_FIX = 5
-# 	OUT_BY_DISPATCH = 6
-
-# 	MOVEMENT_CHOICES = (
-# 		(IN_BY_INITIAL, 'Entrada por levantamiento inicial'),
-# 		(IN_BY_PURCHASE, 'Entrada por compra'),
-# 		(OUT_BY_FIX, 'Salida por reparación'),
-# 		(OUT_BY_DISPATCH, 'Salida por despacho'),
-# 	)
-
-# 	quantity = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='cantidad')
-# 	unit_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio unitario')
-# 	total_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='precio total')
-# 	stock = models.DecimalField(max_digits=10, decimal_places=2)
-# 	observation = models.TextField(blank=True, null=True, verbose_name='Observaciones')
-# 	movement = models.PositiveSmallIntegerField(choices=MOVEMENT_CHOICES)
-# 	date_joined = models.DateTimeField(auto_now_add=True)
-# 	model = models.ForeignKey(Model)
-
-# 	def __unicode__(self):
-# 		return '%s | %s' % (self.model, self.stock)
-
-class Replacement(models.Model):
-	equipment = models.OneToOneField(Equipment)
-	is_available = models.BooleanField(default=True)
-	is_new = models.BooleanField(default=True)
-	from_equipment = models.ForeignKey(Equipment, related_name='part', blank=True, null=True)		
-
-	def __unicode__(self):
-		return str(equipment)
 
 	

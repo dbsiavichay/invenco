@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 from django import forms
-from django.forms import formset_factory, ModelForm
+from django.forms import formset_factory, ModelForm, Form
 from django.forms.widgets import HiddenInput
 from .models import Reply
-# from stocktaking.models import Replacement
+
+from stocktaking.models import Type, Equipment
 
 # from functools import partial, wraps
 
@@ -14,48 +16,20 @@ class ReplyForm(ModelForm):
 			'ticket': HiddenInput
 		}
 
+class ReplacementForm(Form):
+	replacement = forms.ModelChoiceField(
+		queryset = Equipment.objects.filter(
+			model__type__usage=Type.REPLACEMENT,
+			reply__isnull=True
+		),
+		label = 'Repuesto'
+	)	
+	serial = forms.CharField(label='Serie')
 
-
-
-# class ReplacementForm(ModelForm):
-# 	class Meta:
-# 		model = Replacement
-# 		fields = ('quantity', 'unit_price', 'stock', 'movement', 'model')
-# 		widgets = {
-#             'model': forms.HiddenInput,
-#             'unit_price': forms.HiddenInput,
-#             'stock': forms.HiddenInput,
-#             'movement': forms.HiddenInput,
-#         }
-        	
-
-# 	def __init__(self, *args, **kwargs):
-# 		replacements = kwargs.pop('replacements', None)
-# 		replacement = replacements.pop(0)		
-
-# 		initial = kwargs.get('initial', {})
-
-# 		initial.update({
-# 			'quantity': 0,
-# 			'unit_price': replacement.unit_price,
-# 			'stock': replacement.stock,
-# 			'movement': Replacement.OUT_BY_FIX,
-# 			'model': replacement.model.id
-# 		})
-
-# 		kwargs['initial'] = initial
-
-# 		super(ReplacementForm, self).__init__(*args, **kwargs)
-
-# 		self.fields['quantity'].widget.attrs.update({'min': 0, 'max': replacement.stock})		
-# 		self.fields['stock'].required = False
-# 		self.fields['model'].label = '%s %s' % (replacement.model.type, replacement.model)
-		
-
-# def get_replacement_formset():
-# 	replacements = Replacement.objects.order_by('model__name', '-date_joined').distinct('model__name').filter(stock__gt=0)
-	
-# 	return formset_factory(			
-# 		wraps(ReplacementForm)(partial(ReplacementForm, replacements=list(replacements))),		
-# 		extra=len(replacements)
-# 	)
+	def __init__(self, *args, **kwargs):
+		type = kwargs.pop('type', None)
+		super(ReplacementForm, self).__init__(*args, **kwargs)
+		if type is not None:
+			self.fields['replacement'].queryset = self.fields['replacement'].queryset.filter(model__type=type)		
+		for key in self.fields:			
+			self.fields[key].widget.attrs.update({'class': 'form-control', 'key': key})

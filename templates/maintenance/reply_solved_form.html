@@ -2,8 +2,98 @@
 
 {% block title %}Respuesta a ticket{% endblock %}
 
+{% block extra_fields %}
+<div>
+	<button type="button" id="btnShowTypes" class="btn btn-link">
+		<i class="fa fa-plus"></i>
+		Registrar repuestos empleados
+	</button>
+	<div style="display: none;" class="border-container types">
+		<div class="row">
+			{% for type in types %}		
+			<div class="col-sm-4 col-md-3">
+				<figure class="type" data-type="{{ type.id }}">
+					<img width="30" src="{{ type.image.url }}">	
+					<span>{{ type.name }}</span>					
+				</figure>
+			</div>
+			{% endfor %}
+		</div>		
+	</div>
+	<input type="hidden" name="form-TOTAL_FORMS" value="0" id="id_form-TOTAL_FORMS">
+	<input type="hidden" name="form-INITIAL_FORMS" value="0" id="id_form-INITIAL_FORMS">
+	<input type="hidden" name="form-MIN_NUM_FORMS" value="0" id="id_form-MIN_NUM_FORMS">
+	<input type="hidden" name="form-MAX_NUM_FORMS" value="1000" id="id_form-MAX_NUM_FORMS">
+</div>
+<br>
+{% endblock %}
+
 {% block submit %}			
 <button type="submit" class="btn btn-success">
 	<i class="fa fa-check-circle"></i> Resolver ticket
 </button>
+{% endblock %}
+
+{% block css %}
+<style type="text/css">
+	.border-container {		
+	    padding: 15px 10px;
+	    border: 2px solid #eaeaea;
+	    border-radius: 5px;
+	    margin-top: 10px;
+	}
+
+	.border-container figure:hover {
+		background-color: #eaeaea;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+</style>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function () {
+	document.getElementById('btnShowTypes').addEventListener('click', function(){
+		$('.border-container.types').slideToggle();
+	});
+
+
+	$('.type').on('click', function (e) {
+		var type = this.dataset.type
+		$.get('/get_component/'+type+'/', function (data) {
+			var comp = data['form'];
+			var cont = document.querySelector('.border-container.types');
+			cont.insertAdjacentHTML('beforeend', comp);
+
+			var forms = cont.querySelectorAll('.form-inline');
+			for (var i = 0; i < forms.length; i++) {				
+				var prefix = 'form-';				
+				var inputs = forms[i].querySelectorAll('input, select, textarea');
+				for (var j = 0; j < inputs.length; j++) {
+					var name =  prefix + i + '-' + inputs[j].getAttribute('key');
+					var id = 'id_' + name;					
+					inputs[j].setAttribute('name', name);
+					inputs[j].setAttribute('id', id);
+					inputs[j].previousElementSibling.setAttribute('for', id);
+				}
+			}
+
+			var totalFormsElem = document.getElementById('id_form-TOTAL_FORMS');
+			totalFormsElem.value = parseInt(totalFormsElem.value) + 1;
+			addDeleteEventListener(cont);
+		});
+	});
+
+	var addDeleteEventListener = function(container) {
+		var forms = container.querySelectorAll('.form-inline');
+		var lastForm = forms.item(forms.length - 1);
+		lastForm.querySelector('.delete-form').addEventListener('click', function () {
+			lastForm.remove();
+			var totalFormsElem = document.getElementById('id_form-TOTAL_FORMS');
+			totalFormsElem.value = parseInt(totalFormsElem.value) - 1;
+		});
+	}
+});
+</script>
 {% endblock %}

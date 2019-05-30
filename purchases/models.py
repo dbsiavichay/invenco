@@ -24,9 +24,6 @@ class Provider(AuditMixin, models.Model):
 		verbose_name_plural = 'proveedores'
 
 class Invoice(AuditMixin, models.Model):
-	class Meta:
-		ordering = ['-date',]
-
 	provider = models.ForeignKey(Provider, verbose_name='proveedor')
 	number = models.CharField(max_length=64, verbose_name='número de factura')
 	date = models.DateField(verbose_name='fecha de factura')	
@@ -54,6 +51,7 @@ class Invoice(AuditMixin, models.Model):
 
 	class Meta:
 		verbose_name = 'factura'
+		ordering = ['-date',]
 
 class InvoiceLine(AuditMixin, models.Model):
 	quantity = models.FloatField()
