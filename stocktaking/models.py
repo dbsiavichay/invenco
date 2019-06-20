@@ -79,6 +79,7 @@ class Model(AuditMixin, models.Model):
 	name = models.CharField(max_length=128, verbose_name='nombre')
 	part_number = models.CharField(max_length=32, blank=True, null=True, verbose_name='parte #')
 	specifications = JSONField(blank=True, null=True)
+	consumables = models.ManyToManyField('self', symmetrical=False, blank=True, verbose_name='consumibles')
 
 	def __unicode__(self):
 		return '%(brand)s %(name)s' % {'brand': self.brand, 'name': self.name}
@@ -94,25 +95,31 @@ class Model(AuditMixin, models.Model):
 
 	# 	return list_specifications
 
-	# def get_list_specifications(self):
-	# 	list_specifications = []
-	# 	specifications = self.type.type_specifications.exclude(widget='separator')
+	# Used for consumable_table.html component in ajax call
+	def get_specifications_as_list(self):
+		_list = []
+		groups = self.type.groups.all()
 
-	# 	for specification in specifications:
-	# 		key = str(specification.id)
-	# 		if key in self.specifications.keys():				
-	# 			list_specifications.append(
-	# 				'%s: %s' % (specification.label, self.specifications[key])				
-	# 			)
+		for group in groups:
+			for specification in group.specifications.all():
+				key = str(specification.id)
+				if key in self.specifications.keys() and self.specifications[key]:				
+					_list.append(
+						'%s: %s' % (specification.name, self.specifications[key])				
+					)
 
-	# 	return list_specifications
+		return _list
 
 	def get_replacement_count(self):
 		count = self.equipment_set.filter(reply__isnull=True).exclude(state=10).count();
 		return count
 
-	def get_consumable_count(self):
-		count = self.equipment_set.exclude(state=10).count();
+	def get_available_consumable_list(self):
+		queryset = self.equipment_set.filter(reply__isnull=True)
+		return queryset
+
+	def get_consumable_stock(self):
+		count = self.get_available_consumable_list().count()
 		return count
 
 class Equipment(models.Model):	
@@ -202,4 +209,32 @@ class Assignment(models.Model):
 	date = models.DateTimeField(auto_now_add=True)
 	active = models.BooleanField(default=True)
 
-	
+class Dispatch(models.Model):
+	employee = models.CharField(max_length=16, verbose_name='solicitante')
+	observation = models.TextField(blank=True, null=True, verbose_name='observaciones')
+	date = models.DateTimeField(auto_now_add=True)
+	replies = models.ManyToManyField('maintenance.Reply')
+
+	def get_employee(self):
+		contributor = Contributor.objects.using('sim').get(charter=self.employee)
+		arr = contributor.name.split()
+		return '%s %s' % (arr[2], arr[0])
+
+	def get_details(self):
+		result = {}
+		args = (
+			'ticket__equipment__model__type__name', 'ticket__equipment__model__brand__name', 'ticket__equipment__model__name', 'ticket__equipment__code', 'ticket__equipment__serial',
+			'replacements__model__type__name', 'replacements__model__brand__name', 'replacements__model__name'
+		)
+		queryset = self.replies.values(*args).annotate(num=models.Count('replacements__model'))
+		for data in queryset:
+			key = '{} {} {}|{}|{}'.format(data[args[0]], data[args[1]], data[args[2]], data[args[3]], data[args[4]])
+			description = '{} {} {}'.format(data[args[5]], data[args[6]], data[args[7]])
+			quantity = data['num']
+			if key in result:
+				result[key].append((description, quantity))
+			else:
+				result[key] = [(description, quantity),]
+
+		return result
+

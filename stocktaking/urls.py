@@ -22,4 +22,9 @@ urlpatterns = [
     
     url(r'^consumable/$', login_required(ConsumableListView.as_view()), name='consumable_list'),        
     url(r'^consumable/stock/$', login_required(ConsumableStockView.as_view()), name='consumable_stock'),
+
+    url(r'^dispatch/$', login_required(DispatchListView.as_view()), name='dispatch_list'),
+    url(r'^dispatch/add/$', login_required(DispatchCreateView.as_view()), name='dispatch_create'),    
+    
+    url(r'^get_component/(?P<pk>\d+)/$', get_component, name='consumable_select'),    
 ]

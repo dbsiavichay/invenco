@@ -10,7 +10,7 @@ from .forms import *
 from .mixins import SearchMixin
 from pure_pagination.mixins import PaginationMixin
 
-#from structure.models import Employee
+from maintenance.models import Ticket, Reply
 
 class SelectTypeListView(ListView):
 	model = Type
@@ -52,7 +52,7 @@ class ModelListView(PaginationMixin, SearchMixin, ListView):
 class ModelCreateView(CreateView):
 	model = Model
 	form_class = ModelForm
-	success_url = '/model/'	
+	success_url = reverse_lazy('model_list')	
 
 	def get_context_data(self, **kwargs):
 		context = super(ModelCreateView, self).get_context_data(**kwargs)		
@@ -67,8 +67,18 @@ class ModelCreateView(CreateView):
 		self.object = form.save(commit=False)
 		self.object.specifications = specifications_form.cleaned_data
 		self.object.save()
+		form.save_m2m()
 
 		return redirect(self.get_success_url())
+
+	def get_form_kwargs(self):
+		kwargs = super(ModelCreateView, self).get_form_kwargs()
+		kwargs.update({
+			'type': self.get_type_object()
+		})
+
+		return kwargs
+
 
 	def get_specifications_form(self):
 		kwargs = {'type': self.get_type_object(), 'usage': Group.MODEL}				
@@ -89,7 +99,7 @@ class ModelCreateView(CreateView):
 class ModelUpdateView(UpdateView):
 	model = Model
 	form_class = ModelForm
-	success_url = '/model/'	
+	success_url = reverse_lazy('model_list')	
 
 	def get_context_data(self, **kwargs):
 		context = super(ModelUpdateView, self).get_context_data(**kwargs)		
@@ -104,6 +114,7 @@ class ModelUpdateView(UpdateView):
 		self.object = form.save(commit=False)
 		self.object.specifications = specifications_form.cleaned_data
 		self.object.save()
+		form.save_m2m()
 
 		return redirect(self.get_success_url())
 
@@ -118,6 +129,14 @@ class ModelUpdateView(UpdateView):
 				pass
 		form = SpecificationsForm(post_data, **kwargs)
 		return form
+
+	def get_form_kwargs(self):
+		kwargs = super(ModelUpdateView, self).get_form_kwargs()
+		kwargs.update({
+			'type': self.object.type
+		})
+
+		return kwargs
 
 	def get_specification_form(self, type):				
 		self.object = self.get_object()		
@@ -136,7 +155,7 @@ class ModelUpdateView(UpdateView):
 
 class ModelDeleteView(DeleteView):
 	model = Model
-	success_url = '/model/'
+	success_url = reverse_lazy('model_list')
 
 class EquipmentListView(PaginationMixin, SearchMixin, ListView):
 	model = Equipment	
@@ -339,3 +358,66 @@ class LocationTransferView(LocationCreateView):
 		self.create_assigments(equipments)
 		Assignment.objects.filter(location=self.get_object(), active=True, equipment__in=equipments).update(active=False)		
 		return redirect(self.success_url)
+
+class DispatchListView(PaginationMixin, ListView):
+	model = Dispatch
+
+class DispatchCreateView(CreateView):
+	model = Dispatch
+	form_class = DispatchForm
+	success_url = reverse_lazy('dispatch_list')
+
+	def form_valid(self, form):
+		formset = self.get_consumable_formset()
+		if not formset.is_valid():
+			return self.form_invalid(form)
+
+		self.object = form.save()
+		self.create_replies(formset)
+		return redirect(self.success_url)
+
+	def create_replies(self, formset):
+		data = {}
+
+		for form in formset:
+			key = str(form.cleaned_data['equipment'].id)
+			if key in data:
+				data[key]['consumables'].append((form.cleaned_data['consumable'], form.cleaned_data['quantity']))
+			else:
+				data[key] = {
+					'ticket': {
+						'problem_type_id': 1,
+						'equipment': form.cleaned_data['equipment'],
+						'problem': 'Sin consumibles para equipo.',
+						'status': Ticket.SOLVED,
+						'user': self.request.user	
+					}, 
+					'reply': {
+						'description': 'Despacho de consumible',
+					},
+					'consumables': [(form.cleaned_data['consumable'], form.cleaned_data['quantity']),]
+				}
+
+		for key in data:
+			ticket = Ticket.objects.create(**data[key]['ticket'])
+			reply = Reply.objects.create(ticket=ticket, **data[key]['reply'])
+			self.object.replies.add(reply)
+			for model, quantity in data[key]['consumables']:
+				for consumable in model.get_available_consumable_list()[:quantity]:
+					consumable.reply = reply
+					consumable.save()
+
+	def get_consumable_formset(self):
+		DispatchConsumableFormset = formset_factory(DispatchConsumableForm, extra=0)
+		formset = DispatchConsumableFormset(self.request.POST)
+		return formset
+
+
+
+def get_component(request, pk):
+	from django.template.loader import render_to_string	
+	equipment = get_object_or_404(Equipment, pk=pk)
+
+	r = render_to_string('components/realty/consumable_table.html', context={'equipment':equipment})
+	
+	return JsonResponse({'table': r}, status=200)

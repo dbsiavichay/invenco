@@ -80,8 +80,7 @@ class ReplySolvedCreateView(ReplyBaseCreateView):
 
 	def get_context_data(self, **kwargs):
 		context = super(ReplySolvedCreateView, self).get_context_data(**kwargs)
-		types = Type.objects.filter(usage=Type.REPLACEMENT)
-		formset = self.get_replacement_formset()		
+		types = Type.objects.filter(usage=Type.REPLACEMENT)		
 		context.update({'types': types,})
 		return context
 

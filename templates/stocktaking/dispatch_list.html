@@ -1,0 +1,40 @@
+{% extends 'base/base_list.html' %}	
+
+{% block title %}Lista de despachos{% endblock %}
+{% block button %}
+<a href="{% url 'dispatch_create' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Agregar</a>
+{% endblock %}
+{% block table %}
+<table class="table">
+    <thead>      
+        <tr>
+            <th>Cedula</th>
+            <th>Solicitante</th>
+            <th>Destino del consumible</th>
+            <th>Fecha</th>        
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>             
+        {% for object in object_list %}
+        <tr>                  
+            <td>{{ object.employee }}</td>                
+            <td>{{ object.get_employee }}</td>
+            <td>          
+                {% for reply in object.replies.all %}
+                <li>{{ reply.ticket.equipment }}</li>
+                {% endfor %}          
+            </td>
+            <td>{{ object.date }}</td>        
+            <td class="col-xs-2">
+                <a href="{% url 'dispatch_print' object.id %}" class="btn btn-default btn-xs">
+                    <span class="fa fa-print"></span>
+                </a>          
+            </td>
+        </tr>
+        {% empty %}
+        <tr colspan="4"><td>"Sin registros."</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
