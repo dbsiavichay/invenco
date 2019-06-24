@@ -178,7 +178,7 @@ class EquipmentListView(PaginationMixin, SearchMixin, ListView):
 class EquipmentCreateView(CreateView):
 	model = Equipment
 	form_class = EquipmentForm
-	success_url = '/equipment/'	
+	success_url = reverse_lazy('equipment_list')	
 
 	def get_context_data(self, **kwargs):
 		context = super(EquipmentCreateView, self).get_context_data(**kwargs)		
@@ -219,7 +219,7 @@ class EquipmentCreateView(CreateView):
 class EquipmentUpdateView(UpdateView):
 	model = Equipment
 	form_class = EquipmentForm
-	success_url = '/equipment/'	
+	success_url = reverse_lazy('equipment_list')	
 
 	def get_context_data(self, **kwargs):
 		context = super(EquipmentUpdateView, self).get_context_data(**kwargs)		

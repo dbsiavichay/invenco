@@ -84,6 +84,9 @@
 	}
 
 	var addRowListener = function (row) {
+		$(row).find('input[name*=discount]').val(0)
+		$(row).find('input[name*=iva_percent]').val(12)
+
 		$(row).find('input[name*=quantity]').on('keyup', function () {
 			calculateSubtotal(row);
 		});
@@ -117,8 +120,8 @@
             deleteCssClass: 'btn btn-danger btn-xs',
             deleteText: '<span class="fa fa-close"></span>',
             added: function ($row) {
-            	$row.find('.select2-container').remove();
-            	$row.find('select').select2();
+            	//$row.find('.select2-container').remove();
+            	//$row.find('select').select2();
             	addRowListener($row);
             } 
         });        
