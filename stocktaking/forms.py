@@ -111,7 +111,7 @@ class EmployeeMixin(object):
 
 class LocationForm(EmployeeMixin, DjangoModelForm):
 	equipments = ModelMultipleChoiceField(
-		queryset = Equipment.objects.filter(model__type__usage=Type.EQUIPMENT),
+		queryset = Equipment.objects.filter(model__type__usage=Type.EQUIPMENT, assignment__isnull=True),
 		label = 'Equipos disponibles',
 	)
 

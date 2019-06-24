@@ -323,6 +323,26 @@ class LocationCreateView(CreateView):
 			self.object.delete()			
 			raise Exception
 
+class LocationUpdateView(UpdateView):
+	model = Location
+	form_class = LocationForm
+	template_name = 'stocktaking/location_add.html'
+	success_url = reverse_lazy('location_list')
+
+	def form_valid(self, form):
+		self.object = form.save()		
+		self.create_assigments(form.cleaned_data['equipments'])		
+		return redirect(self.success_url)
+
+	def create_assigments(self, equipments):
+		try:		
+			for eq in equipments:
+				Assignment.objects.create(location=self.object, equipment=eq)				
+		except:
+			self.object.assignment_set.all().delete()
+			self.object.delete()			
+			raise Exception
+
 class LocationTransferView(LocationCreateView):
 	form_class = LocationTransferForm
 	template_name = 'stocktaking/location_transfer.html'

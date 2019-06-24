@@ -25,15 +25,15 @@
             </button>
           </td>
 	        <td class="col-xs-3">
-            <a href="#" class="btn btn-default btn-xs">
+            <a href="{% url 'location_update' object.id %}" class="btn btn-default btn-xs">
               <span class="fa fa-plus"></span>
             </a>					        	
 	        	<a href="{% url 'location_transfer' object.id %}" class="btn btn-default btn-xs">
 	        		<span class="fa fa-exchange"></span>
 	        	</a>
-	        	<button class="btn btn-default btn-xs delete" data-model="model" data-id="{{ model.id }}">
+	        	<!-- <button class="btn btn-default btn-xs delete" data-model="model" data-id="{{ model.id }}">
 	        		<span class="fa fa-trash"></span>
-	        	</button>
+	        	</button> -->
 	        </td>
         </tr>
         {% empty %}

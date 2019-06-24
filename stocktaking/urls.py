@@ -11,9 +11,11 @@ urlpatterns = [
     url(r'^equipment/$', login_required(EquipmentListView.as_view()), name='equipment_list'),    
 
     url(r'^equipment/add/type/(?P<type>\d+)/$', login_required(EquipmentCreateView.as_view()), name='equipment_create'),
-    url(r'^equipment/(?P<pk>\d+)/edit/$', login_required(EquipmentUpdateView.as_view()), name='equipment_update'),    
+    url(r'^equipment/(?P<pk>\d+)/edit/$', login_required(EquipmentUpdateView.as_view()), name='equipment_update'),
+
     url(r'^location/$', login_required(LocationListView.as_view()), name='location_list'),    
     url(r'^location/add/$', login_required(LocationCreateView.as_view()), name='location_create'),    
+    url(r'^location/(?P<pk>\d+)/update/$', login_required(LocationUpdateView.as_view()), name='location_update'),    
     url(r'^location/(?P<pk>\d+)/transfer/$', login_required(LocationTransferView.as_view()), name='location_transfer'),    
     
     url(r'^replacement/$', login_required(ReplacementListView.as_view()), name='replacement_list'),        
