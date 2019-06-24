@@ -370,16 +370,21 @@ class DispatchCreateView(CreateView):
 	def form_valid(self, form):
 		formset = self.get_consumable_formset()
 		if not formset.is_valid():
-			return self.form_invalid(form)
-
-		self.object = form.save()
-		self.create_replies(formset)
+			return self.form_invalid(form, formset)
+		data = self.get_data(formset)
+		if data:
+			self.object = form.save()
+			self.create_replies(data)
 		return redirect(self.success_url)
 
-	def create_replies(self, formset):
-		data = {}
+	def form_invalid(self, form, formset):		
+		return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
+	def get_data(self, formset):
+		count = 0
+		data = {}
 		for form in formset:
+			count = count + form.cleaned_data['quantity']
 			key = str(form.cleaned_data['equipment'].id)
 			if key in data:
 				data[key]['consumables'].append((form.cleaned_data['consumable'], form.cleaned_data['quantity']))
@@ -389,16 +394,19 @@ class DispatchCreateView(CreateView):
 						'problem_type_id': 1,
 						'equipment': form.cleaned_data['equipment'],
 						'problem': 'Sin consumibles para equipo.',
-						'status': Ticket.SOLVED,
+						'status': Ticket.HIDDEN,
 						'user': self.request.user	
 					}, 
 					'reply': {
 						'description': 'Despacho de consumible',
 					},
-					'consumables': [(form.cleaned_data['consumable'], form.cleaned_data['quantity']),]
+					'consumables': [(form.cleaned_data['consumable'], form.cleaned_data['quantity']),],
 				}
+		if count:
+			return data
 
-		for key in data:
+	def create_replies(self, data):
+		for key in data:			
 			ticket = Ticket.objects.create(**data[key]['ticket'])
 			reply = Reply.objects.create(ticket=ticket, **data[key]['reply'])
 			self.object.replies.add(reply)
@@ -408,8 +416,8 @@ class DispatchCreateView(CreateView):
 					consumable.save()
 
 	def get_consumable_formset(self):
-		DispatchConsumableFormset = formset_factory(DispatchConsumableForm, extra=0)
-		formset = DispatchConsumableFormset(self.request.POST)
+		FormSet = formset_factory(DispatchConsumableForm, formset=DispatchConsumableFormset, extra=0)
+		formset = FormSet(self.request.POST)
 		return formset
 
 

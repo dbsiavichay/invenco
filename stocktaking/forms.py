@@ -167,6 +167,28 @@ class DispatchForm(EmployeeMixin, DjangoModelForm):
 			'employee': Select,			
 		}
 
+class DispatchConsumableFormset(forms.BaseFormSet):
+	def clean(self):
+		if any(self.errors):
+			# Don't bother validating the formset unless each form is valid on its own
+			return
+		models = {}
+		for form in self.forms:
+			model = form.cleaned_data.get('consumable')
+			quantity = form.cleaned_data.get('quantity')
+			key = str(model.id)
+			if key in models:
+				models[key]['quantity'] += quantity
+			else:
+				stock = model.get_consumable_stock()
+				models[key] = {
+					'stock': stock,
+					'quantity': quantity
+				}
+
+			if models[key]['stock'] < models[key]['quantity']:
+				raise ValidationError('No hay suficiente stock para {}'.format(model.name))
+
 class DispatchConsumableForm(Form):
 	equipment=ModelChoiceField(
 		queryset = Equipment.objects.filter(model__type__usage=Type.EQUIPMENT)

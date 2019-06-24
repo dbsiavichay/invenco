@@ -238,3 +238,5 @@ class Dispatch(models.Model):
 
 		return result
 
+	class Meta:
+		ordering = ('-date', )

@@ -1,6 +1,11 @@
 {% extends 'base/base_form.html' %}
 {% load components %}
 
+{% block errors %}
+{{ form.errors }}
+{{ formset.non_form_errors }}
+{% endblock %}
+
 {% block visible_fields %}
 {% render_field form.employee class="form-control" %}
 {% render_field form.selector class="form-control" %}
@@ -20,6 +25,11 @@
 	selector.addEventListener('change', function () {
 		$.get('/stocktaking/get_component/'+ this.value + '/', function (data){
 			selector.parentElement.insertAdjacentHTML('afterend', data['table']);
+			var table = document.querySelector('.table-responsive');
+			table.querySelector('a').addEventListener('click', function (e) {
+				e.preventDefault();
+				table.remove();
+			});
 		});
 	});
 
@@ -33,10 +43,13 @@
 		set_identifiers(elem.nextElementSibling, index)
 	}
 
-	document.querySelector('#form').addEventListener('submit', function () {
+	document.querySelector('#form').addEventListener('submit', function (e) {
+		e.preventDefault();
+		var values = document.querySelectorAll('[name="quantity"]');
 		var inputs = document.querySelectorAll('[name="equipment"]');		
 		inputs.forEach(set_identifiers);
 		document.getElementById('id_form-TOTAL_FORMS').value = inputs.length
+		this.submit();
 	});
 
 </script>

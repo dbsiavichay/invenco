@@ -18,6 +18,11 @@ class TicketListView(PaginationMixin, ListView):
 	model = Ticket
 	paginate_by = 20
 
+	def get_queryset(self):
+		queryset = super(TicketListView, self).get_queryset()
+		queryset = queryset.exclude(status=Ticket.HIDDEN)
+		return queryset
+
 class TicketUserListView(TicketListView):
 	def get_queryset(self):
 		queryset = super(TicketUserListView, self).get_queryset()
