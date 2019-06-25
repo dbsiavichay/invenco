@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		type.addEventListener('click', function () {			
 			var id = this.dataset.type;
 			var model = document.getElementById('model').value;
-			url = '/'+ model +'/add/type/' + id + '/';
+			url = '/stocktaking/'+ model +'/add/type/' + id + '/';
 			document.getElementById('next').setAttribute('href', url)
 			deactiveAllTypes();
 			activeType(this)

@@ -18,10 +18,10 @@ class ProblemType(models.Model):
 		verbose_name_plural='tipos de problema'
 
 class Ticket(models.Model):
-	CREATED, OPEN, SOLVED, CLOSED, CANCELED = (1,2,3,4,5)
+	CREATED, OPEN, SOLVED, CLOSED, CANCELED, HIDDEN = (1,2,3,4,5,10)
 	
 	STATUS_CHOICES = (
-		(CREATED,'Creado'), (OPEN,'Abierto'), (SOLVED, 'Resuelto'), (CLOSED, 'Cerrado'),(CANCELED, 'Anulado'),
+		(CREATED,'Creado'), (OPEN,'Abierto'), (SOLVED, 'Resuelto'), (CLOSED, 'Cerrado'),(CANCELED, 'Anulado'), (HIDDEN, 'Oculto')
 	)
 
 	problem_type = models.ForeignKey(ProblemType, verbose_name='tipo de problema')

@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'', include('security.urls')),
-    url(r'', include('stocktaking.urls')), 
+    url(r'^stocktaking/', include('stocktaking.urls')), 
     url(r'^purchases/', include('purchases.urls')), 
     url(r'', include('structure.urls')),
     url(r'', include('maintenance.urls')),

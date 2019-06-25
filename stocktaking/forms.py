@@ -32,6 +32,18 @@ class ModelForm(DjangoModelForm):
 			'type': HiddenInput
 		}
 
+	def __init__(self, *args, **kwargs):
+		type = kwargs.pop('type', None)
+		super(ModelForm, self).__init__(*args, **kwargs)
+		if type is None:
+			raise ValueError('<Type> es requerido.')
+
+		if type.usage == Type.EQUIPMENT:
+			consumables = self.fields['consumables'].queryset
+			self.fields['consumables'].queryset = consumables.filter(type__usage=Type.CONSUMABLE)
+		else:
+			self.fields['consumables'].widget = HiddenInput()
+
 class EquipmentForm(DjangoModelForm):
 	class Meta:
 		model = Equipment
@@ -87,17 +99,7 @@ class SpecificationsForm(Form):
 			self.fields[key].widget.attrs.update(attrs)
 			self[key].group = group.name
 
-class LocationForm(DjangoModelForm):
-	equipments = ModelMultipleChoiceField(
-		queryset = Equipment.objects.filter(model__type__usage=Type.EQUIPMENT),
-		label = 'Equipos disponibles',
-	)
-
-	def __init__(self, *args, **kwargs):		
-		super(LocationForm, self).__init__(*args, **kwargs)		
-		self.fields['employee'].widget.choices = self.get_employee_choices()
-		self.fields['department'].widget.choices = self.get_department_choices()
-
+class EmployeeMixin(object):
 	def _get_employees(self):		
 		employees = Employee.objects.using('sim').filter(contributor__state='ACTIVO')
 		return employees	
@@ -106,6 +108,17 @@ class LocationForm(DjangoModelForm):
 		choices = [('', '---------'),]		
 		choices = choices + [(emp.contributor.charter, emp.contributor.charter+' | '+emp.contributor.name) for emp in self._get_employees()]		
 		return choices
+
+class LocationForm(EmployeeMixin, DjangoModelForm):
+	equipments = ModelMultipleChoiceField(
+		queryset = Equipment.objects.filter(model__type__usage=Type.EQUIPMENT, assignment__isnull=True),
+		label = 'Equipos disponibles',
+	)
+
+	def __init__(self, *args, **kwargs):		
+		super(LocationForm, self).__init__(*args, **kwargs)		
+		self.fields['employee'].widget.choices = self.get_employee_choices()
+		self.fields['department'].widget.choices = self.get_department_choices()
 
 	def get_department_choices(self):
 		choices = [('', '---------'),]		
@@ -136,3 +149,53 @@ class LocationTransferForm(LocationForm):
 		queryset = super(LocationTransferForm, self)._get_employees()
 		employees = queryset.exclude(contributor__charter=self.charter)
 		return employees
+
+class DispatchForm(EmployeeMixin, DjangoModelForm):
+	selector = ModelChoiceField(
+		queryset=Equipment.objects.filter(model__type__usage=Type.EQUIPMENT, model__consumables__isnull=False),
+		label = 'Equipo'
+	)
+
+	def __init__(self, *args, **kwargs):		
+		super(DispatchForm, self).__init__(*args, **kwargs)		
+		self.fields['employee'].widget.choices = self.get_employee_choices()
+
+	class Meta:
+		model = Dispatch
+		exclude = ('replies',)
+		widgets = {
+			'employee': Select,			
+		}
+
+class DispatchConsumableFormset(forms.BaseFormSet):
+	def clean(self):
+		if any(self.errors):
+			# Don't bother validating the formset unless each form is valid on its own
+			return
+		models = {}
+		for form in self.forms:
+			model = form.cleaned_data.get('consumable')
+			quantity = form.cleaned_data.get('quantity')
+			key = str(model.id)
+			if key in models:
+				models[key]['quantity'] += quantity
+			else:
+				stock = model.get_consumable_stock()
+				models[key] = {
+					'stock': stock,
+					'quantity': quantity
+				}
+
+			if models[key]['stock'] < models[key]['quantity']:
+				raise ValidationError('No hay suficiente stock para {}'.format(model.name))
+
+class DispatchConsumableForm(Form):
+	equipment=ModelChoiceField(
+		queryset = Equipment.objects.filter(model__type__usage=Type.EQUIPMENT)
+	)
+	consumable = ModelChoiceField(
+		queryset=Model.objects.filter(type__usage=Type.CONSUMABLE),
+		widget = HiddenInput()
+	)
+
+	quantity = IntegerField()

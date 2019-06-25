@@ -8,7 +8,10 @@
 		<nav>
 			<ul class="nav">
 				<li><a href="{% url 'home' %}" class=""><i class="lnr lnr-home"></i><span>Inicio</span></a></li>
-				<li><a href="{% url 'model_list' %}" class=""><i class="lnr lnr-code"></i> <span>Modelos</span></a></li>				
+				{% if perms.stocktaking.change_model %}
+				<li><a href="{% url 'model_list' %}" class=""><i class="lnr lnr-code"></i> <span>Modelos</span></a></li>
+				{% endif %}
+				{% if perms.stocktaking.change_equipment %}
 				<li><a href="{% url 'equipment_list' %}" class=""><i class="lnr lnr-laptop"></i> <span>Equipos</span></a></li>
 				<li>
 					<a href="#subReplacements" data-toggle="collapse" class="collapsed">
@@ -22,6 +25,8 @@
 						</ul>
 					</div>
 				</li>
+				{% endif %}				
+				{% if perms.stocktaking.change_dispatch %}
 				<li>
 					<a href="#subConsumables" data-toggle="collapse" class="collapsed">
 						<i class="lnr lnr-drop"></i> <span>Consumibles</span> 
@@ -31,10 +36,15 @@
 						<ul class="nav">
 							<li><a href="{% url 'consumable_list' %}" class="">Listado</a></li>
 							<li><a href="{% url 'consumable_stock' %}" class="">Stock</a></li>
+							<li><a href="{% url 'dispatch_list' %}" class="">Despachos</a></li>
 						</ul>
 					</div>
-				</li>				
+				</li>
+				{% endif %}
+				{% if perms.stocktaking.change_location %}
 				<li><a href="{% url 'location_list' %}" class=""><i class="lnr lnr-user"></i> <span>Asignaciones</span></a></li>
+				{% endif %}
+				{% if perms.purchases.change_purchase %}
 				<li>
 					<a href="#subPurchases" data-toggle="collapse" class="collapsed">
 						<i class="lnr lnr-cart"></i> <span>Compras</span> 
@@ -47,6 +57,8 @@
 						</ul>
 					</div>
 				</li>
+				{% endif %}
+				{% if perms.maintenance.change_purchase %}
 				<li>
 					<a href="#subMaintenance" data-toggle="collapse" class="collapsed">
 						<i class="lnr lnr-bug"></i> <span>Mantenimiento</span> 
@@ -58,8 +70,11 @@
 							<li><a href="{% url 'ticket_user_list' %}" class="">Mis tickets</a></li>
 						</ul>
 					</div>
-				</li>				
+				</li>
+				{% endif %}				
+				{% if perms.stocktaking.change_equipment %}
 				<li><a href="{% url 'reporting_home' %}" class=""><i class="lnr lnr-file-empty"></i> <span>Reportes</span></a></li>
+				{% endif %}
 			</ul>
 		</nav>
 	</div>	

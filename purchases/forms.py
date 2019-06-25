@@ -49,7 +49,7 @@ class InvoiceLineForm(forms.ModelForm):
 
 
 InvoiceLineFormset = inlineformset_factory(
-	Invoice, InvoiceLine, fields='__all__', min_num=1, extra=2    
+	Invoice, InvoiceLine, fields='__all__', min_num=1, extra=5    
 )
 
 InvoiceLineEquipmentsFormset = inlineformset_factory(

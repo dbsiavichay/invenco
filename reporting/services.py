@@ -4,9 +4,10 @@ from os.path import join
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib import colors
 from reportlab.lib.units import cm, mm
-from reportlab.platypus import Image, Table, TableStyle, Paragraph
+from reportlab.platypus import Image, Table, TableStyle, Paragraph, Spacer
 
 from stocktaking.models import Equipment
 
@@ -60,27 +61,30 @@ def get_letterhead_page(canvas, doc):
 		canvas.restoreState()
 
 ### Functions for paragraphs
+def get_title_paragraph(text, size=18):
+	style = getSampleStyleSheet()['Title']
+	style.fontSize = size
+	return Paragraph(text, style=style)
+
 def get_strong_text(text, size=10):
 	stylesheet=getSampleStyleSheet()
 	bold = stylesheet['Heading5']
 	bold.fontSize = size
-
  	return Paragraph(text, style=bold)
 
-def get_paragraph(text, size):
+def get_paragraph(text, size=12):
 	style = getSampleStyleSheet()['Normal']
 	style.fontSize = size
 	style.leading = size
-
 	return Paragraph(text, style=style)
 
 ### Functions for draw tables
-def get_table_style():
+def get_table_style(fontSize=6):
 	style = TableStyle([
 		('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
 		('GRID',(0,0),(-1,-1), 0.25, colors.black),
 		('VALIGN', (0, 0), (-1, -1), 'TOP'),
-		('FONTSIZE', (0, 0), (-1, -1), 6),
+		('FONTSIZE', (0, 0), (-1, -1), fontSize),
 	])
 
 	return style
@@ -140,23 +144,32 @@ def get_data(object_list, fields ,style=None):
 
 	return data
 
+
+def get_table(queryset, fields, col_widths=None, aling='LEFT'):
+	if len(queryset) <= 0:
+		return None
+
+	headers = [item.split('as')[1].strip() for item in fields]
+	fields = [item.split('as')[0].strip() for item in fields]
+	data = get_data(queryset, fields)	
+	data = get_styled_data([headers,] + data)
+	col_widths = [width*cm for width in col_widths]	
+	table = Table(data, cols_widths, style=get_table_style(), hAlign=aling)
+	return table
+
 def get_table_equipments(type):
 	equipments = Equipment.objects.filter(model__type=type).exclude(state=10)
 
 	if len(equipments) <= 0:
 		return None
 
-	table_title = get_table_title(type.name)
-	headers = ['Marca', 'Equipo', 'Serie', 'Código','Responsable', 'Estado']
-	columns_width = [1.5*cm, 3*cm,2.3*cm,1.5*cm,4*cm, 3*cm]
-	fields = ('model.brand', 'model.name', 'serial', 'code', 'get_responsible', 'get_state')
-
-	data = get_data(equipments, fields)	
+	table_title = get_table_title(type.name)	
+	col_widths = [1.5, 3, 2.3, 1.5, 4, 3]
+	fields = ('model.brand as Marca', 'model.name as Equipo', 'serial as Serie', 'code as Código', 'get_responsible as Responsable', 'get_state as Estado')
 
 	# ##Specifications
-	specifications = type.type_specifications.filter(when='device')
+	#specifications = type.type_specifications.filter(when='device')
 
-	
 	# for i in range(len(equipments)):
 	# 	equipment = equipments[i]
 	# 	values = []		
@@ -178,8 +191,47 @@ def get_table_equipments(type):
 
 	# 	if len(values) > 0:
 	# 		data[i].append(get_list_component(values))
-
-	data = get_styled_data([headers,] + data)	
-	table = Table(data, columns_width, style=get_table_style(), hAlign='LEFT')
+	
+	table = get_table(equipments, fields, col_widths)
 
 	return [table_title, table]
+
+def get_signatures(values_list):
+	story = [Spacer(0, 2.5*cm)]
+
+	table_style = TableStyle([
+		#('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+		#('GRID',(0,0),(-1,-1), 0.25, colors.black),
+		('VALIGN', (0, 0), (-1, -1), 'TOP'),
+		('ALIGN', (0, 0), (-1,-1), 'CENTER'),
+		('FONTSIZE', (0, 0), (-1, -1), 12),
+	])
+
+	names = []
+	positions = []
+	for name, position in values_list:
+		names.append(name)
+		pos = get_strong_text(position, 12)
+		pos.style.alignment=TA_CENTER
+		positions.append(pos)
+
+	table = Table([names, positions], style=table_style, hAlign='CENTER')
+	story.append(table)
+	return story
+
+
+def get_table_dispatch(dispatch):
+	story = []
+	details = dispatch.get_details()	
+	for key in details:
+		story.append(get_strong_text(key, 12))
+		story.append(Spacer(0, 0.5*cm))
+		data = [['Descripción', 'Cantidad']]
+		for description, quantity in details[key]:
+			data.append([description, quantity])
+		data = get_styled_data(data)
+		table = Table(data, [None, 3*cm], style=get_table_style(10), hAlign='CENTER')
+		story.append(table)
+
+	return story
+

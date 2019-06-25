@@ -18,6 +18,11 @@ class TicketListView(PaginationMixin, ListView):
 	model = Ticket
 	paginate_by = 20
 
+	def get_queryset(self):
+		queryset = super(TicketListView, self).get_queryset()
+		queryset = queryset.exclude(status=Ticket.HIDDEN)
+		return queryset
+
 class TicketUserListView(TicketListView):
 	def get_queryset(self):
 		queryset = super(TicketUserListView, self).get_queryset()
@@ -80,8 +85,7 @@ class ReplySolvedCreateView(ReplyBaseCreateView):
 
 	def get_context_data(self, **kwargs):
 		context = super(ReplySolvedCreateView, self).get_context_data(**kwargs)
-		types = Type.objects.filter(usage=Type.REPLACEMENT)
-		formset = self.get_replacement_formset()		
+		types = Type.objects.filter(usage=Type.REPLACEMENT)		
 		context.update({'types': types,})
 		return context
 
