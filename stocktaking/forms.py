@@ -42,7 +42,8 @@ class ModelForm(DjangoModelForm):
 			consumables = self.fields['consumables'].queryset
 			self.fields['consumables'].queryset = consumables.filter(type__usage=Type.CONSUMABLE)
 		else:
-			self.fields['consumables'].widget = HiddenInput()
+			del self.fields['consumables']
+			#self.fields['consumables'].widget = HiddenInput()
 
 class EquipmentForm(DjangoModelForm):
 	class Meta:

@@ -79,7 +79,6 @@ class ModelCreateView(CreateView):
 
 		return kwargs
 
-
 	def get_specifications_form(self):
 		kwargs = {'type': self.get_type_object(), 'usage': Group.MODEL}				
 		post_data = self.request.POST if self.request.method == 'POST' else None
