@@ -95,16 +95,16 @@ class SpecificationsForm(Form):
 				CHOICES = [(choice, choice) for choice in specification.choices.split(',')]
 				self.fields[key].choices = CHOICES
 
-			pairs = (pair.split('=') for pair in specification.attributes.split(',')) if specification.attributes else None			
+			pairs = (pair.split('=') for pair in specification.attributes.split(',')) if specification.attributes else None
 			attrs = dict((key.strip(), eval(value.strip())) for key, value in pairs) if pairs is not None else {}
 
 			self.fields[key].widget.attrs.update(attrs)
 			self[key].group = group.name
 
 class EmployeeMixin(object):
-	def _get_employees(self):		
+	def _get_employees(self):
 		employees = Employee.objects.using('sim').filter(contributor__state='ACTIVO')
-		return employees	
+		return employees
 
 	def get_employee_choices(self):
 		choices = [('', '---------'),]		

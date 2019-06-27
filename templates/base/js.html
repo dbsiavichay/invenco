@@ -5,3 +5,14 @@
 <script src="{% static 'new/js/plugins/jquery-slimscroll/jquery.slimscroll.min.js' %}"></script>
 <script src="{% static 'new/js/plugins/toastr/toastr.min.js' %}"></script>
 <script src="{% static 'new/js/klorofil.min.js' %}"></script>
+<!-- CHOICES LIB -->
+<script type="text/javascript" src="{% static 'new/plugins/choices/choices.js' %}"></script>
+<script type="text/javascript">
+	window.addEventListener('DOMContentLoaded', function () {		
+		var choices = new Choices('select', {
+			shouldSort: false,
+			removeItemButton: true,
+			itemSelectText: 'Seleccionar',
+		});
+	});
+</script>
