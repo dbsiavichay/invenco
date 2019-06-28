@@ -19,8 +19,8 @@
 <table class="table">
   <thead>      
       <tr>
-        <th>Tipo</th>
         <th>Nombre</th>        
+        <th>Parte #</th>        
         <th>Serie</th>                
         <th>Estado</th>
         <th>Acciones</th>
@@ -28,9 +28,9 @@
   </thead>
   <tbody>             
     {% for equipment in object_list %}
-      <tr>                  
-        <td>{{ equipment.model.type }}</td>                
+      <tr>                                 
         <td>{{ equipment.model }}</td>        
+        <td>{{ equipment.model.part_number }}</td>        
         <td>{{ equipment.serial }}</td>
         <td>{{ equipment.get_state }}</td>
         <td class="col-xs-3">

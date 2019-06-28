@@ -82,7 +82,9 @@ class Model(AuditMixin, models.Model):
 	consumables = models.ManyToManyField('self', symmetrical=False, blank=True, verbose_name='consumibles')
 
 	def __unicode__(self):
-		return '%(brand)s %(name)s' % {'brand': self.brand, 'name': self.name}
+		kwargs = {'type': self.type,'brand': self.brand, 'name': self.name}
+		formatstr = '%(type)s %(brand)s %(name)s'		
+		return formatstr % kwargs
 
 	# def get_specifications(self):
 	# 	list_specifications = []

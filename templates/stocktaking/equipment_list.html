@@ -18,8 +18,7 @@
 {% block table %}
 <table class="table">
   <thead>      
-      <tr>
-        <th>Tipo</th>
+      <tr>        
         <th>Nombre</th>
         <th>Código</th>
         <th>Serie</th>
@@ -31,8 +30,7 @@
   </thead>
   <tbody>             
     {% for equipment in object_list %}
-      <tr>                  
-        <td>{{ equipment.model.type }}</td>                
+      <tr>                          
         <td>{{ equipment.model }}</td>
         <td>{{ equipment.code }}</td>
         <td>{{ equipment.serial }}</td>
