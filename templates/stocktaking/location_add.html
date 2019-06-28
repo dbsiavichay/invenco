@@ -38,18 +38,3 @@
 	</div>
 </div>
 {% endblock %}
-
-{% block css %}
-<link rel="stylesheet" type="text/css" href="{% static 'new/plugins/choices/choices.css' %}">
-{% endblock %}
-{% block js %}
-<script type="text/javascript" src="{% static 'new/plugins/choices/choices.js' %}"></script>
-<script type="text/javascript">
-	window.addEventListener('DOMContentLoaded', function () {
-		var inputEquipments = document.getElementById('id_equipments');
-		var choices = new Choices(inputEquipments, {
-			removeItemButton: true,
-		});
-	});
-</script>
-{% endblock %}
