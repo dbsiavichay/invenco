@@ -50,7 +50,7 @@ def get_pdf_dispatch(obj):
 	story.append(date)
 	story.append(Spacer(A4[0], 1*cm))
 	story.append(get_paragraph('Ing. Cristian Navarro'))
-	story.append(get_strong_text('GUARDALMACEN 2', 12))
+	story.append(get_strong_text('ESPECIALISTA DE CONTROL Y SUPERVISIÓN DE BIENES PÚBLICOS', 12))
 	story.append(Spacer(A4[0], 1*cm))
 	request = 'Solicito a usted se sirva realizar el despacho correspondiente de los siguiente bienes al Sr/a {}, funcionario del Gobierno Municipal del Cantón Morona.'
 	request = get_paragraph(request.format(obj.get_employee()))
