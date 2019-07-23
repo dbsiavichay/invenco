@@ -59,7 +59,7 @@ def get_pdf_dispatch(obj):
 	story = story + get_table_dispatch(obj)
 	story.append(get_strong_text('Observaciones:', 12))	
 	if obj.observation: story.append(get_paragraph(obj.observation))
-	director = ('Ing. Patricia Cabrera', 'DIRECTOR DE GESTIÓN ADMINISTRATIVA')
+	director = ('Lic. Edwin Erazo', 'DIRECTOR DE GESTIÓN ADMINISTRATIVA')
 	solicitante = ('Sr/a. ' + obj.get_employee(), 'FUNCIONARIO')
 	story = story + get_signatures([director, solicitante])	
 	doc.build(story, onFirstPage=get_letterhead_page,onLaterPages=get_letterhead_page)
