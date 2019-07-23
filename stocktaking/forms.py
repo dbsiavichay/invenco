@@ -108,7 +108,7 @@ class EmployeeMixin(object):
 
 	def get_employee_choices(self):
 		choices = [('', '---------'),]		
-		choices = choices + [(emp.contributor.charter, emp.contributor.charter+' | '+emp.contributor.name) for emp in self._get_employees()]		
+		choices = choices + [(emp.contributor.charter, emp.contributor.charter+' | '+emp.contributor.name) for emp in self._get_employees()]
 		return choices
 
 class LocationForm(EmployeeMixin, DjangoModelForm):
@@ -154,7 +154,7 @@ class LocationTransferForm(LocationForm):
 
 class DispatchForm(EmployeeMixin, DjangoModelForm):
 	selector = ModelChoiceField(
-		queryset=Equipment.objects.filter(model__type__usage=Type.EQUIPMENT, model__consumables__isnull=False),
+		queryset=Equipment.objects.filter(model__type__usage=Type.EQUIPMENT, model__consumables__isnull=False).distinct(),
 		label = 'Equipo'
 	)
 
