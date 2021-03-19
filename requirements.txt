@@ -3,7 +3,7 @@ Django==1.10
 django-pure-pagination==0.3.0
 django-simple-history==1.8.2
 django-widget-tweaks==1.4.1
-djangorestframework==3.4.4
+djangorestframework==3.11.2
 packaging==16.8
 Pillow==3.3.1
 psycopg2==2.6.2
